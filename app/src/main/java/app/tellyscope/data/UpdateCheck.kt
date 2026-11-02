@@ -5,77 +5,95 @@ package app.tellyscope.data
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
+import java.io.FileNotFoundException
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.Properties
 
-/** Where releases are published: the app's own GitHub repo. */
-const val RELEASES = "https://github.com/man15h/tellyscope/releases"
-private val REPO = RELEASES.removePrefix("https://github.com/").removeSuffix("/releases")
-private const val RELEASES_API = "https://api.github.com/repos/man15h/tellyscope/releases?per_page=20"
+const val PROJECT_REPO = "https://github.com/mohamedlalah/SecretoTVManager"
+const val UPSTREAM_REPO = "https://github.com/man15h/tellyscope"
+const val RELEASES = "$PROJECT_REPO/releases"
+const val RELEASES_API = "https://api.github.com/repos/mohamedlalah/SecretoTVManager/releases/latest"
 
-/** How long a check counts for: release builds ask every 30 minutes, alpha builds every 5 minutes for testing. */
 private const val RELEASE_INTERVAL_MS = 30 * 60 * 1000L
 private const val ALPHA_INTERVAL_MS = 5 * 60 * 1000L
 
-/** Tellyscope is about 3 MB; an APK far past that isn't it. */
-private const val MAX_APK_BYTES = 64L shl 20
+/** Metadata only. The application never downloads an APK or offers installation. */
+data class Update(val version: String, val notes: String, val url: String)
+enum class UpdateStatus { NotChecked, NoPublishedUpdates, UpToDate, Available, Failed, Disabled }
 
-/** A newer Tellyscope than the one running. [apk] is its release's APK link; null when the release has none this build can install. */
-data class Update(val version: String, val notes: String, val url: String, val apk: String? = null)
-
-/**
- * Asks GitHub, at most every 30 minutes (5 minutes on alpha builds), whether a newer release is out. No auth and no download: it
- * only reads the release list. Off switch and last check live in [file].
- * Release builds look at full releases only; alpha builds at `-alpha` pre-releases too.
- */
+/** Only the official fork's latest published stable release; no alternate repository or endpoint. */
 class UpdateCheck(
     private val file: File,
-    /** The running versionName, alpha suffix included. */
     private val current: String,
     val alpha: Boolean,
     private val clock: () -> Long = System::currentTimeMillis,
-    private val fetch: suspend (String) -> ByteArray = ::download,
+    private val fetch: suspend (String) -> ByteArray = ::fetchOfficialRelease,
 ) {
+    @Volatile var status: UpdateStatus = props().let { p ->
+        if (p.getProperty("source") == RELEASES_API && p.getProperty("status") == UpdateStatus.NoPublishedUpdates.name)
+            UpdateStatus.NoPublishedUpdates else UpdateStatus.NotChecked
+    }
+        private set
+    private var latestOfficial: Update? = null
+
     @get:Synchronized @set:Synchronized
     var enabled: Boolean
         get() = props().getProperty("off") != "true"
-        set(on) = save { if (on) remove("off") else setProperty("off", "true") }
+        set(on) {
+            save { if (on) remove("off") else setProperty("off", "true") }
+            status = if (!on) UpdateStatus.Disabled else props().let { p ->
+                if (p.getProperty("source") == RELEASES_API && p.getProperty("status") == UpdateStatus.NoPublishedUpdates.name)
+                    UpdateStatus.NoPublishedUpdates else UpdateStatus.NotChecked
+            }
+        }
 
-    /** The newest release past [current]. Null when off, checked recently, or on any failure. */
+    /** Null means no new offer. [status] distinguishes no published release from network errors. */
     suspend fun check(): Update? = withContext(Dispatchers.IO) {
         val p = props()
-        if (p.getProperty("off") == "true") return@withContext null
-        val last = p.getProperty("checked")?.toLongOrNull()
+        if (p.getProperty("off") == "true") { status = UpdateStatus.Disabled; return@withContext null }
+        // The old upstream timestamp must not suppress the first check against the fork.
+        val last = p.getProperty("checked")?.toLongOrNull()?.takeIf { p.getProperty("source") == RELEASES_API }
         val now = clock()
         val interval = if (alpha) ALPHA_INTERVAL_MS else RELEASE_INTERVAL_MS
         if (last != null && now - last in 0 until interval) return@withContext null
-        val text = try {
-            fetch(RELEASES_API).decodeToString()
+        try {
+            val text = fetch(RELEASES_API).decodeToString()
+            val release = parseLatestRelease(text) ?: throw IllegalArgumentException("Invalid latest-release response")
+            latestOfficial = release
+            val newer = compareVersions(release.version, current) > 0
+            status = if (newer) UpdateStatus.Available else UpdateStatus.UpToDate
+            checked(now)
+            release.takeIf { newer }
         } catch (e: CancellationException) {
             throw e
+        } catch (_: FileNotFoundException) {
+            latestOfficial = null
+            status = UpdateStatus.NoPublishedUpdates
+            checked(now)
+            null
         } catch (_: Exception) {
-            return@withContext null
+            status = UpdateStatus.Failed
+            null
         }
-        save { setProperty("checked", now.toString()) }
-        newest(text, alpha)?.takeIf { compareVersions(it.version, current) > 0 }
     }
 
-    /**
-     * The released CHANGELOG sections past [current], newest first, read from `main` on every build:
-     * What's new lists releases only, never alphas. Null on any failure. No interval: What's new
-     * asks only once the check has found an update.
-     */
+    /** What's new uses the already-fetched official release notes, never upstream/main history. */
     suspend fun newer(): List<Changelog.Release>? = withContext(Dispatchers.IO) {
-        val text = try {
-            fetch("https://raw.githubusercontent.com/$REPO/main/${Changelog.ASSET}").decodeToString()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            return@withContext null
-        }
-        // An alpha's own section is its base version's, as for the Installed chip.
-        Changelog.parse(text).filter { compareVersions(it.version, current.substringBefore('-')) > 0 }
+        if (status == UpdateStatus.Failed) return@withContext null
+        val release = latestOfficial?.takeIf { compareVersions(it.version, current) > 0 } ?: return@withContext emptyList()
+        val changes = Changelog.parse("# Changelog\n\n## ${release.version}\n\n${release.notes}").firstOrNull()?.changes.orEmpty()
+        listOf(Changelog.Release(release.version, null, changes.ifEmpty {
+            if (release.notes.isBlank()) emptyList() else listOf(Changelog.Change(null, release.notes, null))
+        }))
+    }
+
+    private fun checked(now: Long) = save {
+        setProperty("source", RELEASES_API)
+        setProperty("checked", now.toString())
+        setProperty("status", status.name)
     }
 
     private fun props() = Properties().apply {
@@ -85,45 +103,61 @@ class UpdateCheck(
     @Synchronized
     private fun save(change: Properties.() -> Unit) {
         val p = props().apply(change)
-        runCatching {
-            file.parentFile?.mkdirs()
-            file.outputStream().use { p.store(it, null) }
-        }
+        runCatching { file.parentFile?.mkdirs(); file.outputStream().use { p.store(it, null) } }
     }
 }
 
-/** The newest release in a GitHub release list a build may move to; null when there is none or the list won't parse. */
-fun newest(json: String, alpha: Boolean): Update? = runCatching {
-    val list = JSONArray(json)
-    (0 until list.length()).map(list::getJSONObject)
-        .filter { !it.optBoolean("draft") }
-        .mapNotNull { r ->
-            val version = r.optString("tag_name").removePrefix("v")
-            val parsed = parseVersion(version) ?: return@mapNotNull null
-            // A release build never offers an alpha; an alpha build offers both.
-            if (parsed.alpha != null && !alpha) return@mapNotNull null
-            if (r.optBoolean("prerelease") && parsed.alpha == null) return@mapNotNull null
-            // Only an APK served from this repo's releases, of a plausible size, and only one this
-            // build can update to: alpha and release builds are different packages with different keys.
-            val apk = if ((parsed.alpha != null) != alpha) null else r.optJSONArray("assets")?.let { a -> (0 until a.length()).map(a::getJSONObject) }.orEmpty()
-                .singleOrNull { it.optString("name").endsWith(".apk") }
-                ?.takeIf { it.optString("browser_download_url").startsWith("$RELEASES/download/") && it.optLong("size") in 1..MAX_APK_BYTES }
-            Update(version, r.optString("body").trim(), "$RELEASES/tag/v$version", apk?.optString("browser_download_url"))
-        }
-        .maxWithOrNull { a, b -> compareVersions(a.version, b.version) }
+/** GitHub /latest is a single object, not the releases-list array. Assets are intentionally ignored. */
+fun parseLatestRelease(json: String): Update? = runCatching {
+    val r = JSONObject(json)
+    if (!r.has("draft") || !r.has("prerelease") || r.getBoolean("draft") || r.getBoolean("prerelease")) return null
+    val tag = r.getString("tag_name")
+    val version = tag.removePrefix("v")
+    if (parseVersion(version)?.alpha != null || parseVersion(version) == null) return null
+    val page = "$RELEASES/tag/$tag"
+    // Never trust an API payload pointing to an upstream, unrelated or lookalike repository.
+    if (r.has("html_url") && r.getString("html_url") != page) return null
+    Update(version, r.optString("body").takeUnless { it == "null" }.orEmpty().trim(), page)
 }.getOrNull()
+
+/** Fixed HTTPS endpoint, bounded metadata and no cross-repository redirects or APK downloads. */
+private suspend fun fetchOfficialRelease(url: String): ByteArray = withContext(Dispatchers.IO) {
+    require(url == RELEASES_API)
+    val c = URL(url).openConnection() as HttpURLConnection
+    c.instanceFollowRedirects = false
+    c.connectTimeout = 10_000
+    c.readTimeout = 10_000
+    c.setRequestProperty("Accept", "application/vnd.github+json")
+    c.setRequestProperty("User-Agent", "SecretoTVManager")
+    val started = System.nanoTime()
+    try {
+        if (c.responseCode == 404) throw FileNotFoundException("No official published release")
+        check(c.responseCode == 200) { "HTTP ${c.responseCode}" }
+        c.inputStream.use { input ->
+            val out = java.io.ByteArrayOutputStream()
+            val buffer = ByteArray(8192)
+            while (true) {
+                val n = input.read(buffer)
+                if (n < 0) break
+                check(out.size() + n <= 1_048_576) { "Release metadata too large" }
+                check(System.nanoTime() - started <= 30_000_000_000L) { "Release metadata too slow" }
+                out.write(buffer, 0, n)
+            }
+            out.toByteArray()
+        }
+    } finally { c.disconnect() }
+}
 
 private class Version(val core: List<Int>, val alpha: Int?)
 
-/** `X.Y.Z` or `X.Y.Z-alpha.N`; anything else is not a Tellyscope version. */
+/** Numeric major.minor.patch, optionally with the existing alpha suffix. */
 private fun parseVersion(v: String): Version? {
     val m = Regex("""(\d+)\.(\d+)\.(\d+)(?:-alpha\.(\d+))?""").matchEntire(v) ?: return null
     val n = m.groupValues.drop(1).map { it.toIntOrNull() }
-    if (n.take(3).any { it == null }) return null
+    if (n.take(3).any { it == null } || (m.groups[4] != null && n[3] == null)) return null
     return Version(n.take(3).map { it!! }, m.groups[4]?.let { it.value.toIntOrNull() ?: return null })
 }
 
-/** Like semver: `0.2.0-alpha.3` < `0.2.0` < `0.2.1-alpha.1`. An unparseable version sorts first. */
 fun compareVersions(a: String, b: String): Int {
     val x = parseVersion(a)
     val y = parseVersion(b)

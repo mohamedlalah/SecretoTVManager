@@ -1,4 +1,5 @@
 <resources>
-    <color name="splash_background">#0E1415</color>
-    <color name="splash_icon_background">#00696B</color>
+    <!-- Match the default Ocean Blue Compose theme, including system dark mode launches. -->
+    <color name="splash_background">#F5F9FF</color>
+    <color name="splash_icon_background">#071A46</color>
 </resources>

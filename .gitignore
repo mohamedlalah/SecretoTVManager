@@ -12,9 +12,35 @@ captures/
 
 # Local machine config (SDK path, signing)
 local.properties
-*.jks
-*.keystore
+*.[jJ][kK][sS]
+*.[kK][eE][yY][sS][tT][oO][rR][eE]
 keystore.properties
+*.[pP]12
+*.[pP][fF][xX]
+.env
+.env.*
+!.env.example
+!.env.sample
+signing.properties
+signing-*.properties
+key.properties
+# Name-specific private keys only; public certificates and arbitrary PEM fixtures remain trackable.
+*-private.pem
+*_private.pem
+*-private-key.pem
+*_private_key.pem
+private-key.pem
+private_key.pem
+release-key.pem
+signing-key.pem
+*.key.pem
+id_rsa.pem
+id_ecdsa.pem
+id_ed25519.pem
+
+# Python release tooling
+__pycache__/
+*.pyc
 
 # OS
 .DS_Store

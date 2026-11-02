@@ -68,3 +68,6 @@ abstract class TranslationsTest(private val qualifier: String) {
 @Config(sdk = [35], qualifiers = "ja") class JapaneseStringsTest : TranslationsTest("ja")
 @Config(sdk = [35], qualifiers = "ru") class RussianStringsTest : TranslationsTest("ru")
 @Config(sdk = [35], qualifiers = "hi") class HindiStringsTest : TranslationsTest("hi")
+
+@Config(sdk = [35], qualifiers = "fr") class FrenchStringsTest : TranslationsTest("fr")
+@Config(sdk = [35], qualifiers = "ar") class ArabicStringsTest : TranslationsTest("ar")

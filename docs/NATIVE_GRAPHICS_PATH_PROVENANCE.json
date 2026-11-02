@@ -1,0 +1,100 @@
+{
+  "coordinate": "androidx.graphics:graphics-path:1.0.1",
+  "repository": "https://android.googlesource.com/platform/frameworks/support",
+  "source_revision": "8a05a22af450d589ef911d772a001a49dcb05b71",
+  "release_notes": "https://developer.android.com/jetpack/androidx/releases/graphics",
+  "official_release_diff": "https://android.googlesource.com/platform/frameworks/support/+log/4fcd99eacd92d7c73fb1d3580fd423ed7704a98a..8a05a22af450d589ef911d772a001a49dcb05b71/graphics/graphics-path",
+  "maven_base": "https://dl.google.com/dl/android/maven2/androidx/graphics/graphics-path/1.0.1/",
+  "module_archive_url": "https://android.googlesource.com/platform/frameworks/support/+archive/8a05a22af450d589ef911d772a001a49dcb05b71/graphics/graphics-path.tar.gz",
+  "license": "Apache-2.0; original AOSP copyright headers retained",
+  "kotlin_source_jar_files_matched": 4,
+  "all_four_apk_so_files_match_published_aar": true,
+  "cmake": "3.22.1",
+  "ndk": "25.2.9519653",
+  "external_native_non_system_source_dependencies_found": [],
+  "native_rebuild_performed": false,
+  "files": [
+    {
+      "path": "ELF_DEPENDENCIES.json",
+      "sha256": "72b51723a2d76b707b8e4f679fd4dc52200091cb25cb19ad1f63c1ad6118b5c5",
+      "bytes": 396
+    },
+    {
+      "path": "build-context/LICENSE.txt",
+      "sha256": "809fa1ed21450f59827d1e9aec720bbc4b687434fa22283c6cb5dd82a47ab9c0",
+      "bytes": 10175
+    },
+    {
+      "path": "build-context/build.gradle",
+      "sha256": "2dc473adda37e6f01329e2830e32fab35d1bed9469e1f774a60493111a123aed",
+      "bytes": 1401
+    },
+    {
+      "path": "build-context/development/build_log_simplifier/message-flakes.ignore",
+      "sha256": "286ca178929a61497ee02f450730899c947f46ddb03e00e8e5bed763452e55a8",
+      "bytes": 11990
+    },
+    {
+      "path": "build-context/development/build_log_simplifier/messages.ignore",
+      "sha256": "25c10c2423e4b9902ad9b2cda1e8fc12806d22e186571a78e2c7cfe48eb37256",
+      "bytes": 98939
+    },
+    {
+      "path": "build-context/gradle/libs.versions.toml",
+      "sha256": "c9c0f5c9723dd11786a3ac64caf7347647abbe989682dd874968f975af520b76",
+      "bytes": 23233
+    },
+    {
+      "path": "build-context/gradle.properties",
+      "sha256": "8444d70d9646b726f91f86ddec9611d3fe33e3f63b2bea579066d4457779ea88",
+      "bytes": 4484
+    },
+    {
+      "path": "build-context/gradlew",
+      "sha256": "1b4f5d3eef31bce46c99f1c04646c25e8895b74a5d7867a7f09289cf4814123d",
+      "bytes": 16927
+    },
+    {
+      "path": "build-context/libraryversions.toml",
+      "sha256": "e55e1a3e079d8f30fe0d06cc78d1d32393ed1a17ff6d6f8da7e70bad274cfd23",
+      "bytes": 17985
+    },
+    {
+      "path": "build-context/settings.gradle",
+      "sha256": "c912f302815f5fe5c7a32be5655d1f77ece7a4fbb2f56c774212b16df9e999a5",
+      "bytes": 82676
+    },
+    {
+      "path": "buildSrc-8a05a22af450d589ef911d772a001a49dcb05b71.tar.gz",
+      "sha256": "0956f4cb8f38e4a7c3bc6c950a34c33a3262de2fb8d1ac32af6526127500a6e3",
+      "bytes": 229521
+    },
+    {
+      "path": "gradle-8a05a22af450d589ef911d772a001a49dcb05b71.tar.gz",
+      "sha256": "ba0f415e07fd462ed233a5425afa918d45c42fdbf3cb11b8f2d5e1630dd1b0ec",
+      "bytes": 434344
+    },
+    {
+      "path": "graphics-path-1.0.1.aar",
+      "sha256": "8ca4032b6d79b351f0b59ad4b580eddbb9423e1652f7c958830687f1eee2ec03",
+      "bytes": 39380
+    },
+    {
+      "path": "graphics-path-1.0.1.pom",
+      "sha256": "866fb357c7146f5f7678ad44e4bc6c2823d568defce1ed2805bb6c899606b228",
+      "bytes": 2051
+    },
+    {
+      "path": "graphics-path-8a05a22af450d589ef911d772a001a49dcb05b71.tar.gz",
+      "sha256": "7f870f21a8bb540537e1ea0d5db1ffef15d27dff3ffce2370a1b1380c14813e5",
+      "bytes": 24319
+    },
+    {
+      "path": "revision.json",
+      "sha256": "2b4f36c75dbb487cb59b2bc7c05eee1c5f8c821c23d606ae6f0e1b089527c02d",
+      "bytes": 792
+    }
+  ],
+  "native_directory_files": 12,
+  "original_relative_build_tool_symlink_targets_included": true
+}

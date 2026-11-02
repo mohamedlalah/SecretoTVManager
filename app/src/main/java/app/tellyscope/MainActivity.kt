@@ -225,7 +225,6 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
     state.update?.let { u ->
         UpdateDialog(
             u,
-            onDownload = { vm.updateLater(); u.apk?.let { runCatching { browser.openUri(it) } } },
             onRelease = { vm.updateLater(); runCatching { browser.openUri(u.url) } },
             onCancel = vm::updateLater,
         )
@@ -332,13 +331,14 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
     } else if (whatsNew) {
         BackHandler { whatsNew = false }
         LaunchedEffect(state.available) { vm.loadNewer() }
-        WhatsNewScreen(rememberChangelog(), back = { whatsNew = false }, available = state.available, newer = state.newer, onUpdate = vm::reopenUpdate)
+        WhatsNewScreen(rememberChangelog(), back = { whatsNew = false }, available = state.available, newer = state.newer, onUpdate = vm::reopenUpdate, updateStatus = state.updateStatus)
     } else if (settings) {
         BackHandler { settings = false }
         SettingsScreen(
             state.listSource,
             onListSource = vm::setListSource,
             checkUpdates = state.checkUpdates,
+            updateStatus = state.updateStatus,
             alphaBuild = state.alphaBuild,
             onCheckUpdates = vm::setCheckUpdates,
             keyHaptics = state.keyHaptics,

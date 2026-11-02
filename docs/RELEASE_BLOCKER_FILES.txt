@@ -1,0 +1,14 @@
+README.md
+docs/DEVICE_TEST_EVIDENCE.md
+docs/FINAL_RELEASE_AUDIT.md
+docs/LIVE_GITHUB_AUDIT.json
+docs/LIVE_GITHUB_AUDIT.md
+docs/NATIVE_GRAPHICS_PATH.md
+docs/NATIVE_GRAPHICS_PATH_PROVENANCE.json
+docs/PUBLICATION_CHECKLIST.md
+docs/RELEASE_BLOCKERS_RESOLUTION.md
+docs/RELEASE_BLOCKER_FILES.txt
+docs/RELEASE_COMMIT_FILES.txt
+release/RELEASE_NOTES_1.0.0.md
+scripts/release/package_final_signed_source.py
+tests/release/test_final_source_package.py

@@ -28,8 +28,36 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      # build = assemble (debug + release) + unit tests + Android lint
-      - run: ./gradlew build --console=plain
+      # Preserve the project's Java 21 daemon; Kadb tests require Java 25 workers.
+      - name: Prepare isolated Java 25 test launcher
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/secreto-jdk25-tests.gradle" <<'GRADLE'
+          import org.gradle.api.tasks.testing.Test
+          import org.gradle.jvm.toolchain.JavaLanguageVersion
+          import org.gradle.jvm.toolchain.JavaToolchainService
+
+          allprojects {
+              tasks.withType(Test).configureEach {
+                  def tools = project.extensions.getByType(JavaToolchainService)
+                  javaLauncher.set(tools.launcherFor {
+                      languageVersion.set(JavaLanguageVersion.of(25))
+                  })
+                  doFirst {
+                      logger.lifecycle("Verification test JVM: Java " + javaLauncher.get().metadata.languageVersion + " / " + javaLauncher.get().metadata.jvmVersion)
+                  }
+              }
+          }
+          GRADLE
+
+      # build = assemble (debug + release) + unit tests + Android lint.
+      # This CI build never replaces the separately verified official signed APK.
+      - name: Build, test and lint with compatible test JVMs
+        run: >-
+          ./gradlew build
+          --init-script "$RUNNER_TEMP/secreto-jdk25-tests.gradle"
+          -Dorg.gradle.java.installations.auto-download=false
+          --no-configuration-cache --console=plain
 
       - name: Upload reports on failure
         if: failure()

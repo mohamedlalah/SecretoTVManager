@@ -65,6 +65,7 @@ import app.tellyscope.data.Changelog.Change
 import app.tellyscope.data.Changelog.Kind
 import app.tellyscope.data.Changelog.Release
 import app.tellyscope.data.Update
+import app.tellyscope.data.UpdateStatus
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -96,6 +97,7 @@ fun WhatsNewScreen(
     available: Update? = null,
     newer: List<Release>? = emptyList(),
     onUpdate: () -> Unit = {},
+    updateStatus: UpdateStatus = UpdateStatus.NotChecked,
 ) {
     val browser = LocalUriHandler.current
     val openPr = { pr: Int -> runCatching { browser.openUri(Changelog.pullUrl(pr)) }; Unit }
@@ -114,6 +116,14 @@ fun WhatsNewScreen(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            if (available == null && releases.isEmpty()) {
+                item(key = "no-published-history") {
+                    Text(
+                        stringResource(if (updateStatus == UpdateStatus.NoPublishedUpdates) R.string.update_no_published else R.string.whats_new_no_history),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
             if (available != null) {
                 if (newer == null) {
                     item(key = "failed") { NewerFailed() }

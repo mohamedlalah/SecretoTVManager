@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Local camera/app glyph with platform gradient; not a SecretofNet avatar. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="32dp" android:height="32dp"
+    android:viewportWidth="24" android:viewportHeight="24" android:autoMirrored="false">
+    <path android:pathData="M6,0H18Q24,0 24,6V18Q24,24 18,24H6Q0,24 0,18V6Q0,0 6,0Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:startX="2" android:startY="24" android:endX="22" android:endY="0" android:type="linear">
+                <item android:offset="0" android:color="#FEDA75" />
+                <item android:offset="0.25" android:color="#FA7E1E" />
+                <item android:offset="0.5" android:color="#D62976" />
+                <item android:offset="0.75" android:color="#962FBF" />
+                <item android:offset="1" android:color="#4F5BD5" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="1.7"
+        android:pathData="M8,4.5H16Q19.5,4.5 19.5,8V16Q19.5,19.5 16,19.5H8Q4.5,19.5 4.5,16V8Q4.5,4.5 8,4.5Z" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="1.7"
+        android:pathData="M15.6,12A3.6,3.6 0,1 0,8.4,12A3.6,3.6 0,1 0,15.6,12Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M17.8,7.2A1,1 0,1 0,15.8,7.2A1,1 0,1 0,17.8,7.2Z" />
+</vector>

@@ -84,6 +84,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -408,6 +409,7 @@ private fun StateLine(what: String, then: String) {
 
 /** The four arrows around a big OK, shaped like the remote in the user's other hand; [size] across. */
 @Composable
+// D-pad directions are physical TV directions: never swap left and right in RTL.
 private fun DPad(enabled: Boolean, press: suspend (RemoteKey) -> Boolean, size: Dp = DPAD_MAX) {
     // Every part keeps its share of the full-size pad, so a smaller pad is the same pad, scaled.
     val scale = size / DPAD_MAX
@@ -422,10 +424,10 @@ private fun DPad(enabled: Boolean, press: suspend (RemoteKey) -> Boolean, size: 
             KeySurface(RemoteKey.DOWN, stringResource(R.string.remote_down), enabled, press, CircleShape, Color.Transparent, arrow.align(Alignment.BottomCenter)) {
                 Icon(Icons.Default.KeyboardArrowDown, null, glyph, tint = tint)
             }
-            KeySurface(RemoteKey.LEFT, stringResource(R.string.remote_left), enabled, press, CircleShape, Color.Transparent, arrow.align(Alignment.CenterStart)) {
+            KeySurface(RemoteKey.LEFT, stringResource(R.string.remote_left), enabled, press, CircleShape, Color.Transparent, arrow.align(AbsoluteAlignment.CenterLeft)) {
                 Icon(Icons.Default.KeyboardArrowLeft, null, glyph, tint = tint)
             }
-            KeySurface(RemoteKey.RIGHT, stringResource(R.string.remote_right), enabled, press, CircleShape, Color.Transparent, arrow.align(Alignment.CenterEnd)) {
+            KeySurface(RemoteKey.RIGHT, stringResource(R.string.remote_right), enabled, press, CircleShape, Color.Transparent, arrow.align(AbsoluteAlignment.CenterRight)) {
                 Icon(Icons.Default.KeyboardArrowRight, null, glyph, tint = tint)
             }
             KeySurface(

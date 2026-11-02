@@ -59,7 +59,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import app.tellyscope.data.RELEASES
+import app.tellyscope.data.PROJECT_REPO
+import app.tellyscope.data.UPSTREAM_REPO
+import app.tellyscope.data.UpdateStatus
 import app.tellyscope.data.sourceName
 import androidx.compose.ui.res.stringResource
 import app.tellyscope.R
@@ -70,10 +72,10 @@ import app.tellyscope.data.resolve
 internal const val CLEANYOURTV = "https://github.com/Gathin23/cleanyourtv"
 
 /** CONTRIBUTING's guide to pointing the app at your own lists. */
-internal val OWN_LISTS_GUIDE = RELEASES.removeSuffix("/releases") + "/blob/main/CONTRIBUTING.md#using-your-own-lists"
+internal val OWN_LISTS_GUIDE = UPSTREAM_REPO + "/blob/main/CONTRIBUTING.md#using-your-own-lists"
 
-/** What Share Tellyscope sends: what it is, then the repo, whose page shows it and how to install. */
-internal val SHARE_TEXT = UiText(R.string.settings_share_text, REPO)
+/** Share identifies this fork and its official source repository, independently of attribution. */
+internal val SHARE_TEXT = UiText(R.string.settings_share_text, PROJECT_REPO)
 
 /** Android's share sheet with [SHARE_TEXT], so any app the user picks can send it on. */
 internal fun shareTellyscope(context: Context) {
@@ -93,6 +95,7 @@ fun SettingsScreen(
     onListSource: (String?) -> Unit,
     /** Null hides the switch: this build doesn't check (screenshots). */
     checkUpdates: Boolean?,
+    updateStatus: UpdateStatus = UpdateStatus.NotChecked,
     /** Alpha builds check every 5 minutes, release builds every 30 minutes. */
     alphaBuild: Boolean,
     onCheckUpdates: (Boolean) -> Unit,
@@ -103,11 +106,13 @@ fun SettingsScreen(
     onWhatsNew: () -> Unit = {},
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
 ) {
+    var about by rememberSaveable { mutableStateOf(false) }
     var editing by rememberSaveable { mutableStateOf(false) }
     var advanced by rememberSaveable { mutableStateOf(false) }
     val browser = LocalUriHandler.current
     val context = LocalContext.current
     val open = { url: String -> runCatching { browser.openUri(url) }; Unit }
+    if (about) AboutDialog(commit = null, onDismiss = { about = false })
     if (editing) SourceDialog(listSource, onSave = { editing = false; onListSource(it) }, onDismiss = { editing = false })
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -126,6 +131,18 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
+                Card(
+                    onClick = { about = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                ) {
+                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(R.string.developer_about), style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.developer_credit), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+            item {
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
                     if (checkUpdates != null) Row(
                         Modifier.fillMaxWidth()
@@ -139,6 +156,10 @@ fun SettingsScreen(
                                 stringResource(if (alphaBuild) R.string.settings_check_updates_alpha else R.string.settings_check_updates_release),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
+                            if (updateStatus == UpdateStatus.NoPublishedUpdates && checkUpdates) {
+                                Text(stringResource(R.string.update_no_published), style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                         }
                         Spacer(Modifier.width(16.dp))
                         Switch(checked = checkUpdates, onCheckedChange = null)
