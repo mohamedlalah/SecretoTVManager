@@ -62,6 +62,7 @@ import app.tellyscope.data.TvTweaks
 import app.tellyscope.data.Update
 import app.tellyscope.data.FoldBook
 import app.tellyscope.data.SeenBook
+import app.tellyscope.data.UpdateStatus
 import app.tellyscope.data.UpdateCheck
 import app.tellyscope.data.UiText
 import app.tellyscope.data.why
@@ -299,6 +300,7 @@ data class UiState(
     val alphaBuild: Boolean = false,
     /** A newer release to offer; cleared once the user answers. */
     val update: Update? = null,
+    val updateStatus: UpdateStatus = UpdateStatus.NotChecked,
     /** The newest release the last check found; unlike [update] it stays after Later, for What's new. */
     val available: Update? = null,
     /** What's new's CHANGELOG sections past the installed version, once [available] is set: empty until read, null if they couldn't be. */
@@ -489,7 +491,7 @@ class TellyscopeViewModel(
         }
         startTick()
         updates?.let { u ->
-            viewModelScope.launch(Dispatchers.IO) { _state.update { it.copy(checkUpdates = u.enabled, alphaBuild = u.alpha) } }
+            viewModelScope.launch(Dispatchers.IO) { _state.update { it.copy(checkUpdates = u.enabled, alphaBuild = u.alpha, updateStatus = if (u.enabled) u.status else UpdateStatus.Disabled) } }
         }
         keyHaptics?.let { k ->
             viewModelScope.launch(Dispatchers.IO) { _state.update { it.copy(keyHaptics = k.on, screenOffTip = !k.screenOffTipSeen) } }
@@ -1786,12 +1788,20 @@ class TellyscopeViewModel(
         val u = updates ?: return
         if (updateJob?.isActive == true || _state.value.update != null) return
         updateJob = viewModelScope.launch(Dispatchers.IO) {
-            // Null on any failure: no offer looks the same as no newer release.
-            u.check()?.let { found -> _state.update { it.copy(update = found, available = found) } }
+            val found = u.check()
+            _state.update { state ->
+                // If the switch was turned off while a request was in flight, show no offer.
+                if (state.checkUpdates == false) state.copy(update = null, available = null, updateStatus = UpdateStatus.Disabled)
+                else state.copy(
+                    update = found ?: state.update,
+                    available = if (u.status == UpdateStatus.NoPublishedUpdates || u.status == UpdateStatus.UpToDate) null else found ?: state.available,
+                    updateStatus = u.status,
+                )
+            }
         }
     }
 
-    /** "Download APK", "Check release" or "Cancel": the offer goes away until the next check. */
+    /** "Check release" or "Cancel": dismiss the metadata offer until the next check. */
     fun updateLater() {
         _state.update { it.copy(update = null) }
     }
@@ -1819,7 +1829,8 @@ class TellyscopeViewModel(
 
     fun setCheckUpdates(on: Boolean) {
         val u = updates ?: return
-        _state.update { it.copy(checkUpdates = on) }
+        _state.update { it.copy(checkUpdates = on, update = if (on) it.update else null, available = if (on) it.available else null,
+            updateStatus = if (on) UpdateStatus.NotChecked else UpdateStatus.Disabled) }
         viewModelScope.launch(Dispatchers.IO) { u.enabled = on }
     }
 

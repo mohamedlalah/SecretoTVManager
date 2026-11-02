@@ -1,127 +1,101 @@
-# <img src="docs/logo/icon.svg" alt="" width="64" height="64" align="middle"> Tellyscope
-
-Debloat your Android TV, install apps, and browse and transfer files on it, all from your phone. No root, no PC.
-
-<p>
-  <img src="https://img.shields.io/badge/size-3%20MB-00696B" alt="3 MB">
-  <img src="https://img.shields.io/badge/tracking-none-00696B" alt="No tracking">
-  <img src="https://img.shields.io/badge/root-not%20needed-00696B" alt="No root">
-  <img src="https://img.shields.io/badge/languages-6-00696B" alt="6 languages">
-  <img src="https://img.shields.io/badge/license-GPL--3.0-00696B" alt="GPL-3.0">
-  <a href="../../releases/latest"><img src="https://img.shields.io/github/v/release/man15h/tellyscope?color=00696B&label=release" alt="Latest release"></a>
+<p align="center">
+  <img src="app/src/main/res/drawable-nodpi/secreto_icon_foreground.png" width="96" alt="Secreto TV Manager icon">
 </p>
 
-<a href="../../releases/latest"><img src="docs/badges/get-it-on-github.png" alt="Get the signed APK on GitHub" height="60"></a>
-<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/man15h/tellyscope"><img src="docs/badges/get-it-on-obtainium.png" alt="Get it on Obtainium" height="60"></a>
-<a href="https://rookieenough.github.io/Orion-Data/redirect.html?id=tellyscope&icon=https%3A%2F%2Fraw.githubusercontent.com%2Fman15h%2Ftellyscope%2Fmain%2Fdocs%2Flogo%2Ficon.svg"><img src="docs/badges/get-it-on-orion.png" alt="Get it on Orion Store" height="60"></a>
+# Secreto TV Manager
 
-[![Watch the demo](docs/site/demo-thumb.webp)](https://youtu.be/N_PeDw5GiCc)
+**Android TV and Google TV management from your Android phone.**
 
-<table>
-  <tr>
-    <td width="25%"><img src="docs/screenshots/tv-page.png" alt="A TV's page: the TV at a glance, its vitals, and the Install, Debloat and Send buttons"></td>
-    <td width="25%"><img src="docs/screenshots/remote.png" alt="The Remote: Screen off and Restart under a menu in the top bar, a D-pad, icon keys for Back, Home, Menu, mute and volume, typing on the TV with a backspace key, and three streaming buttons along the bottom: YouTube, Netflix and Jellyfin"></td>
-    <td width="25%"><img src="docs/screenshots/debloat.png" alt="Debloat: the TV's model on top, then the apps it will turn off, each with its package name"></td>
-    <td width="25%"><img src="docs/screenshots/install.png" alt="Installing Kodi on the TV from an APK on the phone: the dialog says it is not on this TV yet"></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Your TV at a glance</sub></td>
-    <td align="center"><sub>Control the TV from your phone</sub></td>
-    <td align="center"><sub>Review every app Debloat turns off</sub></td>
-    <td align="center"><sub>Install apps</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/send.png" alt="Sending a video from the phone to the TV's Movies folder"></td>
-    <td><img src="docs/screenshots/tweaks.png" alt="Tweaks: the Home screen card with Google TV Home as Current and Get another launcher, then ad-blocking Private DNS on, faster animations and clear caches"></td>
-    <td><img src="docs/screenshots/home.png" alt="Make Projectivy Launcher the home screen: the confirm says Google TV Home, the TV's built-in launcher, is the only one ever turned off"></td>
-    <td><img src="docs/screenshots/advanced.png" alt="Advanced monitor: CPU and RAM by app, the TV's network connection, and the apps' open connections"></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Send files to the TV</sub></td>
-    <td align="center"><sub>Block ads, tweak the TV, add a launcher</sub></td>
-    <td align="center"><sub>Make a launcher Home</sub></td>
-    <td align="center"><sub>Advanced monitor: what is using the CPU, RAM and network</sub></td>
-  </tr>
-</table>
+Customized and maintained by **SecretoTools / Mohamed LALAH | محمد لالاح**, based on [Tellyscope](https://github.com/man15h/tellyscope) by the Tellyscope contributors. Ocean Blue styling, eight languages and direct access to SecretofNet resources.
 
-<sub>Rendered from the app's screenshot tests with sample data. The Install dialog is drawn to match the app, and Advanced monitor joins parts of its longer page.</sub>
+[Website](https://secretotools.com) · [YouTube](https://www.youtube.com/@SecretofNet) · [Instagram](https://www.instagram.com/secretofnet/) · [Source](https://github.com/mohamedlalah/SecretoTVManager) · [Report a problem](https://github.com/mohamedlalah/SecretoTVManager/issues)
 
-## What it does
+## Features
 
-Tellyscope talks to your Android TV, Google TV, NVIDIA Shield or Fire TV over Wi-Fi using ADB, the debugging protocol developers use. Tested on Fire TV (Fire OS 8); a few remote keys don't work there yet. NVIDIA Shield hasn't been tested on real hardware yet.
+- Discover TVs over your local network, pair with wireless debugging or connect using network ADB.
+- Use a remote with navigation keys, volume controls, text entry and app shortcuts.
+- Review debloat suggestions, disable selected apps and restore changes through history/undo.
+- Manage installed apps and install APKs or supported app bundles on the TV.
+- Browse and transfer files; inspect storage, CPU, memory and network information.
+- Review launcher choices, Private DNS and other supported system tweaks.
+- Optional update checks use only this project's official GitHub releases and open a release page. The updater does not automatically download or install APKs.
 
-- **Connect.** Finds TVs on your Wi-Fi, looking again every 10 seconds or when you tap **Rescan**, or add one by IP. Works with network debugging and with Android 11+ wireless debugging and its pairing code. TVs reconnect by themselves.
-- **See how it's doing.** Free space, CPU, RAM and network speed, plus what's paired or plugged in. **Advanced monitor** has CPU and RAM by app, processes, network and data used.
-- **Debloat.** Matches your TV to one of 330+ tested lists (adapted from [cleanyourtv](https://github.com/Gathin23/cleanyourtv)) and shows every app it will turn off before it does. Untick anything you use, or a whole group from its heading, then watch each app turn off. No list for your model? Pick from the maker's lists, or by hand.
-- **Apps.** See what's running and what's on the TV. Turn off apps you don't want, turn them back on any time, and uninstall the ones you added yourself.
-- **Install apps.** From an APK, split APKs or an `.apks`/`.xapk`/`.apkm` bundle on your phone; the picker opens in Downloads and shows only apps. It says first whether it's new, an update or an older version.
-- **A better home screen.** Install Projectivy or FLauncher and make it Home. Android TV installs it from the TV's Play Store, or Projectivy can be downloaded directly after a warning. Fire TV has no Play Store, so Tellyscope downloads Projectivy from its developer's GitHub releases and installs it only if its signature matches. Switch between launchers, or back to the TV's own, from the Home screen card in Tweaks; only the TV's own is ever turned off. A launcher's accessibility service turns on only if you say yes.
-- **Send files.** To and from the TV's Download and Movies folders.
-- **Remote.** D-pad, Back, Home, Menu, mute and volume, typing on the TV, buttons that open Netflix, YouTube, Plex and 20 more streaming apps (hold one to pick up to three), restart the TV, and **Screen off** for music with the picture off (Android 13 or older).
-- **Reset TV.** In ⋮: turn the TV back to how it shipped, with one Undo. Preinstalled apps come back on, uninstalled ones too, and the TV's own launcher is Home again; apps the maker shipped off stay off.
-- **Tweaks.** Block ads with Private DNS, faster animations, clear caches, take a screenshot.
-- **Who has access.** See every computer the TV allows over ADB, remove all but this phone, and answer the TV's "Allow debugging?" prompt from your phone.
+These tools retain the original project's functionality. Availability depends on the TV, Android/Fire OS version, OEM restrictions and granted ADB access; no universal compatibility is promised.
 
-<img src="docs/screenshots/clean-home.jpg" alt="A TV home screen after debloating: the inputs and the user's own apps, with no ads or suggestions" width="100%">
+## Screenshots
 
-<sub>A TV after Tellyscope.</sub>
+<p>
+  <img src="docs/screenshots/secreto-welcome.png" width="270" alt="Secreto TV Manager first-run Welcome screen">
+  <img src="docs/screenshots/secreto-about.png" width="270" alt="About and developer dialog with SecretofNet social links">
+</p>
+
+These are automated renders from this fork's UI tests, not photographs or captures from the Galaxy A15. The developer reports the signed v1.0.0 APK was physically tested on a Samsung Galaxy A15; YOU-BOX discovery, connection and remote control were also reported working, while those individual tests’ exact build was not identified. File, app, launcher and tweak testing occurred during development. See [device-test evidence](docs/DEVICE_TEST_EVIDENCE.md) for build attribution and limits.
+
+## Requirements and connection
+
+- **Controller phone/tablet:** Android 8.0 (API 26) or newer, as enforced by the app's minSdk. Target/compile SDK is 37; that is not the minimum supported Android version.
+- **TV:** Android TV, Google TV or a compatible Android-based TV device exposing ADB. Wireless-debugging pairing requires Android 11+ on the TV. Older/network-ADB support depends on the device; a universal minimum TV version is not verified.
+- Phone and TV must be mutually reachable on a trusted local network. Guest Wi-Fi/client isolation, VPNs or firewalls may prevent discovery or connection. No root is required by the app's normal workflow.
+
+1. Enable Developer options on the TV, then enable the debugging option its firmware provides (network/ADB debugging or wireless debugging).
+2. Open Secreto TV Manager, use the brand-specific connection guide and select the discovered TV, or enter its IP when appropriate.
+3. For wireless debugging, enter the pairing code shown by the TV. For an authorization prompt, verify it refers to your own phone before allowing access.
+4. Revoke authorizations and disable debugging when no longer needed. Never authorize an unknown device or expose ADB to the internet.
+
+**ADB grants powerful control over the TV.** Use only devices you own or are authorized to administer, on a network you trust. Pairing codes and device reports may reveal sensitive device/network information; review reports before submitting them.
+
+## Install v1.0.0
+
+Publication is pending final review. Once published, obtain **Secreto-TV-Manager-1.0.0.apk** only from the [official repository's Releases](https://github.com/mohamedlalah/SecretoTVManager/releases). Upstream Tellyscope APKs are a separate application and are not this fork's updates.
+
+1. Verify the APK's SHA-256 against the release notes (or run `sha256sum` on Linux / `shasum -a 256` on macOS).
+2. On the Android controller, open the APK and permit installation from that specific browser/file manager if Android requests it. Revoke that permission afterward if you do not need it.
+3. Keep future updates on the same trusted signing identity. A debug-signed development installation cannot normally be updated by this release key. Do not uninstall it without first deciding what app data/configuration you need to preserve.
+
+Application ID: `com.secreto.tvmanager` · Version: `1.0.0` · Version code: `1`
+
+APK SHA-256:
+```text
+f942f5fbe9731656ca4e944d0ce18761db8cf864a7ae7df063c787e164954e23
+```
+
+Signing certificate SHA-256:
+```text
+83d1c238040cc3dca9dbb3fe71ad5468a95eb4aaa09654f6bb7107d36c06ef61
+```
+
+## Use system changes carefully
+
+- **Debloat:** review every selected package and model-specific suggestion. Disabling a package can still break TV functions. Keep a recovery route and use history/undo; package uninstallation can remove data and is not equivalent to reversible disabling.
+- **Launchers:** verify an alternative opens and provides working navigation before changing Home. Keep a way to restore the TV's launcher. Accessibility permissions grant additional control; enable them only when understood and necessary.
+- **DNS:** record the previous settings. A Private DNS provider may see DNS queries; blocking or unreachable DNS can break apps or connectivity. Know how to restore the prior configuration locally on the TV.
+- **System settings:** animation, cache, access and other changes can affect apps and usability. Change one thing at a time, read confirmations and verify the result. Undo cannot guarantee recovery from every OEM-specific behavior or data loss.
 
 ## Languages
 
-English, Español, 简体中文, 日本語, Русский and हिन्दी.
+English, العربية, Français, Español, हिन्दी, 日本語, Русский and 简体中文. Arabic RTL is supported. On Android 13+, Android's per-app language setting is available. Translation corrections are welcome.
 
-- Tellyscope follows your phone's language. On Android 13 or newer you can also pick one just for Tellyscope in **Settings → Apps → Tellyscope → Language**.
-- The translations are machine-made. Corrections are welcome as a PR to `app/src/main/res/values-<lang>/strings.xml`.
+## Build and validation
 
-## Safety rules
-
-Debloating a TV can break it if done carelessly. Tellyscope keeps to these rules, and contributions must too:
-
-1. **Disable, never uninstall, what came with the TV.** Built-in apps get `pm disable-user`, which Undo or `pm enable` reverses. Uninstall is offered only for apps you installed (`pm list packages -3`), after a confirm. Tellyscope never runs `pm uninstall --user 0`.
-2. **Record before changing.** Before its first change on a TV, Tellyscope notes which apps were already off. Every change goes into that TV's History with an Undo (except uninstalls), and **Restore everything** turns back on only what Tellyscope turned off.
-3. **Protected list.** Apps the TV needs to boot, update, stay on Wi-Fi, show web pages, show its home screen or take input can't be stopped or disabled, with no override. A TV's list can only add warnings, never remove protection. When you switch home screens, the old launcher is turned off only after Home is checked to open the new one.
-4. **You see it first.** Every change names the apps it touches and asks before it runs.
-5. **No root, no exploits.** Only what ADB allows on a stock TV.
-6. **Nothing left on the TV.** Two small helpers run from `/data/local/tmp`: one reads app names and icons and is deleted at once, the other runs the Remote and is deleted when the Remote closes.
-7. **Private.** No ads, tracking or accounts. The only internet requests fetch the shared lists from GitHub (debloat lists, launchers, app names and streaming services with their logos, or [your own fork](CONTRIBUTING.md#using-your-own-lists)), check for a new version every 30 minutes, which you can turn off in Settings, and download Projectivy from its developer's GitHub releases when you ask for it. Everything else stays on your Wi-Fi, except the DNS lookup of each TV's name during the scan.
-
-## Get it
-
-- **[GitHub Releases](../../releases/latest):** download `Tellyscope-<version>.apk` and open it on your phone. `-alpha` pre-releases are test builds that install next to the regular app.
-- **[Obtainium](https://github.com/ImranR98/Obtainium)** or **[Orion Store](https://github.com/RookieEnough/Orion-Store):** tap the badge above on your phone for automatic updates.
-
-You need a phone on Android 8.0 or newer, on the same Wi-Fi as the TV.
-
-## Setting up your TV
-
-1. On the TV, open **About** in Settings and press OK on **Build** (Fire TV: your device's name) 7 times.
-2. In **Developer options**, turn on **USB debugging** (Fire TV: **ADB debugging**), and **Network debugging** or **Wireless debugging** if your TV lists it.
-3. Open Tellyscope, pick your TV's brand under **Add your TV**, and tap **Connect** when your TV shows up. The app shows the exact menu names for your brand.
-4. On the TV, check the key matches the one Tellyscope shows, tick **Always allow from this computer** and press **Allow**. With wireless debugging, type the 6-digit pairing code instead.
-
-## Building
-
-Modules: `:app` (the phone app, Kotlin and Jetpack Compose), `:adb` (pure Kotlin ADB library on [Kadb](https://github.com/flyfishxu/Kadb)), `app/src/helper` (the on-TV label helper) and `:cli` (a desktop smoke test, not shipped). You need JDK 25 and the Android SDK with platform 37.
+The repository includes the Gradle wrapper, app/ADB/CLI modules, TV-helper sources, resource assets, R8 rules, legal bundling and release-preparation scripts. Install an Android SDK with platform 37 and the compatible build tools; configure your SDK locally (never commit local.properties).
 
 ```sh
-./gradlew build          # assemble, unit tests and lint
-./gradlew :app:installDebug
+./gradlew :app:assembleDebug
+./gradlew :app:assembleRelease       # unsigned when RELEASE_* variables are absent
+python3 -m unittest discover -s tests/release -v
 ```
 
-## Contributing
+AGP is 9.4.1, Gradle 9.8.2 and Java source/target is 17. The checked-in daemon criteria select JDK 21. Kadb 2.1.5 contains Java 25 class files: tests loading it require a Java 25 test runtime, so installing JDK 25 or setting JAVA_HOME alone may not override the daemon criteria. With an isolated Java25 test launcher, the full app (701) and ADB (296) suites now pass: 997 tests, zero failures/errors/skips. Running the tests on Java21 still encounters Kadb’s class-version mismatch; the project daemon criteria remain21. See [Java25 verification](docs/JAVA25_VERIFICATION.md) for the exact temporary override and [current release blockers](docs/RELEASE_BLOCKERS_RESOLUTION.md).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). If you have an Android TV, a [device report](../../issues/new?template=device_report.yml) helps even if nothing worked.
+Producing an unsigned artifact does not require the official private key. A developer may sign their own build with their own key; it will not update the official signed installation. The private release key/password is never part of corresponding source.
 
-## Why the name?
+## License, source and credits
 
-In Wallace & Gromit's 2002 short [The Tellyscope](https://wallaceandgromit.fandom.com/wiki/The_Tellyscope), Wallace builds a contraption so he can change the channel without leaving his armchair.
+Secreto TV Manager is distributed under **GPL-3.0-only**, preserving the original **Copyright (C) 2026 Tellyscope contributors** and their work. SecretoTools / Mohamed LALAH is responsible for this fork's customizations and maintenance, not authorship of the entire original codebase.
 
-## Star History
+- [Full GPL-3.0 license](LICENSE), [original NOTICE and third-party credits](NOTICE), [fork release notice](release/RELEASE_NOTICE.md), [additional dependency license texts](release/licenses/).
+- Original project: [man15h/tellyscope](https://github.com/man15h/tellyscope); [original demo](https://youtu.be/N_PeDw5GiCc); [upstream site](https://man15h.github.io/tellyscope/). Original version history is preserved in [CHANGELOG.md](CHANGELOG.md); fork changes are in [SECRETO_CHANGELOG.md](SECRETO_CHANGELOG.md).
+- Key dependencies include Kadb/Dadb, spake2-java, AndroidX/Compose/Material, Kotlin/coroutines, Bouncy Castle and the Elisabeth libraries. Device lists are adapted from [cleanyourtv](https://github.com/Gathin23/cleanyourtv) with its MIT attribution. Each retains its applicable license and notices. Service marks identify their owners and imply no endorsement.
+- Publish complete corresponding source for the exact binary alongside the release with equivalent download access and at no additional charge. The native-source/build gap is now closed in the [native provenance report](docs/NATIVE_GRAPHICS_PATH.md), and a fresh sanitized local source package is prepared. Java25 host-test validation now passes; the live repository's inherited publishing workflow and exact public-source readiness still block publication; see the [current blocker report](docs/RELEASE_BLOCKERS_RESOLUTION.md). A collection of source JARs alone is not a completeness guarantee.
 
-<a href="https://www.star-history.com/#man15h/tellyscope&Date">
-  <img alt="Star history chart for Tellyscope" src="https://api.star-history.com/svg?repos=man15h/tellyscope&type=Date">
-</a>
-
-## License
-
-[GNU General Public License v3.0](LICENSE). Third-party credits are in [NOTICE](NOTICE).
+See the [publication checklist](docs/PUBLICATION_CHECKLIST.md). GitHub Actions currently prepare unsigned review artifacts only; they do not publish releases. Nothing in this README asserts that v1.0.0 has already been published.

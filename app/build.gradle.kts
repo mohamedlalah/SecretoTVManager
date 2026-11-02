@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 import com.android.build.api.artifact.SingleArtifact
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
@@ -16,14 +18,14 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "app.tellyscope"
+        applicationId = "com.secreto.tvmanager"
         // 26 (Android 8.0): java.time and adaptive icons without desugaring, ~97% of
         // phones in use. Kadb needs 23; the TV side has its own floor (wireless debugging is 11+).
         minSdk = 26
         targetSdk = 37
         // A PR into main must raise both past the latest v* tag (.github/workflows/release-check.yml).
-        versionCode = 26
-        versionName = "0.14.0"
+        versionCode = 1
+        versionName = "1.0.0"
 
         // An alpha tag (release.yml, vX.Y.Z-alpha.N on dev) passes -Ptellyscope.alpha=N:
         // a separate app ID, so it installs next to the release.
@@ -36,7 +38,7 @@ android {
     // Only the languages Tellyscope is translated into: drops the ~80 other locales AndroidX and
     // Material ship (about 440 KB). A new values-xx/strings.xml adds its code here too.
     androidResources {
-        localeFilters += listOf("en", "es", "zh-rCN", "ja", "ru", "hi")
+        localeFilters += listOf("en", "es", "zh-rCN", "ja", "ru", "hi", "ar", "fr")
         // Lists them for Android 13+'s per-app language setting (default locale: res/resources.properties).
         generateLocaleConfig = true
     }
@@ -72,7 +74,7 @@ android {
 
     packaging {
         resources {
-            // Bouncy Castle (via Kadb) ships the same license files in three jars.
+            // Bouncy Castle duplicates these across jars; bundleReleaseNotices preserves each verbatim in assets/legal.
             excludes += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
         }
     }
@@ -127,7 +129,7 @@ val dexLabelHelper by tasks.registering(DexLabelHelper::class) {
     outputDir = layout.buildDirectory.dir("generated/labelHelper/assets")
 }
 
-/** The repo's CHANGELOG.md, shipped as an asset so What's new matches the installed version, offline. */
+/** The fork's SECRETO_CHANGELOG.md, bundled separately from retained upstream history. */
 abstract class BundleChangelog : DefaultTask() {
     @get:InputFile abstract val changelog: RegularFileProperty
     @get:OutputDirectory abstract val outputDir: DirectoryProperty
@@ -139,11 +141,68 @@ abstract class BundleChangelog : DefaultTask() {
 }
 
 val bundleChangelog by tasks.registering(BundleChangelog::class) {
-    changelog = rootProject.layout.projectDirectory.file("CHANGELOG.md")
+    changelog = rootProject.layout.projectDirectory.file("SECRETO_CHANGELOG.md")
     outputDir = layout.buildDirectory.dir("generated/changelog/assets")
 }
 
-/** Fails the build when a release APK grows past the 3.5 MB budget. CI's `build` and release.yml both assemble release. */
+/** Preserve verbatim legal texts in assets even when duplicate META-INF resources are excluded. */
+abstract class BundleReleaseNotices : DefaultTask() {
+    @get:InputFiles abstract val legalFiles: ConfigurableFileCollection
+    @get:Classpath abstract val runtimeArtifacts: ConfigurableFileCollection
+    @get:Input abstract val artifactIds: ListProperty<String>
+    @get:OutputDirectory abstract val outputDir: DirectoryProperty
+
+    @TaskAction fun bundle() {
+        val out = outputDir.get().asFile.also { it.deleteRecursively(); it.mkdirs() }.resolve("legal")
+        out.mkdirs()
+        for (file in legalFiles.files) {
+            if (file.isDirectory) file.copyRecursively(out.resolve(file.name), overwrite = true)
+            else file.copyTo(out.resolve(file.name), overwrite = true)
+        }
+        out.resolve("runtime-dependencies.txt").writeText(artifactIds.get().sorted().joinToString("\n", postfix = "\n"))
+        fun isNotice(name: String): Boolean {
+            val leaf = name.substringAfterLast('/').lowercase()
+            return leaf.matches(Regex("(license|licence|notice|copying|copyright)([-_.].*)?")) &&
+                !leaf.endsWith(".class")
+        }
+        for (file in runtimeArtifacts.files.sortedBy { it.name }) {
+            if (!file.isFile || file.extension !in setOf("jar", "aar")) continue
+            ZipFile(file).use { zip ->
+                val entries = zip.entries()
+                while (entries.hasMoreElements()) {
+                    val entry = entries.nextElement()
+                    if (entry.isDirectory) continue
+                    fun preserve(name: String, bytes: ByteArray) {
+                        // Flatten paths to avoid zip-slip; preserve each dependency's original text.
+                        val target = out.resolve("dependency-notices/" + file.name + "/" + name.replace('/', '_'))
+                        target.parentFile.mkdirs()
+                        target.writeBytes(bytes)
+                    }
+                    if (isNotice(entry.name)) preserve(entry.name, zip.getInputStream(entry).use { it.readBytes() })
+                    if (entry.name == "classes.jar") ZipInputStream(zip.getInputStream(entry)).use { nested ->
+                        var item = nested.nextEntry
+                        while (item != null) {
+                            if (!item.isDirectory && isNotice(item.name)) preserve("classes_" + item.name, nested.readBytes())
+                            item = nested.nextEntry
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+val bundleReleaseNotices by tasks.registering(BundleReleaseNotices::class) {
+    legalFiles.from(rootProject.files("LICENSE", "NOTICE", "release/licenses", "release/SOURCE_AVAILABILITY.md", "release/RELEASE_NOTICE.md"))
+    runtimeArtifacts.from(configurations.named("releaseRuntimeClasspath"))
+    artifactIds.set(configurations.named("releaseRuntimeClasspath").flatMap { it.incoming.artifacts.resolvedArtifacts }
+        .map { artifacts -> artifacts.map { it.id.componentIdentifier.displayName } })
+    outputDir = layout.buildDirectory.dir("generated/releaseNotices/assets")
+}
+
+/** Enforce a measured fork budget: legal-complete unsigned v1.0.0 exceeds upstream's 3.5 MB.
+ * 4 MB retains notices and leaves limited signing/growth headroom; see docs/RELEASE_PREPARATION.md.
+ */
 abstract class CheckApkSize : DefaultTask() {
     @get:InputFiles abstract val apkDir: DirectoryProperty
     @get:Input abstract val maxBytes: Property<Long>
@@ -164,12 +223,13 @@ androidComponents {
     onVariants { variant ->
         variant.sources.assets?.addGeneratedSourceDirectory(dexLabelHelper, DexLabelHelper::outputDir)
         variant.sources.assets?.addGeneratedSourceDirectory(bundleChangelog, BundleChangelog::outputDir)
+        variant.sources.assets?.addGeneratedSourceDirectory(bundleReleaseNotices, BundleReleaseNotices::outputDir)
     }
     onVariants(selector().withBuildType("release")) { variant ->
         val name = variant.name.replaceFirstChar { it.uppercase() }
         val sizeCheck = tasks.register<CheckApkSize>("check${name}ApkSize") {
             apkDir = variant.artifacts.get(SingleArtifact.APK)
-            maxBytes = 3_500_000L
+            maxBytes = 4_000_000L
         }
         afterEvaluate { tasks.named("assemble$name") { finalizedBy(sizeCheck) } }
     }

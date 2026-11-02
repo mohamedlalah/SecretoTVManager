@@ -24,12 +24,9 @@ import androidx.compose.ui.unit.dp
 import app.tellyscope.R
 import app.tellyscope.data.Update
 
-/**
- * A newer release is out. Download APK opens the release's APK in the browser, which downloads it
- * for Android's installer; Check release opens its GitHub page.
- */
+/** Official release metadata only. Opening GitHub is user-initiated; no APK or installer action. */
 @Composable
-fun UpdateDialog(update: Update, onDownload: () -> Unit, onRelease: () -> Unit, onCancel: () -> Unit) {
+fun UpdateDialog(update: Update, onRelease: () -> Unit, onCancel: () -> Unit) {
     AlertDialog(
         onDismissRequest = onCancel,
         title = { Text(stringResource(R.string.update_title, update.version)) },
@@ -38,15 +35,9 @@ fun UpdateDialog(update: Update, onDownload: () -> Unit, onRelease: () -> Unit, 
                 Text(boldSpans(dialogNotes(update.notes, stringResource(R.string.update_more_notes)).ifEmpty { stringResource(R.string.update_no_notes) }), style = MaterialTheme.typography.bodyMedium)
             }
         },
-        // Three actions stack full width; without an APK this build can install, only its page is left.
         confirmButton = {
             Column(Modifier.fillMaxWidth()) {
-                if (update.apk != null) {
-                    Button(onClick = onDownload, Modifier.fillMaxWidth()) { Text(stringResource(R.string.update_download)) }
-                    TextButton(onClick = onRelease, Modifier.fillMaxWidth()) { Text(stringResource(R.string.update_release)) }
-                } else {
-                    Button(onClick = onRelease, Modifier.fillMaxWidth()) { Text(stringResource(R.string.update_release)) }
-                }
+                Button(onClick = onRelease, Modifier.fillMaxWidth()) { Text(stringResource(R.string.update_release)) }
                 TextButton(onClick = onCancel, Modifier.fillMaxWidth()) { Text(stringResource(R.string.update_cancel)) }
             }
         },

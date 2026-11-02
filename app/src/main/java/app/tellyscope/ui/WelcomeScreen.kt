@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -28,10 +27,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import app.tellyscope.R
 import app.tellyscope.ui.theme.SmallNumber
@@ -42,6 +43,8 @@ import app.tellyscope.ui.theme.SmallNumber
  */
 @Composable
 fun WelcomeScreen(askLocalNetwork: Boolean, onContinue: () -> Unit, onSkip: () -> Unit) {
+    val context = LocalContext.current
+    val website = stringResource(R.string.developer_website_url)
     Scaffold(
         bottomBar = {
             Row(
@@ -58,19 +61,38 @@ fun WelcomeScreen(askLocalNetwork: Boolean, onContinue: () -> Unit, onSkip: () -
             Modifier.fillMaxSize().padding(pad).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 48.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // The launcher icon's own teal in both themes, like the home screen and the splash.
+            // The launcher icon's ocean blue, like the home screen and the splash.
             Box(
                 Modifier.size(72.dp).clip(MaterialTheme.shapes.extraLarge).background(colorResource(R.color.splash_icon_background)),
                 contentAlignment = Alignment.Center,
             ) {
-                // The foreground keeps its art inside the adaptive-icon safe zone; oversize it so the art fills the tile.
-                Image(painterResource(R.drawable.ic_launcher_foreground), contentDescription = null, Modifier.requiredSize(108.dp))
+                // Preserve the complete supplied artwork without cropping its wordmark.
+                Image(painterResource(R.drawable.secreto_icon_foreground), contentDescription = null, Modifier.size(72.dp))
             }
-            Text(stringResource(R.string.welcome_title), style = MaterialTheme.typography.headlineMedium)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    stringResource(R.string.welcome_by_secreto),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    stringResource(R.string.welcome_maintainer),
+                    // Keep the bilingual signature in its authored order within either layout direction.
+                    style = MaterialTheme.typography.bodyMedium.copy(textDirection = TextDirection.Ltr),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    stringResource(R.string.developer_version, installedVersion(), installedVersionCode()),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Text(
                 stringResource(R.string.welcome_text),
                 style = MaterialTheme.typography.bodyLarge,
             )
+            DeveloperSocialLinks(showHeading = true)
             Card(
                 Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
@@ -84,6 +106,10 @@ fun WelcomeScreen(askLocalNetwork: Boolean, onContinue: () -> Unit, onSkip: () -
                         }
                     }
                 }
+            }
+            Text(stringResource(R.string.developer_features), style = MaterialTheme.typography.bodyMedium)
+            Column {
+                TextButton(onClick = { openDeveloperLink(context, website) }) { Text(stringResource(R.string.developer_visit_website)) }
             }
             if (askLocalNetwork) {
                 Text(

@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-02",
+  "test_runtime": {
+    "distribution": "Eclipse Temurin",
+    "version": "25.0.5+8-LTS",
+    "architecture": "arm64"
+  },
+  "gradle_launcher": "JetBrains21.0.10",
+  "daemon_criteria": "Java21; unchanged",
+  "selection": "external temporary Test.javaLauncher override; project configuration unchanged",
+  "targeted": {
+    "app": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "adb": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "full": {
+    "app": {
+      "tests": 701,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "adb": {
+      "tests": 296,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "full_total": {
+    "tests": 997,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "build_outcome": "BUILD SUCCESSFUL",
+  "full_run_duration": "2m32s",
+  "apk_sha256": "f942f5fbe9731656ca4e944d0ce18761db8cf864a7ae7df063c787e164954e23",
+  "release_apk_rebuilt": false,
+  "production_or_assertion_changes": false,
+  "limitations": [
+    "Host unit tests do not prove all real-device/OEM paths",
+    "Default CI needs explicit compatible Test JVM selection while daemon criteria remain21"
+  ]
+}

@@ -6,7 +6,13 @@ import androidx.compose.ui.text.font.FontWeight
 import app.tellyscope.data.RELEASES
 import app.tellyscope.data.UpdateCheck
 import app.tellyscope.data.compareVersions
-import app.tellyscope.data.newest
+import app.tellyscope.data.parseLatestRelease
+import app.tellyscope.data.UpdateStatus
+import app.tellyscope.data.RELEASES_API
+import app.tellyscope.data.PROJECT_REPO
+import app.tellyscope.data.UPSTREAM_REPO
+import java.io.FileNotFoundException
+import java.util.Properties
 import app.tellyscope.ui.boldSpans
 import app.tellyscope.ui.dialogNotes
 import kotlinx.coroutines.test.runTest
@@ -34,123 +40,162 @@ class UpdateCheckTest {
     private val hour = 60 * minute
     private val day = 24 * hour
 
-    private fun release(tag: String, pre: Boolean = tag.contains("-alpha"), notes: String = "Notes for $tag") =
-        """{"tag_name":"$tag","prerelease":$pre,"draft":false,"body":"$notes"}"""
+    private fun release(tag: String = "v1.1.0", notes: String = "Official notes") =
+        """{"tag_name":"$tag","html_url":"$RELEASES/tag/$tag","draft":false,"prerelease":false,"body":"$notes"}"""
 
-    private fun releases(vararg r: String) = "[" + r.joinToString(",") + "]"
-
-    @Test fun `alpha sorts before its release, which sorts before the next alpha`() {
-        assertTrue(compareVersions("0.2.0-alpha.3", "0.2.0") < 0)
-        assertTrue(compareVersions("0.2.0", "0.2.1-alpha.1") < 0)
-        assertTrue(compareVersions("0.2.0-alpha.3", "0.2.1-alpha.1") < 0)
-        assertTrue(compareVersions("0.2.0-alpha.2", "0.2.0-alpha.10") < 0)
-        assertTrue(compareVersions("0.10.0", "0.9.9") > 0)
-        assertEquals(0, compareVersions("0.2.0", "0.2.0"))
+    @Test fun officialRepositoryAndApiAreIndependentFromUpstream() {
+        assertEquals("https://github.com/mohamedlalah/SecretoTVManager", PROJECT_REPO)
+        assertEquals("$PROJECT_REPO/releases", RELEASES)
+        assertEquals("https://api.github.com/repos/mohamedlalah/SecretoTVManager/releases/latest", RELEASES_API)
+        assertEquals("https://github.com/man15h/tellyscope", UPSTREAM_REPO)
     }
 
-    @Test fun `release builds see full releases only, alpha builds see alphas too`() {
-        val list = releases(release("v0.2.1-alpha.1"), release("v0.2.0"), release("v0.2.0-alpha.3"), release("v0.1.0"))
-        assertEquals("0.2.0", newest(list, alpha = false)?.version)
-        assertEquals("0.2.1-alpha.1", newest(list, alpha = true)?.version)
+    @Test fun versionsCompareNumericallyAndAlphasSortBeforeStable() {
+        assertTrue(compareVersions("1.10.0", "1.9.99") > 0)
+        assertTrue(compareVersions("1.0.0-alpha.2", "1.0.0-alpha.10") < 0)
+        assertTrue(compareVersions("1.0.0-alpha.10", "1.0.0") < 0)
+        assertTrue(compareVersions("1.0.0", "1.0.1-alpha.1") < 0)
+        assertEquals(0, compareVersions("1.0.0", "1.0.0"))
+        assertTrue(compareVersions("invalid", "1.0.0") < 0)
+        assertTrue(compareVersions("1.0.0-alpha.999999999999999999", "1.0.0") < 0)
     }
 
-    @Test fun `odd tags, drafts and pre-releases without an alpha tag are ignored`() {
-        val list = releases(
-            release("v9.0.0-beta"),
-            release("nightly"),
-            release("v3.0.0", pre = true),
-            """{"tag_name":"v4.0.0","prerelease":false,"draft":true,"body":""}""",
-            release("v0.2.0"),
-        )
-        assertEquals("0.2.0", newest(list, alpha = true)?.version)
-        assertNull(newest("not json", alpha = false))
+    @Test fun latestObjectParsesNotesAndExactOfficialTagPage() {
+        val u = parseLatestRelease(release())!!
+        assertEquals("1.1.0", u.version)
+        assertEquals("Official notes", u.notes)
+        assertEquals("$RELEASES/tag/v1.1.0", u.url)
+        assertEquals("$RELEASES/tag/1.2.0", parseLatestRelease(release("1.2.0"))?.url)
     }
 
-    @Test fun `offers a newer release with its notes and page`() = runTest {
-        val u = UpdateCheck(tmp.newFile(), "0.2.0-alpha.1", alpha = true, fetch = { releases(release("v0.2.0")).toByteArray() }).check()
-        assertEquals("0.2.0", u?.version)
-        assertEquals("Notes for v0.2.0", u?.notes)
-        assertTrue(u!!.url.endsWith("/tellyscope/releases/tag/v0.2.0"))
+    @Test fun arraysDraftsPrereleasesOddTagsAndForeignPagesAreRejected() {
+        assertNull(parseLatestRelease("[${release()}]"))
+        assertNull(parseLatestRelease("not json"))
+        assertNull(parseLatestRelease("{}"))
+        assertNull(parseLatestRelease(release().replace("\"draft\":false", "\"draft\":true")))
+        assertNull(parseLatestRelease(release().replace("\"prerelease\":false", "\"prerelease\":true")))
+        for (tag in listOf("nightly", "v1.2.0-beta.1", "v1.2.0-alpha.1", "v1.2.0/../escape")) {
+            assertNull(parseLatestRelease(release(tag)))
+        }
+        assertNull(parseLatestRelease(release().replace(PROJECT_REPO, UPSTREAM_REPO)))
+        assertNull(parseLatestRelease(release().replace(PROJECT_REPO, "https://github.com/mohamedlalah/SecretoTVManager-evil")))
     }
 
-    @Test fun `the release's one APK comes along, only from this repo's releases`() {
-        val base = RELEASES + "/download/v0.2.0/"
-        fun withAsset(url: String, size: Long) =
-            releases("""{"tag_name":"v0.2.0","prerelease":false,"draft":false,"body":"","assets":[{"name":"Tellyscope-0.2.0.apk","browser_download_url":"$url","size":$size}]}""")
-        val u = newest(withAsset(base + "Tellyscope-0.2.0.apk", 3_000_000), alpha = false)
-        assertEquals(base + "Tellyscope-0.2.0.apk", u?.apk)
-        assertNull(newest(withAsset("https://example.com/Tellyscope-0.2.0.apk", 3_000_000), alpha = false)?.apk)
-        assertNull(newest(withAsset(base + "Tellyscope-0.2.0.apk", 0), alpha = false)?.apk)
-        assertNull(newest(releases(release("v0.2.0")), alpha = false)?.apk)
-        // An alpha build is a different package: it's offered the release, but only its page.
-        val offered = newest(withAsset(base + "Tellyscope-0.2.0.apk", 3_000_000), alpha = true)
-        assertEquals("0.2.0", offered?.version)
-        assertNull(offered?.apk)
+    @Test fun arbitraryApkAssetsAreNeverOffered() {
+        val withAssets = release().dropLast(1) + """, "assets":[{"name":"app.apk","browser_download_url":"https://evil.example/app.apk","size":1234}]}"""
+        val u = parseLatestRelease(withAssets)!!
+        assertEquals("$RELEASES/tag/v1.1.0", u.url)
+        assertTrue(u.javaClass.declaredFields.none { it.name == "apk" })
     }
 
-    @Test fun `nothing when the running version is the newest`() = runTest {
-        val check = UpdateCheck(tmp.newFile(), "0.2.0", alpha = false, fetch = { releases(release("v0.2.0"), release("v0.1.0")).toByteArray() })
+    @Test fun onlyLatestOfficialEndpointIsEverRequested() = runTest {
+        val urls = mutableListOf<String>()
+        val check = UpdateCheck(tmp.newFile(), "1.0.0", false) { urls += it; release().toByteArray() }
+        assertEquals("1.1.0", check.check()?.version)
+        assertEquals(UpdateStatus.Available, check.status)
+        assertEquals(listOf(RELEASES_API), urls)
+    }
+
+    @Test fun http404IsNoPublishedUpdatesWithNoFallback() = runTest {
+        val urls = mutableListOf<String>()
+        val check = UpdateCheck(tmp.newFile(), "1.0.0", false) { urls += it; throw FileNotFoundException("404") }
         assertNull(check.check())
+        assertEquals(UpdateStatus.NoPublishedUpdates, check.status)
+        assertEquals(listOf(RELEASES_API), urls)
+        assertEquals(emptyList<Any>(), check.newer())
     }
 
-    @Test fun `a release build asks again after 30 minutes, not before`() = runTest {
+    @Test fun noReleaseIsThrottledAndRestoredAcrossRestart() = runTest {
+        val file = tmp.newFile()
         var now = 1_000_000L
         var calls = 0
-        val check = UpdateCheck(tmp.newFile(), "0.1.0", alpha = false, clock = { now }) { calls++; releases(release("v0.2.0")).toByteArray() }
-        assertEquals("0.2.0", check.check()?.version)
-        now += 30 * minute - 1
-        assertNull(check.check())
+        val fetch: suspend (String) -> ByteArray = { calls++; throw FileNotFoundException("404") }
+        val check = UpdateCheck(file, "1.0.0", false, { now }, fetch)
+        check.check()
+        now += 29 * minute
+        check.check()
+        val restarted = UpdateCheck(file, "1.0.0", false, { now }, fetch)
+        assertEquals(UpdateStatus.NoPublishedUpdates, restarted.status)
+        restarted.check()
         assertEquals(1, calls)
-        now += 1
-        assertEquals("0.2.0", check.check()?.version)
+        now += minute
+        restarted.check()
         assertEquals(2, calls)
     }
 
-    @Test fun `an alpha build asks again after 5 minutes`() = runTest {
-        var now = 1_000_000L
-        var calls = 0
-        val check = UpdateCheck(tmp.newFile(), "0.2.0-alpha.2", alpha = true, clock = { now }) { calls++; releases(release("v0.2.0-alpha.3")).toByteArray() }
-        assertEquals("0.2.0-alpha.3", check.check()?.version)
-        now += 5 * minute - 1
-        assertNull(check.check())
-        now += 1
-        assertEquals("0.2.0-alpha.3", check.check()?.version)
-        assertEquals(2, calls)
+    @Test fun stableIntervalAndFiveMinuteAlphaIntervalArePreserved() = runTest {
+        for ((alpha, interval) in listOf(false to 30 * minute, true to 5 * minute)) {
+            var now = 1_000_000L
+            var calls = 0
+            val check = UpdateCheck(tmp.newFile(), "1.0.0-alpha.1", alpha, { now }) { calls++; release().toByteArray() }
+            assertEquals("1.1.0", check.check()?.version)
+            now += interval - 1
+            assertNull(check.check())
+            assertEquals(1, calls)
+            now++
+            assertEquals("1.1.0", check.check()?.version)
+            assertEquals(2, calls)
+        }
     }
 
-    @Test fun `a failed request is silent and tried again next time`() = runTest {
+    @Test fun equalAndOlderVersionsDoNotNotify() = runTest {
+        for (tag in listOf("v1.0.0", "v0.9.0")) {
+            val check = UpdateCheck(tmp.newFile(), "1.0.0", false) { release(tag).toByteArray() }
+            assertNull(check.check())
+            assertEquals(UpdateStatus.UpToDate, check.status)
+        }
+    }
+
+    @Test fun failedRequestsAreDistinctFromNoPublishedReleaseAndNeverUseUpstream() = runTest {
         var fail = true
-        val check = UpdateCheck(tmp.newFile(), "0.1.0", alpha = false) {
-            if (fail) throw IOException("offline")
-            releases(release("v0.2.0")).toByteArray()
+        val urls = mutableListOf<String>()
+        val check = UpdateCheck(tmp.newFile(), "1.0.0", false) {
+            urls += it
+            if (fail) throw IOException("offline") else release().toByteArray()
         }
         assertNull(check.check())
+        assertEquals(UpdateStatus.Failed, check.status)
         fail = false
-        assertEquals("0.2.0", check.check()?.version)
+        assertEquals("1.1.0", check.check()?.version)
+        assertTrue(urls.all { it == RELEASES_API })
     }
 
-    @Test fun `on by default, and off means no request`() = runTest {
+    @Test fun malformedPayloadIsNotMisreportedAsNoRelease() = runTest {
+        val check = UpdateCheck(tmp.newFile(), "1.0.0", false) { "{}".toByteArray() }
+        assertNull(check.check())
+        assertEquals(UpdateStatus.Failed, check.status)
+    }
+
+    @Test fun switchPersistsAndOffMakesNoRequests() = runTest {
         val file = tmp.newFile()
         var calls = 0
-        val check = UpdateCheck(file, "0.1.0", alpha = false) { calls++; releases(release("v0.2.0")).toByteArray() }
+        val check = UpdateCheck(file, "1.0.0", false) { calls++; release().toByteArray() }
         assertTrue(check.enabled)
         check.enabled = false
-        assertFalse(UpdateCheck(file, "0.1.0", alpha = false).enabled)
         assertNull(check.check())
+        assertEquals(UpdateStatus.Disabled, check.status)
+        assertFalse(UpdateCheck(file, "1.0.0", false).enabled)
         assertEquals(0, calls)
     }
 
-    @Test fun `newer reads main's CHANGELOG and keeps only releases past the installed one`() = runTest {
+    @Test fun oldUpstreamTimestampDoesNotSuppressForkCheckButOffIsPreserved() = runTest {
+        val file = tmp.newFile()
+        Properties().apply { setProperty("checked", "1000000") }.also { p -> file.outputStream().use { p.store(it, null) } }
+        var calls = 0
+        val check = UpdateCheck(file, "1.0.0", false, { 1_000_001L }) { calls++; release().toByteArray() }
+        assertEquals("1.1.0", check.check()?.version)
+        assertEquals(1, calls)
+        check.enabled = false
+        assertFalse(UpdateCheck(file, "1.0.0", false).enabled)
+    }
+
+    @Test fun whatsNewUsesOnlyAlreadyFetchedForkReleaseNotes() = runTest {
         val urls = mutableListOf<String>()
-        val md = "# Changelog\n\n## Unreleased\n\n- **New:** Later.\n\n## 0.3.0 — 2026-10-30\n\n- **New:** Three.\n\n## 0.2.0 — 2026-10-29\n\n- **New:** Two.\n"
-        val newer = UpdateCheck(tmp.newFile(), "0.2.0", alpha = false) { urls += it; md.toByteArray() }.newer()
-        assertEquals(listOf("0.3.0"), newer?.map { it.version })
-        assertTrue(urls.single().endsWith("/main/CHANGELOG.md"))
-        // An alpha reads main too, and its own section is its base version's.
-        val alpha = UpdateCheck(tmp.newFile(), "0.2.0-alpha.4", alpha = true) { urls += it; md.toByteArray() }.newer()
-        assertEquals(listOf("0.3.0"), alpha?.map { it.version })
-        assertTrue(urls.last().endsWith("/main/CHANGELOG.md"))
-        assertNull(UpdateCheck(tmp.newFile(), "0.2.0", alpha = false) { throw IOException("offline") }.newer())
+        val check = UpdateCheck(tmp.newFile(), "1.0.0", false) { urls += it; release(notes = "- **Fixed:** Fork update source.").toByteArray() }
+        check.check()
+        assertEquals(listOf("1.1.0"), check.newer()?.map { it.version })
+        assertEquals("Fork update source.", check.newer()?.single()?.changes?.single()?.text)
+        assertEquals(listOf(RELEASES_API), urls)
     }
 
     /** v0.1.0's body as release.yml wrote it, commit list cut short. */

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Welcome-only signature; do not alter the approved About identity. -->
+    <string name="welcome_maintainer" translatable="false">Mohamed LALAH | محمد لالاح</string>
+</resources>

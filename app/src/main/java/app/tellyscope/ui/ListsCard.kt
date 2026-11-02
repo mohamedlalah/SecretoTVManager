@@ -3,7 +3,10 @@
 package app.tellyscope.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +34,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -67,8 +72,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.ImeAction
@@ -81,7 +89,7 @@ import app.tellyscope.data.Device
 import app.tellyscope.data.DeviceKind
 import app.tellyscope.data.DeviceState
 import app.tellyscope.data.ListEntry
-import app.tellyscope.data.RELEASES
+import app.tellyscope.data.UPSTREAM_REPO
 import app.tellyscope.data.ResetApp
 import app.tellyscope.data.Suggested
 import app.tellyscope.data.SuggestedGroup
@@ -441,7 +449,7 @@ internal fun DisableDialog(apps: List<Suggested>, onDisable: () -> Unit, onDismi
     )
 }
 
-internal val REPO = RELEASES.removeSuffix("/releases")
+internal const val REPO = UPSTREAM_REPO
 
 /** The project's GitHub Pages site: `https://OWNER.github.io/tellyscope/` for `github.com/OWNER/tellyscope`. */
 internal val SITE = REPO.removePrefix("https://github.com/").split('/').let { (owner, repo) -> "https://$owner.github.io/$repo/" }
@@ -449,49 +457,89 @@ internal val SITE = REPO.removePrefix("https://github.com/").split('/').let { (o
 /** The demo video, the same one the README and the site play. */
 internal const val DEMO_VIDEO = "https://youtu.be/N_PeDw5GiCc"
 
-/**
- * About and licences: the installed version, links to the site, the repo and the demo video,
- * then the licences.
- * [commit] is the cleanyourtv commit the downloaded lists were built from; [version] is the
- * installed versionName, alpha suffix included.
- */
+/** Installed identity and primary project links, followed by expandable, unchanged credits. */
 @Composable
-fun AboutDialog(commit: String?, onDismiss: () -> Unit, version: String = installedVersion()) {
-    val browser = LocalUriHandler.current
+fun AboutDialog(commit: String?, onDismiss: () -> Unit, version: String = installedVersion(), modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val open = { url: String -> openDeveloperLink(context, url) }
+    var creditsExpanded by rememberSaveable { mutableStateOf(false) }
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.lists_about_title)) },
+        title = { Text(stringResource(R.string.developer_about), style = MaterialTheme.typography.titleMedium) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(stringResource(R.string.lists_about_version, version), style = MaterialTheme.typography.titleSmall)
-                AboutLink(stringResource(R.string.lists_about_website), SITE, browser::openUri)
-                AboutLink("GitHub", REPO, browser::openUri)
-                AboutLink(stringResource(R.string.lists_about_demo), DEMO_VIDEO, browser::openUri)
-                Text(stringResource(R.string.lists_about_licence), style = MaterialTheme.typography.bodyMedium)
-                Text(
-                    commit?.let { stringResource(R.string.lists_about_lists_commit, it.take(12)) } ?: stringResource(R.string.lists_about_lists_pending),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    stringResource(R.string.lists_about_libraries),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            Column(
+                Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Image(painterResource(R.drawable.secreto_icon_foreground), contentDescription = null, Modifier.size(48.dp))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.semantics { heading() })
+                        Text(stringResource(R.string.developer_version, version, installedVersionCode()), style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.about_by_secreto), style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                Text(stringResource(R.string.about_maintainer), style = MaterialTheme.typography.bodySmall)
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                    Column(Modifier.fillMaxWidth().padding(12.dp)) {
+                        DeveloperSocialLinks(showHeading = true, compact = true)
+                    }
+                }
+                Column {
+                    AboutLink(stringResource(R.string.developer_website), stringResource(R.string.developer_website_url), open)
+                    AboutLink(stringResource(R.string.developer_source), stringResource(R.string.developer_source_url), open)
+                }
+                Text(stringResource(R.string.developer_credit), style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.developer_description), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.developer_youtube_description), style = MaterialTheme.typography.bodySmall)
+                TextButton(onClick = { creditsExpanded = !creditsExpanded }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                    Text(stringResource(R.string.about_credits), Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
+                    Icon(if (creditsExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = stringResource(if (creditsExpanded) R.string.about_hide_credits else R.string.about_show_credits))
+                }
+                if (creditsExpanded) {
+                    Text(stringResource(R.string.developer_original), style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.developer_attribution), style = MaterialTheme.typography.bodyMedium)
+                    AboutLink(stringResource(R.string.developer_upstream), stringResource(R.string.developer_upstream_url), open)
+                    AboutLink(stringResource(R.string.lists_about_website), SITE, open)
+                    AboutLink(stringResource(R.string.lists_about_demo), DEMO_VIDEO, open)
+                    AboutLink(stringResource(R.string.developer_license), stringResource(R.string.developer_license_url), open)
+                    AboutLink(stringResource(R.string.developer_notice), stringResource(R.string.developer_upstream_url) + "/blob/main/NOTICE", open)
+                    Text(stringResource(R.string.lists_about_licence), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        commit?.let { stringResource(R.string.lists_about_lists_commit, it.take(12)) } ?: stringResource(R.string.lists_about_lists_pending),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(stringResource(R.string.lists_about_libraries), style = MaterialTheme.typography.bodyMedium)
+                }
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.lists_about_close)) } },
-
     )
 }
 
 @Composable
-private fun AboutLink(label: String, url: String, open: (String) -> Unit) {
+internal fun AboutLink(label: String, url: String, open: (String) -> Unit) {
     Row(
-        Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { runCatching { open(url) } },
+        Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(role = Role.Button) { open(url) }.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.width(4.dp))
+        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.width(8.dp))
         Icon(OpenInNew, contentDescription = null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
+    }
+}
+
+@Composable
+internal fun installedVersionCode(): Long {
+    val context = LocalContext.current
+    return remember(context) {
+        @Suppress("DEPRECATION")
+        val info = context.packageManager.getPackageInfo(context.packageName, 0)
+        androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(info)
     }
 }
 

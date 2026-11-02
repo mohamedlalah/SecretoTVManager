@@ -663,7 +663,7 @@ class ScreenshotTest {
         compose.onNodeWithText(" 40k+").assertExists()
         compose.onNodeWithText("cleanyourtv").performClick()
         compose.onNodeWithText("How to use your own lists").performClick()
-        assertEquals(listOf("https://github.com/Gathin23/cleanyourtv", RELEASES.removeSuffix("/releases") + "/blob/main/CONTRIBUTING.md#using-your-own-lists"), opened)
+        assertEquals(listOf("https://github.com/Gathin23/cleanyourtv", app.tellyscope.data.UPSTREAM_REPO + "/blob/main/CONTRIBUTING.md#using-your-own-lists"), opened)
         assertTrue(opened[1].startsWith("https://github.com/") && opened[1].contains("/tellyscope/blob/main/CONTRIBUTING.md"))
         // It opens the existing source dialog, unchanged.
         compose.onNodeWithText("Use your own debloat lists").assertHasClickAction()
@@ -732,32 +732,30 @@ class ScreenshotTest {
         compose.onNodeWithText("Not installed").assertDoesNotExist()
     }
 
-    /** 0.14.0 out, with its APK unless [apk] is false. */
-    private fun updateDialog(apk: Boolean = true, onDownload: () -> Unit = {}, onRelease: () -> Unit = {}) = @Composable {
+    /** Update metadata can open only the official release page; no direct APK/installer action. */
+    private fun updateDialog(onRelease: () -> Unit = {}) = @Composable {
         val notes = changelog.first().changes.joinToString("\n") { "- **${it.kind}:** ${it.text}" }
-        UpdateDialog(
-            Update("0.14.0", notes, "", apk = if (apk) "$RELEASES/download/v0.14.0/Tellyscope-0.14.0.apk" else null),
-            onDownload = onDownload, onRelease = onRelease, onCancel = {},
-        )
+        UpdateDialog(Update("1.1.0", notes, "$RELEASES/tag/v1.1.0"), onRelease = onRelease, onCancel = {})
     }
 
     @Test fun update_offer() {
-        var downloads = 0
         var releases = 0
-        shot("99_update_offer", screen = true) { updateDialog(onDownload = { downloads++ }, onRelease = { releases++ })() }
+        shot("99_update_offer", screen = true) { updateDialog(onRelease = { releases++ })() }
         compose.onNodeWithText("Cancel").assertExists()
-        compose.onNodeWithText("Download APK").performClick()
+        compose.onNodeWithText("Download APK").assertDoesNotExist()
         compose.onNodeWithText("Check release").performClick()
-        assertEquals(1, downloads)
         assertEquals(1, releases)
     }
 
     @Test fun update_offer_dark() = shot("99_update_offer", dark = true, screen = true) { updateDialog()() }
 
-    @Test fun update_offer_noApk() {
-        shot("99_update_offer_no_apk", screen = true) { updateDialog(apk = false)() }
-        compose.onNodeWithText("Download APK").assertDoesNotExist()
-        compose.onNodeWithText("Check release").assertExists()
+    @Test fun settings_noPublishedUpdates() = shot("99_settings_no_published") {
+        SettingsScreen(null, {}, checkUpdates = true, alphaBuild = false, onCheckUpdates = {}, back = {},
+            updateStatus = app.tellyscope.data.UpdateStatus.NoPublishedUpdates)
+    }
+
+    @Test fun whatsNew_noPublishedUpdates() = shot("99_whats_new_no_published") {
+        WhatsNewScreen(emptyList(), {}, updateStatus = app.tellyscope.data.UpdateStatus.NoPublishedUpdates)
     }
 
     @Test fun whatsNew_installedAndLinks() {
@@ -1114,14 +1112,19 @@ class ScreenshotTest {
         DeviceTabsScreen(deviceState { copy(request = request) }, DeviceActions())
     }
 
-    private val dir = Files.createTempDirectory("shots").toFile()
+    private val shotFiles = lazy { Files.createTempDirectory("shots").toFile() }
+    private val dir by shotFiles
+
+    @org.junit.After fun removeTemporaryApkFixtures() {
+        if (shotFiles.isInitialized()) dir.deleteRecursively()
+    }
     private fun apk(name: String, bytes: Long) = File(dir, name).also { RandomAccessFile(it, "rw").use { f -> f.setLength(bytes) } }
-    private val kodi = PickedApp(listOf(apk("kodi.apk", 74_000_000)), ApkInfo("org.xbmc.kodi", 2101, "21.1"), "Kodi")
-    private val split = PickedApp(
+    private val kodi by lazy { PickedApp(listOf(apk("kodi.apk", 74_000_000)), ApkInfo("org.xbmc.kodi", 2101, "21.1"), "Kodi") }
+    private val split by lazy { PickedApp(
         listOf(apk("base.apk", 31_000_000), apk("split_config.armeabi_v7a.apk", 9_400_000), apk("split_config.xxhdpi.apk", 1_100_000)),
         ApkInfo("com.example.player", 410, "4.1.0"),
         "Example Player",
-    )
+    ) }
 
     private fun sideload(name: String, s: SideloadUi, dark: Boolean = false) =
         shot(name, dark, screen = true) { DeviceTabsScreen(deviceState { copy(sideload = s) }, DeviceActions()) }
@@ -1157,7 +1160,27 @@ class ScreenshotTest {
 
     @Test fun welcome() = shot("00_welcome") { WelcomeScreen(askLocalNetwork = true, {}, {}) }
 
+    @Config(qualifiers = "w800dp-h1280dp-xhdpi")
+    @Test fun welcome_tablet() = shot("00_welcome_tablet") { WelcomeScreen(askLocalNetwork = true, {}, {}) }
+
+    @Config(qualifiers = "ar-w800dp-h1280dp-xhdpi")
+    @Test fun welcome_tablet_arabic() = shot("00_welcome_tablet_arabic") { WelcomeScreen(askLocalNetwork = true, {}, {}) }
+
+    @Config(qualifiers = "w320dp-h640dp-xhdpi")
+    @Test fun welcome_largeFont() = shot("00_welcome_large_font") {
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(2f, 1.6f),
+        ) { WelcomeScreen(askLocalNetwork = true, {}, {}) }
+    }
+
     @Test fun welcome_dark() = shot("00_welcome", dark = true) { WelcomeScreen(askLocalNetwork = true, {}, {}) }
+
+    @Config(qualifiers = "ar-w411dp-h891dp-xxhdpi")
+    @Test fun welcome_arabic() = shot("00_welcome_arabic") { WelcomeScreen(askLocalNetwork = true, {}, {}) }
+
+    @Config(qualifiers = "fr-w411dp-h891dp-xxhdpi")
+    @Test fun welcome_french() = shot("00_welcome_french") { WelcomeScreen(askLocalNetwork = true, {}, {}) }
+
 
     @Test fun permission() = shot("08_permission") { PermissionScreen(denied = false, canAsk = true, {}, {}) }
 
@@ -1166,6 +1189,13 @@ class ScreenshotTest {
     @Test fun forget() = shot("09_forget", screen = true) { ForgetDialog("xgimi-projector", {}, {}) }
 
     @Test fun about() = shot("83_about", screen = true) { AboutDialog("4f1c2a9e7b3d5c60", {}, version = "0.8.0-alpha.2") }
+
+    @Config(qualifiers = "ar-w411dp-h891dp-xxhdpi")
+    @Test fun about_arabic() = shot("83_about_arabic", screen = true) { AboutDialog("4f1c2a9e7b3d5c60", {}) }
+
+    @Config(qualifiers = "fr-w411dp-h891dp-xxhdpi")
+    @Test fun about_french() = shot("83_about_french", screen = true) { AboutDialog("4f1c2a9e7b3d5c60", {}) }
+
 
     @Test fun scan_offWifi() = scan(
         ScanUi(scanning = false, noLan = true, hits = listOf(chromecast), rows = mapOf(chromecast.ip to RowState.Found)),
@@ -1194,6 +1224,21 @@ class ScreenshotTest {
     @Test fun remote() = shot("12_remote", screen = true) { RemoteScreen(remoteState(), RemoteActions()) }
 
     @Test fun remote_dark() = shot("12_remote", dark = true, screen = true) { RemoteScreen(remoteState(), RemoteActions()) }
+
+    @Test fun remoteDirectionsStayPhysicalInRtl() {
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl,
+            ) {
+                TellyscopeTheme(dynamic = false) { RemoteScreen(remoteState(), RemoteActions()) }
+            }
+        }
+        compose.mainClock.advanceTimeBy(1_000)
+        val left = compose.onNodeWithContentDescription("Left").fetchSemanticsNode().boundsInRoot
+        val right = compose.onNodeWithContentDescription("Right").fetchSemanticsNode().boundsInRoot
+        org.junit.Assert.assertTrue("Left must stay physically left of Right in Arabic", left.center.x < right.center.x)
+    }
 
     @Test fun remoteKeysAreIconsWithSpokenNames() {
         compose.setContent { TellyscopeTheme(dynamic = false) { RemoteScreen(remoteState(), RemoteActions()) } }
@@ -1494,7 +1539,7 @@ class ScreenshotTest {
         }
         compose.onNodeWithText("XGIMI Horizon Pro (XK03H)").assertExists()
         compose.onNodeWithText(Reports.Connection.WIRELESS_DEBUGGING.option).assertExists()
-        compose.onNodeWithText("Tellyscope sends nothing by itself", substring = true).assertExists()
+        compose.onNodeWithText(RuntimeEnvironment.getApplication().getString(R.string.report_note_nothing_sent), substring = true).assertExists()
         compose.onNodeWithText("Open GitHub").performClick()
         assertTrue(opened.single().startsWith("https://github.com/") && "template=device_report.yml" in opened.single())
     }
