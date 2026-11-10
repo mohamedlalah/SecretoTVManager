@@ -62,6 +62,28 @@ class DeviceMonitorTest {
         }
         val s = DeviceMonitor(tv, clock = testScheduler.timeSource).stats().first()
         assertEquals(2500L, s.netBytesPerSec) // 5000 bytes over the default 2 s
+        assertEquals(2000L, s.rxBytesPerSec)
+        assertEquals(500L, s.txBytesPerSec)
+        assertEquals(Parsers.NetBytes(8000, 2000), s.netTotal)
+    }
+
+    @Test fun eachCoreAndTheClockAreRead() = runTest {
+        var tick = 0L
+        val tv = AdbShell { cmd ->
+            when {
+                cmd.startsWith("cat /proc/stat") -> {
+                    tick++
+                    // Core 0 is busy for 40 of every 100 ticks, core 1 for 10.
+                    ok("cpu  ${tick * 50} 0 0 ${tick * 150} 0 0 0 0\ncpu0 ${tick * 40} 0 0 ${tick * 60} 0 0 0 0\n" +
+                        "cpu1 ${tick * 10} 0 0 ${tick * 90} 0 0 0 0\n${sep}MemTotal: 2000 kB\n")
+                }
+                cmd.startsWith("top") -> ok("PID USER RES %CPU NAME\n$sep  mWakefulness=Awake\n${sep}1200000\n1800000\n")
+                else -> ok("")
+            }
+        }
+        val s = DeviceMonitor(tv).stats().first()
+        assertEquals(listOf(40.0, 10.0), s.cores)
+        assertEquals(1_800_000L, s.clockKhz)
     }
 
     @Test fun keepsEmitting() = runTest {
@@ -178,8 +200,8 @@ class DeviceMonitorTest {
         assertTrue("echo" !in tv.ran)
     }
 
-    /** Answers `ps -A -o` with [ps], plain `ps` with [plain]; `top` and `dumpsys` are logged and answered empty. */
-    private class PsTv(var ps: String, val plain: String = "") : AdbShell {
+    /** Answers `ps -A -o` with [ps], plain `ps` with [plain], the resumed activity with [resumed]; `top` and other `dumpsys` are logged and answered empty. */
+    private class PsTv(var ps: String, val plain: String = "", var resumed: String = "") : AdbShell {
         val ran = mutableListOf<String>()
 
         override suspend fun shell(command: String): ShellResult {
@@ -188,6 +210,7 @@ class DeviceMonitorTest {
                 command.startsWith("cat /proc/stat") -> ok("cpu  25 0 0 75 0 0 0 0\n@@tellyscope@@\nMemTotal: 2000 kB\n")
                 command.startsWith("ps -A") -> ok(ps)
                 command == "ps" -> ok(plain)
+                command == Commands.RESUMED -> ok(resumed)
                 command.startsWith("getprop") -> ok("${SEP.repeat(3)}package:com.google.android.youtube.tv uid:10087\n")
                 else -> ok("")
             }
@@ -258,6 +281,23 @@ class DeviceMonitorTest {
         gate.during(reread = true) { tv.ps = "PID USER RSS NAME\n" }
         runCurrent()
         assertEquals(emptyList(), readings.last().processes)
+    }
+
+    @Test fun appsReadsTheAppOnScreen() = runTest {
+        // Apps tells the app on screen from one running in the background; nothing resumed (screen off) clears it.
+        val gate = StatsGate().apply { profile.value = StatsProfile.APPS }
+        val tv = PsTv(
+            "PID USER RSS NAME\n2201 u0_a87 319488 com.google.android.youtube.tv\n",
+            resumed = "  topResumedActivity=ActivityRecord{1d2 u0 com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity t12}\n",
+        )
+        val readings = mutableListOf<Stats>()
+        backgroundScope.launch { DeviceMonitor(tv, gate = gate, clock = testScheduler.timeSource).stats().collect { readings += it } }
+        advanceTimeBy(10_001)
+        assertEquals("com.google.android.youtube.tv", readings.last().onScreen)
+
+        tv.resumed = ""
+        advanceTimeBy(10_000)
+        assertEquals(null, readings.last().onScreen)
     }
 
     @Test fun aDebloatIsReadAgainOnceAtTheEnd() = runTest {

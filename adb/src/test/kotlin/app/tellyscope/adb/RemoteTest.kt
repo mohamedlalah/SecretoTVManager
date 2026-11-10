@@ -114,6 +114,19 @@ class RemoteTest {
         assertFailsWith<IllegalArgumentException> { Remote.typeCommand("café") }
     }
 
+    @Test fun helperSendsAnyOneLine() {
+        listOf("Привет", "مرحبا", "café", "emoji 🙂", "100%sure", "x".repeat(Remote.MAX_TEXT))
+            .forEach { assertTrue(Remote.sendable(it), it) }
+        listOf("", "line\nbreak", "tab\there", "cr\rhere", "x".repeat(Remote.MAX_TEXT + 1))
+            .forEach { assertFalse(Remote.sendable(it), it) }
+    }
+
+    @Test fun nonLatinWithoutTheHelperIsFalseAndRunsNothing() = runTest {
+        val sh = FakeShell()
+        assertFalse(Remote(sh).type("Привет"))
+        assertEquals(emptyList<String>(), sh.ran)
+    }
+
     @Test fun typeRunsTheQuotedCommand() = runTest {
         val sh = FakeShell()
         assertTrue(Remote(sh).type("hello there"))
@@ -167,6 +180,47 @@ class RemoteTest {
         assertEquals(null, Remote.musicMax("Error: dumpsys not allowed"))
     }
 
+    @Test fun hdmiOutputIsFixedVolume() {
+        // A Fire TV stick: on the TV over HDMI, and on its own (TV off, no HDMI) its speaker stream.
+        fun dump(devices: String) = """
+            - STREAM_MUSIC:
+               Min: 0
+               Max: 15
+               Current: 2 (speaker): 0, 400 (hdmi): 15, 40000000 (default): 3
+               Devices: $devices
+            - STREAM_ALARM:
+               Max: 7
+            --
+              mFixedVolumeDevices=0x1000,0x800,0x400,0x200000,0x40000,0x40001,0x80000
+              mExtVolumeController=null
+        """.trimIndent()
+        assertTrue(Remote.musicFixed(dump("hdmi")))
+        assertFalse(Remote.musicFixed(dump("speaker")))
+        assertFalse(Remote.musicFixed(dump("hdmi").substringBefore("--")))
+        assertFalse(Remote.musicFixed("Error: dumpsys not allowed"))
+        // Android 10 and older: one bitmask, here 0x20000|0x8000|0x4000|0x400.
+        val mask = dump("hdmi").replace("0x1000,0x800,0x400,0x200000,0x40000,0x40001,0x80000", "0x2c400")
+        assertTrue(Remote.musicFixed(mask))
+        assertFalse(Remote.musicFixed(mask.replace("0x2c400", "0x2c000")))
+        // In a list, 0x40001 is its own device, not bit 0x1 (here the code of "earpiece").
+        val earpiece = dump("earpiece").replace("400 (hdmi)", "1 (earpiece)")
+        assertFalse(Remote.musicFixed(earpiece))
+    }
+
+    @Test fun volumeFixedReadsTheAudioDump() = runTest {
+        val dump = """
+            - STREAM_MUSIC:
+               Max: 15
+               Current: 2 (speaker): 0, 400 (hdmi): 15
+               Devices: hdmi
+            --
+              mFixedVolumeDevices=0x400
+        """.trimIndent()
+        val read = "dumpsys audio 2>/dev/null | grep -e mFixedVolumeDevices -e '^- STREAM_MUSIC:' -A12"
+        assertTrue(Remote(FakeShell(mapOf(read to ShellResult(dump, 0)))).volumeFixed())
+        assertFalse(Remote(FakeShell(mapOf(read to ShellResult(dump.replace("Devices: hdmi", "Devices: speaker"), 0)))).volumeFixed())
+    }
+
     @Test fun volumeTapsCoverAboutFifteenSteps() {
         assertEquals(1, Remote.volumeKeys(15))
         assertEquals(1, Remote.volumeKeys(7))
@@ -183,5 +237,61 @@ class RemoteTest {
         val refused = FakeShell(mapOf("input keyevent 25" to ShellResult("", 1)))
         assertFalse(Remote(refused).press(RemoteKey.VOLUME_DOWN, 3))
         assertEquals(listOf("input keyevent 25"), refused.ran)
+    }
+
+    @Test fun volumeTapIsOneJumpThroughTheHelper() = runBlocking { // see KeyHelperTest
+        val sh = FakeShell().apply { execOutput = "ready\n1\n" }
+        assertTrue(Remote(sh, KeyHelper(sh, byteArrayOf(1))).volume(RemoteKey.VOLUME_UP, 7))
+        assertEquals("v7\n", sh.execInput.readUtf8())
+        assertTrue(sh.ran.none { it.startsWith("input") })
+    }
+
+    @Test fun volumeTheHelperCannotReachSendsTheKeys() = runBlocking {
+        // A build whose IAudioService the helper can't call: the tap's keys go as before.
+        val sh = FakeShell().apply { execOutput = "ready\n0\n1\n1\n1\n" }
+        assertTrue(Remote(sh, KeyHelper(sh, byteArrayOf(1))).volume(RemoteKey.VOLUME_DOWN, 3))
+        assertEquals("v-3\n25\n25\n25\n", sh.execInput.readUtf8())
+    }
+
+    @Test fun volumeWithoutTheHelperSendsTheKeys() = runTest {
+        val sh = FakeShell()
+        assertTrue(Remote(sh).volume(RemoteKey.VOLUME_UP, 2))
+        assertEquals(List(2) { "input keyevent 24" }, sh.ran)
+    }
+
+    @Test fun updatesOpenAndroidsUpdateScreen() = runTest {
+        val sh = FakeShell()
+        assertEquals(UpdateScreen.UPDATES, Remote(sh).openUpdates(fireOs = false))
+        assertEquals(listOf("am start -a android.settings.SYSTEM_UPDATE_SETTINGS 2>&1"), sh.ran)
+    }
+
+    @Test fun anAndroidTvWithoutAnUpdateScreenTriesNothingElse() = runTest {
+        val sh = FakeShell(mapOf("am start" to ShellResult("Error: Activity not started, unable to resolve Intent", 0)))
+        assertEquals(UpdateScreen.NONE, Remote(sh).openUpdates(fireOs = false))
+        assertEquals(1, sh.ran.size)
+    }
+
+    @Test fun aFireTvOpensAboutWhenItCan() = runTest {
+        val sh = FakeShell(mapOf("am start -a android.settings.SYSTEM_UPDATE_SETTINGS" to ShellResult("Error: Activity not started, unable to resolve Intent", 0)))
+        assertEquals(UpdateScreen.UPDATES, Remote(sh).openUpdates(fireOs = true))
+        assertEquals("am start -a android.settings.DEVICE_INFO_SETTINGS 2>&1", sh.ran.last())
+    }
+
+    @Test fun aFireTvThatGuardsAboutOpensSettings() = runTest {
+        val sh = FakeShell(
+            mapOf(
+                "am start -a" to ShellResult("Error: Activity not started, unable to resolve Intent", 0),
+                "am start -n ${Remote.FIRE_SETTINGS[0]}" to
+                    ShellResult("java.lang.SecurityException: Permission Denial: starting Intent requires com.amazon.tv.permission.LAUNCHER_SETTINGS", 255),
+            ),
+        )
+        assertEquals(UpdateScreen.FIRE_SETTINGS, Remote(sh).openUpdates(fireOs = true))
+        assertEquals("am start -n ${Remote.FIRE_SETTINGS[1]} 2>&1", sh.ran.last())
+    }
+
+    @Test fun aFireTvThatOpensNothingSaysWhereToLook() = runTest {
+        val sh = FakeShell(mapOf("am start" to ShellResult("Error: Activity class does not exist.", 0)))
+        assertEquals(UpdateScreen.FIRE_NONE, Remote(sh).openUpdates(fireOs = true))
+        assertEquals(2 + Remote.FIRE_SETTINGS.size, sh.ran.size)
     }
 }

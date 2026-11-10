@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -17,21 +18,29 @@ import kotlin.time.Duration.Companion.seconds
  * after the TV sleeps or drops off Wi-Fi. NOT_ALLOWED and NEEDS_PAIRING stop the loop until
  * [connect] is called again: every try puts a fresh "Allow debugging?" prompt on the TV.
  *
- * A device that let this phone in before and then refuses it has taken the key back (revoked, Remove
- * all other access from another build, a reset): that's a logout, stamped in [loggedOutAt]. [knownGood]
+ * A device that let this phone in before and then refuses it twice in a row has taken the key back (revoked,
+ * Remove all other access from another build, a reset): that's a logout, stamped in [loggedOutAt]. Once
+ * could be a handshake that dropped, which reads the same, so the first refusal is retried. [knownGood]
  * marks a device remembered from an earlier launch, which counts as let in before. After
  * `connect(asked = true)` the user is watching the prompt, so a refusal is a plain NOT_ALLOWED until
  * the TV lets the phone in again.
+ *
+ * Wireless debugging moves to a new port after a reboot, standby or toggle: [findPort] looks up the
+ * one the TV takes connections on now, before every retry, and [port] follows it.
  */
 class DeviceLink(
     val host: String,
-    val port: Int,
+    port: Int,
     private val scope: CoroutineScope,
     private val retryEvery: Duration = 5.seconds,
     private val monitorFor: (AdbShell, StatsGate) -> MonitorSource = { s, gate -> DeviceMonitor(s, gate = gate) },
     private val open: suspend (String, Int) -> ConnectResult = { h, p -> Connector.connect(h, p) },
     knownGood: Boolean = false,
+    private val findPort: suspend () -> Int? = { null },
 ) {
+    @Volatile var port: Int = port
+        private set
+
     private val _state = MutableStateFlow(DeviceState.FOUND)
     val state: StateFlow<DeviceState> = _state.asStateFlow()
 
@@ -42,8 +51,8 @@ class DeviceLink(
     /** Pauses the stats while a change runs on this TV, and sets their refresh rates. */
     val gate = StatsGate()
 
-    @Volatile var session: AdbSession? = null
-        private set
+    private val current = AtomicReference<AdbSession?>(null)
+    val session: AdbSession? get() = current.get()
     @Volatile var lastSeenMillis: Long? = null
         private set
 
@@ -67,7 +76,7 @@ class DeviceLink(
      */
     fun connect(asked: Boolean = false) {
         job?.cancel()
-        session = null
+        current.set(null)
         if (asked) allowedBefore = false
         // Set here, not in the loop: nobody may see the old state once connect has returned.
         _state.value = _state.value.on(DeviceEvent.Connect)
@@ -78,10 +87,27 @@ class DeviceLink(
     fun holdLoggedOut(at: Long) {
         job?.cancel()
         job = null
-        session = null
+        current.set(null)
         allowedBefore = false
         _loggedOutAt.value = at
         _state.value = DeviceState.NOT_ALLOWED
+    }
+
+    /**
+     * The phone left the network, so an online TV is out of reach now, though a read on the old
+     * connection can take its socket timeout to fail. Offline at once; the loop retries as usual.
+     */
+    fun lanLost() {
+        if (_state.value != DeviceState.ONLINE) return
+        job?.cancel()
+        val old = current.getAndSet(null)
+        _state.value = _state.value.on(DeviceEvent.Lost)
+        job = scope.launch {
+            // Closing a TLS session sends close_notify: network I/O, so not on the caller's (main) thread.
+            old?.close()
+            delay(retryEvery)
+            loop()
+        }
     }
 
     fun disconnect() {
@@ -91,10 +117,19 @@ class DeviceLink(
     }
 
     private suspend fun loop() {
+        // The first try goes to the port we have; it is usually still right.
+        var retry = false
+        // Refusals in a row from a TV that let this phone in before; see the class doc.
+        var refused = 0
         while (true) {
             gate.awaitResumed()
-            when (val r = open(host, port)) {
-                is ConnectResult.NotAllowed -> {
+            if (retry) findPort()?.let { port = it }
+            retry = true
+            val r = open(host, port)
+            refused = if (r is ConnectResult.NotAllowed && allowedBefore) refused + 1 else 0
+            when (r) {
+                // Once may be a handshake that dropped: tried again, like a TV out of reach.
+                is ConnectResult.NotAllowed -> if (refused == 1) _state.value = _state.value.on(DeviceEvent.Unreachable) else {
                     _loggedOutAt.value = if (allowedBefore) System.currentTimeMillis() else null
                     allowedBefore = false
                     _state.value = _state.value.on(DeviceEvent.AuthTimedOut)
@@ -118,7 +153,7 @@ class DeviceLink(
 
     /** Streams stats until the link drops. The session is closed on every exit, cancellation included. */
     private suspend fun online(s: AdbSession) {
-        session = s
+        current.set(s)
         _state.value = _state.value.on(DeviceEvent.Authorized)
         try {
             monitorFor(s, gate).stats().collect {
@@ -130,7 +165,8 @@ class DeviceLink(
         } catch (_: Exception) {
             // Link dropped mid-read: the caller marks it offline and retries.
         } finally {
-            session = null
+            // A cancelled loop gets here after connect has started over: leave the new session alone.
+            current.compareAndSet(s, null)
             s.close()
         }
     }

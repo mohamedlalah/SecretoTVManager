@@ -49,11 +49,9 @@
     <string name="copy_built_in">Built into the TV</string>
     <string name="copy_built_in_off">Built into the TV · turned off</string>
     <string name="copy_current">Current</string>
-    <string name="copy_keeps_home">Keeps Home with its accessibility service</string>
     <string name="copy_make_home">Make Home</string>
-    <string name="copy_get_launcher">Get another launcher</string>
-    <string name="copy_get_launcher_text">Install one from the Play Store, like Projectivy or FLauncher. Switch back any time.</string>
-    <string name="copy_get_projectivy_text">Install Projectivy. Switch back any time.</string>
+    <string name="copy_change_home">Change home screen</string>
+    <string name="copy_change_home_text">Install another from Editor\'s choice, or switch to one that\'s already on the TV.</string>
     <string name="copy_home_settings">Home screen settings</string>
     <string name="copy_make_home_title">Make %1$s the home screen?</string>
 
@@ -96,7 +94,7 @@
     <string name="copy_better_home">Get a better home screen</string>
     <!-- %1$s is the current launcher's name, or copy_the_tvs_home_screen -->
     <string name="copy_better_home_text">Swap %1$s for a launcher without ads. Free on the Play Store; switch back any time.</string>
-    <!-- Fire OS: there's no Play Store and Secreto TV Manager installs it. %1$s as in copy_better_home_text -->
+    <!-- Fire OS: there's no Play Store and Tellyscope installs it. %1$s as in copy_better_home_text -->
     <string name="copy_better_home_text_fire">Swap %1$s for a launcher without ads; switch back any time.</string>
     <string name="copy_the_tvs_home_screen">the TV\'s home screen</string>
     <string name="copy_choose_one">Choose one</string>
@@ -105,11 +103,13 @@
     <string name="copy_choose_home_text">Each one replaces the TV\'s home screen. Secreto TV Manager opens it in the Play Store on the TV; you install it with the remote.</string>
     <string name="copy_can_download">Some can also be downloaded directly.</string>
     <string name="copy_no_launcher_list">Couldn\'t load the list of home screens. Check the phone\'s internet and try again.</string>
-    <string name="copy_recommended">Recommended</string>
+    <string name="copy_recommended">Editor\'s choice</string>
     <string name="copy_on_this_tv">On this TV</string>
     <string name="copy_installed">Installed</string>
-    <string name="copy_home_now">Home now</string>
+    <string name="copy_install">Install</string>
     <string name="copy_open">Open</string>
+    <string name="copy_home_screen_of">%1$s home screen</string>
+    <string name="copy_picture_failed">Couldn\'t load the picture</string>
     <string name="copy_uses_service">Uses an accessibility service</string>
     <string name="copy_no_service">Open source · no accessibility service</string>
     <!-- %1$s is copy_on_this_tv -->
@@ -139,9 +139,10 @@
     <string name="copy_wasnt_installed">%1$s wasn\'t installed</string>
     <string name="copy_not_installed_text">The Play Store closed on the TV before it was installed. If the Store said it isn\'t available for this TV, choose another launcher.</string>
 
-    <!-- Installing Projectivy on Fire OS: downloaded from its developer's GitHub, installed over adb -->
-    <string name="copy_install_projectivy">Install Projectivy</string>
+    <!-- Installing a launcher's APK (Fire OS, or Download directly): from its developer's GitHub, installed over adb. %1$s the launcher's name -->
+    <string name="copy_install_launcher">Install %1$s</string>
     <string name="copy_fire_install_text">A home screen without ads. Secreto TV Manager installs it on the TV for you; there\'s nothing to do on the TV.</string>
+    <string name="copy_fire_pick_text">A home screen without ads. Download it in your browser, then pick the file here. Secreto TV Manager installs it on the TV.</string>
     <!-- %1$s the app's name -->
     <string name="copy_downloads_from">Secreto TV Manager downloads %1$s from the developer\'s own release page:</string>
     <!-- %1$s the version, %2$s its size (copy_size_*) -->
@@ -161,11 +162,11 @@
     <!-- %1$d percent done, %2$s and %3$s sizes (copy_size_*) -->
     <string name="copy_downloading">Downloading · %1$d%% · %2$s of %3$s</string>
     <string name="copy_step_picked">Picked a file</string>
-    <string name="copy_step_check">Check it\'s Projectivy</string>
-    <string name="copy_step_checking">Checking it\'s Projectivy…</string>
-    <string name="copy_step_checked">It\'s Projectivy</string>
+    <string name="copy_step_check">Check it\'s %1$s</string>
+    <string name="copy_step_checking">Checking it\'s %1$s…</string>
+    <string name="copy_step_checked">It\'s %1$s</string>
     <string name="copy_step_checked_text">Signed by its developer</string>
-    <string name="copy_step_failed">Not Projectivy</string>
+    <string name="copy_step_failed">Not %1$s</string>
     <string name="copy_step_failed_text">Package name or signature didn\'t match</string>
     <string name="copy_install_on">Install on %1$s</string>
     <string name="copy_stop_title">Stop the download?</string>
@@ -174,26 +175,32 @@
     <string name="copy_keep_downloading">Keep downloading</string>
     <!-- %1$s the TV's name -->
     <string name="copy_installing_on">Installing on %1$s…</string>
-    <string name="copy_not_projectivy">That download isn\'t Projectivy</string>
-    <string name="copy_not_projectivy_text">The file from GitHub didn\'t match Projectivy\'s package name or its developer\'s signature, so Secreto TV Manager installed nothing on the TV.</string>
-    <string name="copy_not_projectivy_file">That file isn\'t Projectivy</string>
-    <string name="copy_not_projectivy_file_text">It didn\'t match Projectivy\'s package name or its developer\'s signature, so Secreto TV Manager installed nothing on the TV.</string>
+    <string name="copy_wrong_apk">That download isn\'t %1$s</string>
+    <string name="copy_wrong_apk_text">The file from GitHub didn\'t match %1$s\'s package name or its developer\'s signature, so Secreto TV Manager installed nothing on the TV.</string>
+    <string name="copy_wrong_apk_file">That file isn\'t %1$s</string>
+    <string name="copy_wrong_apk_file_text">It didn\'t match %1$s\'s package name or its developer\'s signature, so Secreto TV Manager installed nothing on the TV.</string>
     <string name="copy_cant_read_file">Secreto TV Manager couldn\'t read that file. Pick it again, or download it again.</string>
     <string name="copy_cant_install">Couldn\'t install %1$s</string>
-    <string name="copy_no_download">Couldn\'t download Projectivy</string>
+    <string name="copy_no_download">Couldn\'t download %1$s</string>
     <string name="copy_no_download_offline">The phone can\'t reach GitHub. Check its internet, then try again.</string>
     <!-- %1$s a clock time, like 18:44 -->
     <string name="copy_no_download_limited_until">GitHub is limiting downloads from your network until %1$s. Try again then, or download it yourself.</string>
     <string name="copy_no_download_limited">GitHub is limiting downloads from your network for a while. Try again then, or download it yourself.</string>
     <string name="copy_or_yourself">Or download it yourself</string>
     <string name="copy_yourself_page">Download the app file (.apk) from the release page in your browser.</string>
-    <!-- %1$s the release's file name, like Projectivy.apk -->
+    <!-- %1$s the release's file name, like Launcher.apk; %2$s the launcher's name -->
     <string name="copy_yourself_pick_file">Come back and pick %1$s. Secreto TV Manager checks it\'s Projectivy before installing it.</string>
     <string name="copy_yourself_pick">Come back and pick it. Secreto TV Manager checks it\'s Projectivy before installing it.</string>
     <string name="copy_latest_release">Latest release</string>
     <string name="copy_pick_downloaded">Pick the downloaded file</string>
     <string name="copy_pick_another">Pick another file</string>
     <string name="copy_try_download_again">Try download again</string>
+    <!-- The launcher list from data/ failed its signature or checksum check: shown, and ticked, before anything installs -->
+    <string name="copy_unverified_title">Couldn\'t verify the launcher list</string>
+    <string name="copy_unverified_text">Tellyscope couldn\'t confirm this is the list it published. If the list changed in the last few minutes, try again later. Install now only if you trust the list and its signer.</string>
+    <string name="copy_unverified_list">List</string>
+    <string name="copy_unverified_signer">Signer (SHA-256)</string>
+    <string name="copy_unverified_trust">I trust this list and its signer</string>
     <string name="copy_service_off_text">%1$s\'s accessibility service is off, so the TV can take Home back.</string>
 
     <string name="copy_open_again">Open again</string>
@@ -219,9 +226,6 @@
     </plurals>
 
     <!-- Compact uptime: days, hours, minutes -->
-    <string name="copy_uptime_days_hours">%1$dd %2$dh</string>
-    <string name="copy_uptime_hours_minutes">%1$dh %2$dm</string>
-    <string name="copy_uptime_minutes">%1$dm</string>
 
     <plurals name="copy_days">
         <item quantity="one">%1$d day</item>
@@ -272,7 +276,9 @@
     <string name="copy_reading_apps">Reading the TV\'s apps…</string>
     <string name="copy_reading_apps_line">This takes a few seconds.</string>
     <string name="copy_tv_offline">TV offline</string>
+    <string name="copy_off_wifi_line">Join the same Wi-Fi as the TV. Secreto TV Manager reconnects as soon as you\'re on.</string>
     <string name="copy_running_offline">Running apps show here once the TV is connected.</string>
+    <string name="copy_apps_offline">Apps show here once the TV is connected.</string>
 
     <!-- Connection state, next to the status dot -->
     <string name="copy_state_online">Connected</string>
@@ -364,6 +370,7 @@
     <string name="copy_sent_renamed">Sent to %1$s as %2$s, since %3$s was already there</string>
     <string name="copy_saved">Saved %1$s to your phone</string>
     <string name="copy_send_failed">Couldn\'t send %1$s. Check the TV is still connected and has space.</string>
+    <string name="copy_send_failed_off_wifi">Couldn\'t send %1$s. This phone isn\'t on Wi-Fi.</string>
     <string name="copy_save_failed">Couldn\'t save %1$s. Check the TV is still connected and the phone has space.</string>
     <string name="copy_cancelled_send">Cancelled. Nothing was left on the TV.</string>
     <string name="copy_cancelled_save">Cancelled. Nothing was saved.</string>
@@ -377,6 +384,10 @@
     <string name="copy_remote_lost">Lost the TV. Check it\'s still on and connected.</string>
     <string name="copy_no_update_screen">This TV has no update screen Secreto TV Manager can open. Look in its Settings, under System or About.</string>
     <string name="copy_updates_opened">Opened the update screen on the TV. Look at the TV to check for updates.</string>
+    <string name="copy_store_opened">Opened %1$s on the TV.</string>
+    <string name="copy_store_cant_open">Couldn\'t open %1$s on the TV.</string>
+    <string name="copy_fire_settings_opened">Opened Settings on the TV. Go to My Fire TV (Device &amp; Software on TVs), then About, then Check for updates.</string>
+    <string name="copy_no_fire_update_screen">Secreto TV Manager can\'t open Settings on this TV. On the TV, go to Settings, then My Fire TV (Device &amp; Software on TVs), then About, then Check for updates.</string>
     <string name="copy_reboot_refused">The TV said no to restarting. Use its own remote or power button instead.</string>
     <string name="copy_reboot_ignored">The TV didn\'t restart. Use its own remote or power button instead.</string>
     <!-- Lower case: shown after the TV's state -->
@@ -417,6 +428,8 @@
 
     <!-- Remote buttons -->
     <string name="copy_remote_buttons">Remote buttons</string>
+    <string name="copy_open_an_app">Open an app</string>
+    <string name="copy_open_an_app_hint">Streaming apps on %1$s. Tap one to open it.</string>
     <string name="copy_more">More options</string>
     <string name="copy_buttons_hint">Pick up to %1$d. Drag to set the order. To pick another, untick one first.</string>
     <string name="copy_not_on_tv">%1$s isn\'t on this TV. Install it from the Play Store on the TV.</string>
@@ -446,6 +459,7 @@
     <string name="copy_animations_state_off">Off. Turn on to make menus feel snappier.</string>
     <string name="copy_caches_title">Clear all app caches</string>
     <string name="copy_caches_text">Frees space by clearing every app\'s temporary files. App data and sign-ins stay.</string>
+    <string name="copy_caches_too_old">Needs Android 8 or newer. This TV is older.</string>
     <string name="copy_caches_button">Clear caches</string>
     <string name="copy_caches_cleared">Cleared app caches</string>
     <!-- %1$s is a size, like 120 MB -->
@@ -505,6 +519,14 @@
     <!-- %1$s is the launcher Home moves away from -->
     <string name="copy_reset_home_text">Instead of %1$s. %1$s stays installed.</string>
     <string name="copy_reset_home_text_service">Instead of %1$s, with its accessibility service turned off. %1$s stays installed.</string>
+    <string name="copy_reset_dns">Private DNS back to Automatic</string>
+    <string name="copy_reset_animations">Animations back to normal speed</string>
+    <!-- Under a setting Reset TV puts back: %1$s is the Private DNS provider ("dns.adguard-dns.com", or "off"), or an animation scale ("0.5×"). -->
+    <string name="copy_reset_was">Was %1$s</string>
+    <!-- Private DNS turned off, as "Was off" and "Private DNS is still off" name it. -->
+    <string name="copy_dns_off">off</string>
+    <!-- An animation scale; %1$s is a number such as 0.5. -->
+    <string name="copy_animation_scale">%1$s×</string>
     <!-- %2$s is the TV's brand, or copy_the_maker -->
     <plurals name="copy_reset_leaves_off">
         <item quantity="one">%1$d app %2$s shipped switched off stay off.</item>
@@ -521,6 +543,8 @@
     <string name="copy_resetting_turn_on">Turning on apps: %1$d of %2$d.</string>
     <string name="copy_resetting_bring_back">Bringing back apps: %1$d of %2$d.</string>
     <string name="copy_resetting_home">Making %1$s the home screen.</string>
+    <string name="copy_resetting_dns">Putting Private DNS back to Automatic.</string>
+    <string name="copy_resetting_animations">Putting animations back to normal speed.</string>
     <string name="copy_keep_tv_on">Keep the TV on and connected.</string>
     <string name="copy_resetting">Resetting…</string>
     <string name="copy_reset_apps_stale">Reset done, but the app list didn\'t refresh. Open the TV again to see it.</string>
@@ -529,16 +553,18 @@
     <string name="copy_reset_partly">Reset partly done</string>
     <!-- After a reset; %2$s is the launcher now on Home -->
     <plurals name="copy_reset_done_apps_home">
-        <item quantity="one">%1$d preinstalled app is back, and %2$s is the home screen. Apps\' data and sign-ins stayed.</item>
-        <item quantity="other">%1$d preinstalled apps are back, and %2$s is the home screen. Apps\' data and sign-ins stayed.</item>
+        <item quantity="one">%1$d preinstalled app is back, and %2$s is the home screen.</item>
+        <item quantity="other">%1$d preinstalled apps are back, and %2$s is the home screen.</item>
     </plurals>
     <plurals name="copy_reset_done_apps">
-        <item quantity="one">%1$d preinstalled app is back. Apps\' data and sign-ins stayed.</item>
-        <item quantity="other">%1$d preinstalled apps are back. Apps\' data and sign-ins stayed.</item>
+        <item quantity="one">%1$d preinstalled app is back.</item>
+        <item quantity="other">%1$d preinstalled apps are back.</item>
     </plurals>
-    <string name="copy_reset_done_home">%1$s is the home screen. Apps\' data and sign-ins stayed.</string>
-    <!-- Only reached when a reset changed nothing; the leading ". " is as the app always showed it -->
-    <string name="copy_reset_done_nothing">. Apps\' data and sign-ins stayed.</string>
+    <string name="copy_reset_done_home">%1$s is the home screen.</string>
+    <string name="copy_reset_done_settings">Private DNS and animations are back to their defaults.</string>
+    <string name="copy_reset_done_dns">Private DNS is back to Automatic.</string>
+    <string name="copy_reset_done_animations">Animations are back to normal speed.</string>
+    <string name="copy_reset_kept_data">Apps\' data and sign-ins stayed.</string>
     <plurals name="copy_reset_partly_text">
         <item quantity="one">One step didn\'t work. Everything else is back to how it shipped. Nothing was lost.</item>
         <item quantity="other">%1$d steps didn\'t work. Everything else is back to how it shipped. Nothing was lost.</item>
@@ -562,6 +588,12 @@
     </plurals>
     <string name="copy_is_home">%1$s is the home screen</string>
     <string name="copy_still_home">%1$s is still the home screen</string>
+    <string name="copy_dns_automatic">Private DNS is Automatic</string>
+    <!-- %1$s is the Private DNS provider, or "off". -->
+    <string name="copy_dns_still">Private DNS is still %1$s</string>
+    <string name="copy_animations_normal">Animations are at normal speed</string>
+    <!-- %1$s is an animation scale, such as "0.5×". -->
+    <string name="copy_animations_still">Animations are still at %1$s</string>
     <string name="copy_try_app_again">Try %1$s again</string>
     <string name="copy_try_again">Try again</string>
 
@@ -582,15 +614,36 @@
     </plurals>
     <string name="copy_still_on">%1$s is still on</string>
 
-    <plurals name="copy_still_off">
-        <item quantity="one">%1$d app still off</item>
-        <item quantity="other">%1$d apps still off</item>
+    <plurals name="copy_to_put_back">
+        <item quantity="one">%1$d change to put back</item>
+        <item quantity="other">%1$d changes to put back</item>
     </plurals>
-    <plurals name="copy_still_off_title">
-        <item quantity="one">%1$d app Secreto TV Manager turned off is still off</item>
-        <item quantity="other">%1$d apps Secreto TV Manager turned off are still off</item>
+    <plurals name="copy_put_back_title">
+        <item quantity="one">%1$d change Secreto TV Manager made is still in place</item>
+        <item quantity="other">%1$d changes Secreto TV Manager made are still in place</item>
     </plurals>
-    <string name="copy_still_off_text">Restore everything turns them back on. Apps that were off before Secreto TV Manager\'s first change stay off.</string>
+    <string name="copy_put_back_text">Restore everything puts this TV back as it was before Secreto TV Manager\'s first change:</string>
+    <plurals name="copy_restore_on">
+        <item quantity="one">Turns %1$d app back on</item>
+        <item quantity="other">Turns %1$d apps back on</item>
+    </plurals>
+    <plurals name="copy_restore_off">
+        <item quantity="one">Turns %1$d app off again</item>
+        <item quantity="other">Turns %1$d apps off again</item>
+    </plurals>
+    <plurals name="copy_restore_remove">
+        <item quantity="one">Removes %1$d app Reset TV brought back</item>
+        <item quantity="other">Removes %1$d apps Reset TV brought back</item>
+    </plurals>
+    <string name="copy_restore_home">Puts Home back</string>
+    <string name="copy_restore_dns">Puts Private DNS back</string>
+    <string name="copy_restore_animations">Puts animation speed back</string>
+    <plurals name="copy_restore_gone">
+        <item quantity="one">%1$d app was uninstalled and can\'t come back</item>
+        <item quantity="other">%1$d apps were uninstalled and can\'t come back</item>
+    </plurals>
+    <!-- One line of what Restore everything does, under the card and in its confirm. -->
+    <string name="copy_restore_line">• %1$s</string>
     <plurals name="copy_others_connected">
         <item quantity="one">%1$d other connected now</item>
         <item quantity="other">%1$d others connected now</item>
@@ -701,10 +754,15 @@
 
     <!-- Snackbar when an action failed and the TV gave no reason -->
     <string name="vm_didnt_work">That didn\'t work.</string>
-    <string name="vm_nothing_to_turn_on">Nothing to turn back on.</string>
-    <plurals name="vm_turned_back_on">
-        <item quantity="one">Turned %1$d app back on.</item>
-        <item quantity="other">Turned %1$d apps back on.</item>
+    <string name="vm_nothing_to_put_back">Nothing to put back.</string>
+    <plurals name="vm_put_back">
+        <item quantity="one">Put back %1$d change.</item>
+        <item quantity="other">Put back %1$d changes.</item>
+    </plurals>
+    <!-- The count is what didn't go back. %4$s names the first of them; %5$s is a lowercase reason. -->
+    <plurals name="vm_put_back_partly">
+        <item quantity="one">Put back %1$d of %2$d. %4$s didn\'t go back: %5$s</item>
+        <item quantity="other">Put back %1$d of %2$d. %3$d didn\'t go back, %4$s among them: %5$s</item>
     </plurals>
 
     <!-- A reason shown mid-sentence after an app's name, so lower case -->
@@ -763,13 +821,9 @@
     <!-- %1$s is a lowercase reason. -->
     <string name="data_uninstall_home_not_back">Home didn\'t switch back: %1$s. Nothing was uninstalled</string>
 
-    <!-- %1$s is a lowercase reason. -->
-    <string name="data_restore_none">couldn\'t turn apps back on: %1$s</string>
-    <!-- %2$s is a lowercase reason. -->
-    <plurals name="data_restore_some">
-        <item quantity="one">turned %1$d app back on, then stopped: %2$s</item>
-        <item quantity="other">turned %1$d apps back on, then stopped: %2$s</item>
-    </plurals>
+    <string name="data_restore_home">Home</string>
+    <string name="data_restore_dns">Private DNS</string>
+    <string name="data_restore_animations">Animation speed</string>
 
     <string name="data_no_reset_to_undo">there\'s no reset to undo</string>
     <string name="data_reset_already_undone">that reset is already undone</string>
@@ -799,6 +853,7 @@
 
     <!-- History lines, saved with the entry in the language of the moment. -->
     <string name="data_history_service_off">Turned off %1$s\'s accessibility service</string>
+    <string name="data_history_service_on">Turned on %1$s\'s accessibility service</string>
     <string name="data_history_reset_undone">Put back what Reset TV changed</string>
     <plurals name="data_history_reset">
         <item quantity="one">Reset TV · %1$d change</item>
@@ -870,9 +925,14 @@
     <string name="tabs_lists_credit">Lists adapted from cleanyourtv (MIT).</string>
     <!-- %1$s is the Android version, like 11 -->
     <string name="tabs_android_version">Android %1$s</string>
+    <string name="tabs_fire_os_version" translatable="false">Fire OS %1$s</string>
     <!-- %1$s is a month and year, like March 2026 -->
     <string name="tabs_updated">Updated %1$s</string>
     <string name="tabs_check_updates">Check for updates</string>
+    <string name="tabs_store_play" translatable="false">Play Store</string>
+    <string name="tabs_store_amazon" translatable="false">Appstore</string>
+    <string name="tabs_store_sub">Get apps and app updates</string>
+    <string name="tabs_store_off">Off on this TV</string>
 
     <!-- ListsCard.kt: the Debloat screen and About -->
     <!-- Title of the group of the TV's own apps when no debloat list fits the TV -->
@@ -935,19 +995,10 @@
 
     <!-- AdvancedScreen.kt: Advanced monitor -->
     <string name="advanced_back">Back to the TV\'s page</string>
-    <string name="advanced_this_tv">This TV</string>
-    <string name="advanced_ip_address">IP address</string>
-    <string name="advanced_port">Port</string>
-    <string name="advanced_maker">Maker</string>
-    <string name="advanced_network_name">Network name</string>
     <string name="advanced_loading">Loading stats…</string>
-    <string name="advanced_cpu_by_app">CPU by app</string>
-    <string name="advanced_ram_by_app">RAM by app</string>
-    <string name="advanced_processes">Processes</string>
     <string name="advanced_network">Network</string>
     <string name="advanced_cpu">CPU</string>
     <string name="advanced_ram">RAM</string>
-    <string name="advanced_app">App</string>
     <!-- How long the TV has been on, like "2d 4h" -->
     <string name="advanced_on_for">On for</string>
     <string name="advanced_screen">Screen</string>
@@ -955,14 +1006,8 @@
     <string name="advanced_screen_off">Off</string>
     <string name="advanced_percent">%1$d%%</string>
     <string name="advanced_percent_whole">%1$.0f%%</string>
-    <string name="advanced_percent_tenths">%1$.1f%%</string>
-    <!-- %1$s is how long ago, like "5 minutes ago" -->
-    <string name="advanced_as_of">As of %1$s</string>
     <string name="advanced_memory">Memory</string>
     <string name="advanced_storage">Storage</string>
-    <string name="advanced_percent_used">%1$d%% used</string>
-    <!-- The bar that sums every app outside the top 6 -->
-    <string name="advanced_other">Other</string>
     <string name="advanced_connection">Connection</string>
     <string name="advanced_wifi">Wi-Fi</string>
     <string name="advanced_ethernet">Ethernet</string>
@@ -972,10 +1017,88 @@
     <string name="advanced_signal_weak">Weak (%1$d dBm)</string>
     <string name="advanced_signal_very_weak">Very weak (%1$d dBm)</string>
     <string name="advanced_mac">MAC</string>
-    <string name="advanced_link_speed">Link speed</string>
     <string name="advanced_mbps">%1$d Mbps</string>
-    <string name="advanced_data_used">Data used</string>
-    <string name="advanced_open_connections">Open connections</string>
+    <string name="advanced_address" translatable="false">%1$s:%2$d</string>
+    <string name="shell_prompt" translatable="false">tv:%1$s $</string>
+    <string name="shell_offline_prompt" translatable="false">tv offline $</string>
+    <string name="shell_key_tab" translatable="false">Tab</string>
+    <string name="shell_key_ctrl_c" translatable="false">Ctrl-C</string>
+    <string name="shell_answer_yes" translatable="false">y</string>
+    <string name="shell_answer_no" translatable="false">N</string>
+    <string name="shell_exit_code" translatable="false">[exit %1$d]</string>
+    <string name="shell_stopped" translatable="false">^C</string>
+    <string name="advanced_copy_address">Copy address</string>
+    <string name="advanced_android">Android</string>
+    <string name="advanced_updated">Updated</string>
+    <string name="advanced_this_tv">This TV</string>
+    <string name="advanced_offline_as_of">Offline · as of %1$s</string>
+    <string name="advanced_busiest">Busiest</string>
+    <string name="advanced_copy_mac">Copy MAC address</string>
+    <string name="advanced_signal_strong_word">Strong</string>
+    <string name="advanced_signal_good_word">Good</string>
+    <string name="advanced_signal_weak_word">Weak</string>
+    <string name="advanced_signal_very_weak_word">Very weak</string>
+    <string name="advanced_not_running">Not running</string>
+    <string name="advanced_split_apps">Apps</string>
+    <string name="advanced_split_system">System</string>
+    <string name="advanced_split_waiting">Waiting on storage</string>
+    <string name="advanced_core">Core %1$d</string>
+    <string name="advanced_ghz">%1$.1f GHz</string>
+    <string name="advanced_in_use">In use</string>
+    <string name="advanced_cached">Cached</string>
+    <string name="advanced_free">Free</string>
+    <string name="advanced_swap">Swap %1$s of %2$s</string>
+    <string name="advanced_wifi_on">Wi-Fi · %1$s</string>
+    <string name="advanced_since_boot">Since boot ↓ %1$s ↑ %2$s</string>
+    <string name="advanced_minute_ago">60 s ago</string>
+    <string name="advanced_now">now</string>
+    <string name="advanced_cpu_share">%1$.0f%% CPU</string>
+    <string name="advanced_since_boot_short">%1$s since boot</string>
+    <string name="advanced_processes_n">Processes · %1$d</string>
+    <string name="advanced_connections_n">Open connections · %1$d</string>
+    <string name="advanced_established">Established</string>
+    <string name="advanced_connecting">Connecting</string>
+    <string name="advanced_closing">Closing</string>
+    <string name="advanced_down" translatable="false">↓ %1$s</string>
+    <string name="advanced_up" translatable="false">↑ %1$s</string>
+    <string name="advanced_down_up" translatable="false">↓ %1$s ↑ %2$s</string>
+    <plurals name="advanced_cores">
+        <item quantity="one">%1$d core</item>
+        <item quantity="other">%1$d cores</item>
+    </plurals>
+    <plurals name="advanced_processes">
+        <item quantity="one">%1$d process</item>
+        <item quantity="other">%1$d processes</item>
+    </plurals>
+    <plurals name="advanced_connections">
+        <item quantity="one">%1$d connection</item>
+        <item quantity="other">%1$d connections</item>
+    </plurals>
+    <plurals name="advanced_open_connections">
+        <item quantity="one">%1$d open connection</item>
+        <item quantity="other">%1$d open connections</item>
+    </plurals>
+    <plurals name="advanced_apps_running">
+        <item quantity="one">%1$d app running</item>
+        <item quantity="other">%1$d apps running</item>
+    </plurals>
+    <string name="shell_open">Shell</string>
+    <string name="shell_close">Close Shell</string>
+    <string name="shell_title">%1$s · %2$s</string>
+    <string name="shell_banner">Connected to %1$s (%2$s).\nType exit or tap ✕ to close.</string>
+    <string name="shell_trimmed">Earlier lines dropped: showing the last %1$d.</string>
+    <string name="shell_offline_hint">Commands run again once the TV is back.</string>
+    <string name="shell_key_paste">Paste</string>
+    <string name="shell_key_up">Previous command</string>
+    <string name="shell_key_down">Next command</string>
+    <string name="shell_confirm">This changes the TV. Run it? [y/N]</string>
+    <string name="shell_confirm_answered">This changes the TV. Run it? [y/N] %1$s</string>
+    <string name="shell_no_history">Shell runs don\'t go in History, so there\'s no one-tap undo.</string>
+    <string name="shell_not_run">Not run.</string>
+    <string name="shell_not_shell">Only adb shell commands run here.</string>
+    <string name="shell_full_screen">%1$s needs a full-screen terminal. It isn\'t supported here.</string>
+    <string name="shell_dropped_prefix">(dropped \"adb shell\")</string>
+    <string name="shell_lost">Lost the TV before the command finished. It may have run only partly.</string>
 
     <!-- ReportScreen.kt: Report a problem, Help add this TV -->
     <string name="report_title_new_tv">Help add this TV</string>
@@ -1036,11 +1159,11 @@
     <string name="device_disable_title">Disable %1$s?</string>
     <string name="device_cancel">Cancel</string>
     <plurals name="device_restore_title">
-        <item quantity="one">Turn %1$d app back on?</item>
-        <item quantity="other">Turn %1$d apps back on?</item>
+        <item quantity="one">Put back %1$d change?</item>
+        <item quantity="other">Put back %1$d changes?</item>
     </plurals>
     <string name="device_restore_text">Turns back on every app Secreto TV Manager disabled on this TV. Apps that were already off before Secreto TV Manager\'s first change stay off.</string>
-    <string name="device_restore_button">Turn back on</string>
+    <string name="device_restore_button">Put back</string>
     <string name="device_rename_title">Rename this TV</string>
     <string name="device_rename_text">Only this phone sees the name. Nothing on the TV changes.</string>
     <string name="device_save">Save</string>
@@ -1063,6 +1186,8 @@
     <string name="device_nothing_matches">Nothing matches \"%1$s\".</string>
     <string name="device_app_disabled">Disabled</string>
     <string name="device_app_running">Running</string>
+    <string name="device_app_background">Running in the background</string>
+    <string name="device_app_on_screen">On screen</string>
     <string name="device_app_not_running">Not running</string>
     <!-- %1$s is why the app can't be changed -->
     <string name="device_app_protected">Protected: %1$s</string>
@@ -1137,6 +1262,11 @@
     <string name="remote_mute">Mute or unmute</string>
     <string name="remote_volume_up">Volume up</string>
     <string name="remote_volume_down">Volume down</string>
+    <string name="remote_volume_fixed">Volume is fixed over HDMI. Use the TV\'s remote.</string>
+    <string name="remote_dpad">D-pad</string>
+    <string name="remote_touchpad">Touchpad</string>
+    <string name="remote_touchpad_swipe">Swipe to move</string>
+    <string name="remote_touchpad_tap">Tap for OK</string>
     <string name="remote_back">Back</string>
     <string name="remote_home">Home</string>
     <string name="remote_menu">Menu</string>
@@ -1295,6 +1425,7 @@
     <string name="scan_back">Back</string>
     <string name="scan_title">Add your TV</string>
     <string name="scan_no_lan">You\'re not on Wi-Fi, so only TVs that announce themselves show up. Join your TV\'s Wi-Fi.</string>
+    <string name="scan_vpn">A VPN is on, so Secreto TV Manager can\'t search your Wi-Fi. TVs that announce themselves still show up. Add your TV by IP address, or allow local network access in your VPN app.</string>
     <string name="scan_same_wifi">Keep your phone and TV on the same Wi-Fi.</string>
     <string name="scan_add_by_ip">Add by IP address</string>
     <string name="scan_cant_find">Can\'t find your TV?</string>
@@ -1352,8 +1483,8 @@
     <!-- History -->
     <string name="history_empty_title">Nothing changed yet</string>
     <string name="history_empty_text">Anything you stop, disable or turn on shows up here, with a way to undo it.</string>
-    <string name="history_restoring">Turning apps back on…</string>
-    <!-- Button; the number is how many apps are still off. -->
+    <string name="history_restoring">Putting back…</string>
+    <!-- Button; the number is how many changes Restore puts back. -->
     <string name="history_restore_all">Restore everything (%1$d)</string>
     <string name="history_undone">Undone</string>
 
@@ -1393,8 +1524,13 @@
     <string name="welcome_step_1">Turn on debugging on your TV. The next screen shows how for your brand.</string>
     <string name="welcome_step_2">Secreto TV Manager finds the TV on your Wi-Fi.</string>
     <string name="welcome_step_3">Type the code the TV shows, or choose Allow when it asks.</string>
-
-    <!-- SecretoTools fork developer integration. -->
+    <string name="copy_not_projectivy_text">The file from GitHub didn\'t match Projectivy\'s package name or its developer\'s signature, so Secreto TV Manager installed nothing on the TV.</string>
+    <string name="copy_not_projectivy_file_text">It didn\'t match Projectivy\'s package name or its developer\'s signature, so Secreto TV Manager installed nothing on the TV.</string>
+    <plurals name="copy_still_off_title">
+        <item quantity="one">%1$d app Secreto TV Manager turned off is still off</item>
+        <item quantity="other">%1$d apps Secreto TV Manager turned off are still off</item>
+    </plurals>
+    <string name="copy_still_off_text">Restore everything turns them back on. Apps that were off before Secreto TV Manager\'s first change stay off.</string>
     <string name="developer_about">About &amp; developer</string>
     <string name="developer_version">Version %1$s · build %2$d</string>
     <string name="developer_credit">Customized and maintained by SecretoTools</string>
@@ -1402,7 +1538,6 @@
     <string name="developer_website">Official SecretoTools website</string>
     <string name="developer_source">Fork source code on GitHub</string>
     <string name="developer_youtube_description">Android TV, Google TV, TV boxes, tutorials and SecretoTools applications.</string>
-
     <string name="developer_visit_channel">Visit SecretofNet on YouTube</string>
     <string name="developer_subscribe">Subscribe on YouTube</string>
     <string name="developer_original">Original project &amp; open-source credits</string>
@@ -1414,8 +1549,6 @@
     <string name="developer_features">Manage your TV, apps and files over Wi-Fi. Debloat with undo, use the remote, adjust tweaks and monitor performance.</string>
     <string name="developer_visit_website">Visit SecretoTools website</string>
     <string name="welcome_by_secreto">by SecretoTools</string>
-
-    <!-- Voluntary SecretofNet social actions. -->
     <string name="social_follow">Follow SecretofNet</string>
     <string name="social_open_youtube">Open SecretofNet on YouTube</string>
     <string name="social_open_instagram">Open SecretofNet on Instagram</string>

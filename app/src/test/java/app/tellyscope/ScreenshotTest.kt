@@ -38,6 +38,14 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
 import app.tellyscope.adb.ApkInfo
+import app.tellyscope.adb.ShellChannel
+import app.tellyscope.adb.ShellPacket
+import app.tellyscope.adb.TvShell
+import app.tellyscope.ui.ShellTerminal
+import androidx.compose.ui.test.hasClickAction
+import java.util.concurrent.LinkedBlockingQueue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import app.tellyscope.adb.AppFacts
 import app.tellyscope.adb.ConnectionRequest
 import app.tellyscope.adb.InstallRefusal
@@ -51,10 +59,15 @@ import app.tellyscope.data.AppInfo
 import app.tellyscope.data.Docked
 import app.tellyscope.data.AppNames
 import app.tellyscope.data.Device
+import app.tellyscope.data.DATA_BASE
 import app.tellyscope.data.DeviceLists
 import app.tellyscope.data.DeviceState
 import app.tellyscope.data.FakeDeviceSource
 import app.tellyscope.data.HistoryEntry
+import app.tellyscope.data.AppBefore
+import app.tellyscope.data.Restorable
+import app.tellyscope.data.RestoreSummary
+import app.tellyscope.data.Was
 import app.tellyscope.data.TvSettings
 import app.tellyscope.data.TvAccess
 import app.tellyscope.data.TvTweaks
@@ -304,6 +317,12 @@ class ScreenshotTest {
         return deviceState { copy(history = history, files = FilesUi(TvFolder.DOWNLOAD, files), tweaks = tweaks) }
     }
 
+    // History's disables as the TV shows them: those apps off, and Restore's list naming them.
+    private fun DeviceUi.leftOff(vararg pkgs: String) = copy(
+        apps = apps.map { if (it.packageName in pkgs) it.copy(enabled = false) else it },
+        restorable = Restorable(apps = pkgs.associateWith { AppBefore(Was.On, Was.Off) }),
+    )
+
     // The 0.5.0 Overview: three TVs, one offline with saved facts.
     private fun md3State(): UiState {
         val s = tabsState()
@@ -459,6 +478,34 @@ class ScreenshotTest {
         compose.onNodeWithText(Copy.RUNNING_OFFLINE.text()).assertExists()
     }
     @Test fun md3_apps_offline_dark() { shot("71_md3_apps_offline", dark = true) { DeviceTabsScreen(offlineMd3(), DeviceActions(), startTab = TvTab.Apps) } }
+    // Away, Installed and Built-in can't say what the TV has either, so they say why rather than "Nothing here yet."
+    @Test fun md3_apps_offline_installed() {
+        appsTab("71_md3_apps_offline_installed", false, "Installed", ::offlineMd3)
+        compose.onNodeWithText(Copy.APPS_OFFLINE.text()).assertExists()
+        compose.onNodeWithText(Strings.strings.getValue("device_nothing_here")).assertDoesNotExist()
+    }
+    @Test fun md3_apps_offline_builtin() {
+        appsTab("71_md3_apps_offline_builtin", false, "Built-in", ::offlineMd3)
+        compose.onNodeWithText(Copy.APPS_OFFLINE.text()).assertExists()
+    }
+    // The phone left Wi-Fi, not the TV: every away state says so instead of "TV offline".
+    private fun offWifiMd3() = offlineMd3().copy(offWifi = true)
+    @Test fun md3_offWifi() {
+        shot("62_md3_off_wifi") { DeviceTabsScreen(offWifiMd3(), DeviceActions()) }
+        compose.onNodeWithText(Copy.PHONE_OFF_WIFI.text()).assertExists()
+        compose.onNodeWithText(Copy.OFF_WIFI_LINE.text()).assertExists()
+    }
+    @Test fun md3_offWifi_dark() { shot("62_md3_off_wifi", dark = true) { DeviceTabsScreen(offWifiMd3(), DeviceActions()) } }
+    @Test fun md3_apps_offWifi() {
+        shot("71_md3_apps_off_wifi") { DeviceTabsScreen(offWifiMd3(), DeviceActions(), startTab = TvTab.Apps) }
+        compose.onNodeWithText(Copy.PHONE_OFF_WIFI.text()).assertExists()
+        compose.onNodeWithText(Copy.TV_OFFLINE.text()).assertDoesNotExist()
+    }
+    @Test fun md3_apps_offWifi_builtin() {
+        appsTab("71_md3_apps_off_wifi_builtin", false, "Built-in", ::offWifiMd3)
+        compose.onNodeWithText(Copy.OFF_WIFI_LINE.text()).assertExists()
+        compose.onNodeWithText(Strings.strings.getValue("device_nothing_here")).assertDoesNotExist()
+    }
     // Just opened: the list is still on its way, so Apps says so rather than "Nothing here yet."
     private fun appsLoading() = md3State().let { it.copy(device = it.device.copy(apps = emptyList(), appsLoading = true)) }
     @Test fun md3_apps_loading() {
@@ -762,9 +809,12 @@ class ScreenshotTest {
         val opened = mutableListOf<String>()
         shot("96_whats_new") { whatsNew(opened)() }
         compose.onNodeWithText("Installed").assertExists()
-        compose.onAllNodesWithText("NEW")[0].assertExists()
-        compose.onAllNodes(SemanticsMatcher("opens #267") { it.config.getOrNull(SemanticsActions.OnClick)?.label == "#267" })[0].performClick()
-        assertEquals(listOf(Changelog.pullUrl(267)), opened)
+        // The newest section's first heading, whatever kind it opens with.
+        compose.onAllNodesWithText(changelog.first().changes.first().kind!!.name.uppercase())[0].assertExists()
+        // A link from the newest section, which is on screen whatever the changelog holds.
+        val pr = changelog.first().changes.first { it.pr != null }.pr!!
+        compose.onAllNodes(SemanticsMatcher("opens #$pr") { it.config.getOrNull(SemanticsActions.OnClick)?.label == "#$pr" })[0].performClick()
+        assertEquals(listOf(Changelog.pullUrl(pr)), opened)
     }
 
     @Test fun whatsNew_dark() = shot("96_whats_new", dark = true) { whatsNew()() }
@@ -800,10 +850,11 @@ class ScreenshotTest {
     }
 
     private fun history(name: String, dark: Boolean, state: () -> UiState) = shot(name, dark) { HistoryScreen(state(), {}, {}, {}) }
-    @Test fun history_list() = history("46_history", false, ::tabsState)
-    @Test fun history_list_dark() = history("46_history", true, ::tabsState)
-    @Test fun history_restoring() = history("47_history_restoring", false) { tabsState().let { it.copy(device = it.device.copy(busy = RESTORING)) } }
-    @Test fun history_restoring_dark() = history("47_history_restoring", true) { tabsState().let { it.copy(device = it.device.copy(busy = RESTORING)) } }
+    private fun historyState() = tabsState().let { it.copy(device = it.device.leftOff("com.xgimi.ota")) }
+    @Test fun history_list() = history("46_history", false, ::historyState)
+    @Test fun history_list_dark() = history("46_history", true, ::historyState)
+    @Test fun history_restoring() = history("47_history_restoring", false) { historyState().let { it.copy(device = it.device.copy(busy = RESTORING)) } }
+    @Test fun history_restoring_dark() = history("47_history_restoring", true) { historyState().let { it.copy(device = it.device.copy(busy = RESTORING)) } }
     @Test fun history_empty() {
         history("48_history_empty", false) { deviceState() }
         compose.onNodeWithText("Nothing changed yet").assertExists()
@@ -879,8 +930,8 @@ class ScreenshotTest {
         // The list's card stands on its own, with no heading over it.
         compose.onNodeWithText("Suggested for this TV").assertDoesNotExist()
         compose.onNodeWithText("Updated ", substring = true).assertExists()
-        // The Remote is the page's FAB, no longer a button in the top bar.
-        compose.onNodeWithText("Remote", useUnmergedTree = true).assertExists()
+        // The Remote is the button in the middle of the bottom bar, not a FAB on the page.
+        compose.onNodeWithTag("barRemote").assertIsEnabled()
     }
 
     @Test fun device_overview_dark() = shot("04_device", dark = true) { DeviceTabsScreen(deviceState(), DeviceActions()) }
@@ -904,8 +955,8 @@ class ScreenshotTest {
         compose.onNodeWithText("Internal storage").assertExists()
         compose.onAllNodesWithText("\u2014").assertCountEquals(3)
         compose.onNodeWithText("Updated ", substring = true).assertExists()
-        // No Remote while the TV is away.
-        compose.onNodeWithText("Remote", useUnmergedTree = true).assertDoesNotExist()
+        // The Remote stays in the bar while the TV is away, greyed out, so the bar doesn't shift.
+        compose.onNodeWithTag("barRemote").assertIsNotEnabled()
     }
 
     @Test fun device_storageFull() {
@@ -918,7 +969,7 @@ class ScreenshotTest {
             HistoryEntry(2, xgimi.ip, now - 40_000, Action.Disable, "com.xgimi.ota", "XGIMI Updates", Action.Enable, null),
             HistoryEntry(1, xgimi.ip, now - 5 * 60_000, Action.Stop, "com.netflix.ninja", "Netflix", Action.Open, now - 4 * 60_000),
         )
-        shot("07_device_history") { HistoryScreen(deviceState { copy(history = history) }, {}, {}, {}) }
+        shot("07_device_history") { HistoryScreen(deviceState { leftOff("com.xgimi.ota").copy(history = history) }, {}, {}, {}) }
     }
 
     @Test fun history_undoOfTurnOnAsksFirst() {
@@ -1214,7 +1265,7 @@ class ScreenshotTest {
         }
     }
 
-    @Test fun restore() = shot("11_restore", screen = true) { RestoreDialog(2, {}, {}) }
+    @Test fun restore() = shot("11_restore", screen = true) { RestoreDialog(RestoreSummary(turnOn = 2, home = true), {}, {}) }
 
     private val docked = listOf(Docked("com.google.android.youtube.tv", "YouTube"), Docked("com.netflix.ninja", "Netflix"))
 
@@ -1304,21 +1355,24 @@ class ScreenshotTest {
     private fun withLogos(vararg names: String, body: () -> Unit) {
         val offline: suspend (String) -> ByteArray = { throw IOException("offline") }
         val dir = Files.createTempDirectory("logos").toFile()
+        val none = Files.createTempDirectory("none").toFile()
         runBlocking {
             val online = DeviceLists(dir)
             if (online.index() != null) names.forEach { online.logo(it) }
-            SharedLists.load(DeviceLists(dir, offline))
+            SharedLists.load(DeviceLists(none, DATA_BASE, fetch = offline), DeviceLists(dir, offline))
         }
         try { body() } finally {
-            runBlocking { SharedLists.load(DeviceLists(Files.createTempDirectory("none").toFile(), offline)) }
+            SharedLists.reseed()
             dir.deleteRecursively()
+            none.deleteRecursively()
         }
     }
 
     // The README's Remote: a full row of streaming buttons, with their logos.
     @Test fun remote_dockFull() = withLogos("youtube", "netflix", "jellyfin") {
         val three = docked + Docked("org.jellyfin.androidtv", "Jellyfin")
-        shot("12_remote_dock_full", screen = true) { RemoteScreen(remoteState(apps = three), RemoteActions()) }
+        // Each pill reads its logo on the IO dispatcher, which the paused clock doesn't wait for.
+        shot("12_remote_dock_full", screen = true, before = { Thread.sleep(500) }) { RemoteScreen(remoteState(apps = three), RemoteActions()) }
         // A full row has no Remote buttons pill.
         compose.onNodeWithText(Copy.REMOTE_BUTTONS.text()).assertDoesNotExist()
     }
@@ -1677,7 +1731,7 @@ class ScreenshotTest {
             HistoryEntry(2, xgimi.ip, now - 5 * 60_000, Action.Stop, "com.netflix.ninja", "Netflix", Action.Open, null),
             HistoryEntry(1, xgimi.ip, now - 2 * 3_600_000, Action.Stop, "com.google.android.youtube.tv", "YouTube", Action.Open, now - 3_500_000),
         )
-        shot("22_readme_history") { HistoryScreen(deviceState { copy(history = history) }, {}, {}, {}) }
+        shot("22_readme_history") { HistoryScreen(deviceState { leftOff("com.google.android.tvrecommendations", "com.xgimi.assistant").copy(history = history) }, {}, {}, {}) }
         compose.onNodeWithText("Restore everything (2)").assertExists()
     }
     @Test fun readme_install() {
@@ -1706,7 +1760,7 @@ class ScreenshotTest {
     @Test fun readme_tweaks() {
         val tweaks = TvTweaks(dnsHost = TvSettings.ADGUARD, animationScale = null)
         shot("29_readme_tweaks") { DeviceTabsScreen(deviceState { copy(tweaks = tweaks, apps = listOf(stockHome, playStore) + apps) }, DeviceActions(), startTab = TvTab.Tweaks) }
-        compose.onNodeWithText(Copy.GET_LAUNCHER_TEXT.text()).assertExists()
+        compose.onNodeWithText(Copy.CHANGE_HOME_TEXT.text()).assertExists()
     }
 
     private val stockHome = AppInfo(
@@ -1732,6 +1786,54 @@ class ScreenshotTest {
     @Test fun readme_home() {
         shot("30_readme_home", screen = true) { DeviceTabsScreen(homeState(home = false, pending = "com.spocky.projengmenu" to Action.Home), DeviceActions(), startTab = TvTab.Tweaks) }
         compose.onNodeWithText(Copy.makeHomeTitle("Projectivy Launcher").text()).assertExists()
+    }
+
+    // Advanced's tabs on a minute of stats, so the graphs have a line.
+    private fun readmeAdvanced() = deviceState {
+        val recent = (29 downTo 0).map { fake.snapshot(xgimi.ip).copy(at = now - it * 2_000L) }
+        copy(snapshot = recent.last(), recent = recent)
+    }
+    private fun advancedTab(label: String) = { compose.onAllNodes(hasText(label) and hasClickAction()).onFirst().performClick(); Unit }
+    @Test fun readme_thisTv() = shot("31_readme_this_tv") { AdvancedScreen(readmeAdvanced(), back = {}) }
+    @Test fun readme_cpu() = shot("32_readme_cpu", before = advancedTab("CPU")) { AdvancedScreen(readmeAdvanced(), back = {}) }
+    @Test fun readme_ram() = shot("33_readme_ram", before = advancedTab("RAM")) { AdvancedScreen(readmeAdvanced(), back = {}) }
+    @Test fun readme_network() = shot("34_readme_network", before = advancedTab("Network")) { AdvancedScreen(readmeAdvanced(), back = {}) }
+
+    /** A shell on the TV that answers each command from [replies] and ends it with TvShell's marker line. */
+    private class ReadmeChannel(val replies: Map<String, String>) : ShellChannel {
+        private val frames = LinkedBlockingQueue<ShellPacket>()
+        override fun read(): ShellPacket = frames.take()
+        override fun write(bytes: ByteArray) {
+            val command = String(bytes).substringAfter("{ ").substringBefore("\n}")
+            replies[command]?.let { frames.add(ShellPacket.Out("$it\n".toByteArray())) }
+            frames.add(ShellPacket.Out("\u001ETELLYSCOPE 0 /\n".toByteArray()))
+        }
+        override fun close() {}
+    }
+
+    // Shell after three read-only commands.
+    @Test fun readme_shell() = shellShot("en")
+    @Test @Config(qualifiers = "ar-w411dp-h891dp-xxhdpi")
+    fun shell_arabic_commandsStayLtr() = shellShot("ar")
+    @Test @Config(qualifiers = "fr-w411dp-h891dp-xxhdpi")
+    fun shell_french() = shellShot("fr")
+
+    private fun shellShot(language: String) {
+        val xgimiApps = runBlocking { fake.apps(xgimi.ip) }.map { it.packageName }.filter { it.startsWith("com.xgimi.") }.sorted()
+        val replies = linkedMapOf(
+            "getprop ro.product.model" to "XGIMI Horizon Pro",
+            "getprop ro.build.version.release" to "11",
+            "pm list packages xgimi" to xgimiApps.joinToString("\n") { "package:$it" },
+        )
+        val channel = ReadmeChannel(replies)
+        val terminal = ShellTerminal(TvShell({ throw IOException("no one-shot shell") }) { channel }, CoroutineScope(Dispatchers.IO))
+        for (command in replies.keys) {
+            terminal.submit(command, online = true)
+            repeat(200) { if (terminal.state.value.running) Thread.sleep(10) }
+            assertFalse(terminal.state.value.running)
+        }
+        shot("35_readme_shell_$language", before = advancedTab(RuntimeEnvironment.getApplication().getString(R.string.shell_open))) { AdvancedScreen(readmeAdvanced(), back = {}, terminal = terminal) }
+        compose.onAllNodesWithText("package:com.xgimi.ota").onFirst().assertExists()
     }
 
     private fun homeCard(dark: Boolean) {

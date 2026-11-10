@@ -23,12 +23,12 @@ jobs:
       - name: Validate fork release
         run: python3 scripts/release/check_release.py
       - name: Build unsigned APK
-        run: ./gradlew :app:assembleRelease -Dorg.gradle.java.installations.auto-download=false --console=plain
+        run: ./gradlew :app:assembleGithubRelease -Dorg.gradle.java.installations.auto-download=false --console=plain
       - name: Prepare corresponding source and accompanying materials
         run: python3 scripts/release/prepare_materials.py --fetch-dependency-sources
       - uses: actions/upload-artifact@v7
         with:
-          name: Secreto-TV-Manager-1.0.0-unsigned-review-only
-          path: app/build/release-materials/
+          name: Secreto-TV-Manager-unsigned-review-only
+          path: app/build/release-materials-*/
           if-no-files-found: error
           retention-days: 14

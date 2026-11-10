@@ -27,14 +27,30 @@ data class Stats(
     /** The name on the box; the manufacturer can be the factory (Philips TVs say TPV). */
     val brand: String? = null,
     val androidVersion: String? = null,
+    /** Fire OS's own version, like `8.1.4.9`; null on anything else. See [Parsers.fireOsVersion]. */
+    val fireOsVersion: String? = null,
     val sdk: Int? = null,
     /** Uid → packages, from the slow tier; empty where `pm` can't list uids. */
     val packages: Map<Int, List<String>> = emptyMap(),
     val processes: List<AppProcess> = emptyList(),
     val screenOn: Boolean? = null,
+    /** The package on screen; null when nothing is, or the profile doesn't read it ([StatsProfile.onScreen]). */
+    val onScreen: String? = null,
     /** Bytes in and out per second over the whole TV, between the last two fast readings. */
     val netBytesPerSec: Long? = null,
     val softwareMonth: YearMonth? = null,
+    /** Each online core's use, 0..100, in core order. */
+    val cores: List<Double> = emptyList(),
+    val cpuSplit: Parsers.CpuSplit? = null,
+    /** The chip's name, from `getprop`. */
+    val chip: String? = null,
+    /** The fastest core's clock now; Advanced only. */
+    val clockKhz: Long? = null,
+    /** [netBytesPerSec] split into received and sent. */
+    val rxBytesPerSec: Long? = null,
+    val txBytesPerSec: Long? = null,
+    /** Received and sent since boot. */
+    val netTotal: Parsers.NetBytes? = null,
 )
 
 /** One process and the package it belongs to; null for native daemons. */
@@ -61,10 +77,16 @@ enum class ProcessLevel {
  * How often one screen refreshes what it shows: the stat strip (CPU, RAM, network) every [fastEvery],
  * the process list at [processes] every [processEvery].
  */
-data class StatsProfile(val fastEvery: Duration, val processes: ProcessLevel, val processEvery: Duration) {
+data class StatsProfile(
+    val fastEvery: Duration,
+    val processes: ProcessLevel,
+    val processEvery: Duration,
+    /** Reads the app on screen with the processes: Apps tells it from one running in the background. */
+    val onScreen: Boolean = false,
+) {
     companion object {
         val OVERVIEW = StatsProfile(2.seconds, ProcessLevel.LIGHT, 2.seconds)
-        val APPS = StatsProfile(10.seconds, ProcessLevel.LIGHT, 10.seconds)
+        val APPS = StatsProfile(10.seconds, ProcessLevel.LIGHT, 10.seconds, onScreen = true)
         val ADVANCED = StatsProfile(2.seconds, ProcessLevel.FULL, 2.seconds)
 
         /** Files, Tweaks, Remote, Settings, Debloat, and every TV that isn't on screen. */
@@ -137,9 +159,10 @@ class DeviceMonitor(
     override fun stats(): Flow<Stats> = flow {
         var slowStats = Stats(cpuPercent = null, memory = null)
         var lastSlow: TimeMark? = null
-        var procStats: Pair<List<AppProcess>, Boolean?> = emptyList<AppProcess>() to null
+        var procStats = Medium(emptyList(), null, null, null)
         var lastProcs: TimeMark? = null
         var lastLevel = ProcessLevel.NONE
+        var lastOnScreen = false
         var seenChanged = gate.changed.value
         var prev: Fast? = null
 
@@ -162,22 +185,35 @@ class DeviceMonitor(
                 lastSlow = started
             }
             val level = profile.processes
-            if (level != ProcessLevel.NONE && (level != lastLevel || lastProcs.due(profile.processEvery) || fresh)) {
-                readProcesses(level, slowStats.packages, procStats.second)?.let { procStats = it }
+            // Opening Apps from Overview reads the app on screen at once, not after Apps' 10 s.
+            val changedProfile = level != lastLevel || profile.onScreen != lastOnScreen
+            if (level != ProcessLevel.NONE && (changedProfile || lastProcs.due(profile.processEvery) || fresh)) {
+                readProcesses(level, profile.onScreen, slowStats.packages, procStats)?.let { procStats = it }
                 lastProcs = started
                 lastLevel = level
+                lastOnScreen = profile.onScreen
             }
             val now = readFast()
             val last = prev
             if (now != null && last != null) {
                 val pct = if (last.cpu != null && now.cpu != null) Parsers.cpuPercent(last.cpu, now.cpu) else null
+                val rx = rate(last, now) { it.rx }
+                val tx = rate(last, now) { it.tx }
                 emit(
                     slowStats.copy(
                         cpuPercent = pct,
                         memory = now.memory,
-                        processes = procStats.first,
-                        screenOn = procStats.second,
-                        netBytesPerSec = rate(last, now),
+                        processes = procStats.procs,
+                        screenOn = procStats.screenOn,
+                        onScreen = procStats.onScreen,
+                        netBytesPerSec = if (rx != null && tx != null) rx + tx else null,
+                        // A core switched off between the two readings drops out rather than reading 0.
+                        cores = now.cores.mapNotNull { (n, t) -> last.cores[n]?.let { Parsers.cpuPercent(it, t) } },
+                        cpuSplit = if (last.cpu != null && now.cpu != null) Parsers.cpuSplit(last.cpu, now.cpu) else null,
+                        clockKhz = procStats.clockKhz,
+                        rxBytesPerSec = rx,
+                        txBytesPerSec = tx,
+                        netTotal = now.netBytes,
                     ),
                 )
             }
@@ -223,30 +259,45 @@ class DeviceMonitor(
         withTimeoutOrNull(pingTimeout) { shell.shell("echo") } ?: throw IOException("no answer to echo in $pingTimeout")
     }
 
-    private class Fast(val cpu: Parsers.CpuTimes?, val memory: Parsers.Memory?, val netBytes: Long?, val at: ComparableTimeMark)
+    private class Fast(
+        val cpu: Parsers.CpuTimes?,
+        val cores: Map<Int, Parsers.CpuTimes>,
+        val memory: Parsers.Memory?,
+        val netBytes: Parsers.NetBytes?,
+        val at: ComparableTimeMark,
+    )
 
     private suspend fun readFast(): Fast? {
         val (stat, meminfo, netDev) = Commands.split(run(Commands.FAST) ?: return null, 3)
-        return Fast(Parsers.cpuTimes(stat), Parsers.memory(meminfo), Parsers.netBytes(netDev), clock.markNow())
+        return Fast(Parsers.cpuTimes(stat), Parsers.coreTimes(stat), Parsers.memory(meminfo), Parsers.netBytes(netDev), clock.markNow())
     }
 
     /** Null across a counter reset (an interface going down and up), never a negative speed. */
-    private fun rate(prev: Fast, now: Fast): Long? {
-        val bytes = (now.netBytes ?: return null) - (prev.netBytes ?: return null)
+    private fun rate(prev: Fast, now: Fast, of: (Parsers.NetBytes) -> Long): Long? {
+        val bytes = of(now.netBytes ?: return null) - of(prev.netBytes ?: return null)
         val ms = (now.at - prev.at).inWholeMilliseconds
         return if (bytes < 0 || ms <= 0) null else bytes * 1000 / ms
     }
 
-    /** The light read keeps [screenOn] from the last full one; only Advanced shows it. */
-    private suspend fun readProcesses(level: ProcessLevel, packages: Map<Int, List<String>>, screenOn: Boolean?): Pair<List<AppProcess>, Boolean?>? {
-        val (procs, screen) = if (level == ProcessLevel.FULL) {
-            val (top, power) = Commands.split(run(Commands.MEDIUM) ?: return null, 2)
-            Parsers.processes(top) to Parsers.screenOn(power)
-        } else {
-            (readPs() ?: return null) to screenOn
-        }
+    /**
+     * The process read: the light one keeps [screenOn] and [clockKhz] from the last full one; only Advanced shows them.
+     * [onScreen] is read only when the profile asks, and kept from the last read when that one is skipped.
+     */
+    private class Medium(val procs: List<AppProcess>, val screenOn: Boolean?, val clockKhz: Long?, val onScreen: String?)
+
+    private suspend fun readProcesses(level: ProcessLevel, onScreen: Boolean, packages: Map<Int, List<String>>, last: Medium): Medium? {
         val known = packages.values.flatten().toSet()
-        return procs.map { p -> AppProcess(p.pid, p.name, Parsers.owner(p, packages, known), p.cpuPercent, p.rssKb) } to screen
+        fun owned(procs: List<Parsers.Process>) = procs.map { p -> AppProcess(p.pid, p.name, Parsers.owner(p, packages, known), p.cpuPercent, p.rssKb) }
+        val read = if (level != ProcessLevel.FULL) {
+            Medium(owned(readPs() ?: return null), last.screenOn, last.clockKhz, null)
+        } else {
+            val (top, power, freqs) = Commands.split(run(Commands.MEDIUM) ?: return null, 3)
+            Medium(owned(Parsers.processes(top)), Parsers.screenOn(power), Parsers.clockKhz(freqs), null)
+        }
+        if (!onScreen) return read
+        // A skipped read keeps the last answer; one with nothing resumed (the screen off) clears it.
+        val resumed = run(Commands.RESUMED)
+        return Medium(read.procs, read.screenOn, read.clockKhz, if (resumed == null) last.onScreen else Parsers.resumedPackage(resumed))
     }
 
     /** Set once `ps -o` answered without a single process row; plain `ps` from then on. */
@@ -277,8 +328,10 @@ class DeviceMonitor(
             manufacturer = props["ro.product.manufacturer"],
             brand = props["ro.product.brand"],
             androidVersion = props["ro.build.version.release"],
+            fireOsVersion = Parsers.fireOsVersion(props),
             sdk = props["ro.build.version.sdk"]?.toIntOrNull(),
             softwareMonth = Parsers.softwareMonth(props),
+            chip = Parsers.chip(props),
             packages = Parsers.byUid(Parsers.packages(pm)),
         )
     }

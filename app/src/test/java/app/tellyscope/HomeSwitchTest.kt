@@ -9,47 +9,74 @@ import app.tellyscope.adb.AdbSession
 import app.tellyscope.adb.RemoteEntry
 import app.tellyscope.adb.ShellResult
 import app.tellyscope.data.Action
+import app.tellyscope.data.DATA_BASE
+import app.tellyscope.data.DATA_KEYS
+import app.tellyscope.data.DeviceLists
+import app.tellyscope.data.FIRE_TV_LAUNCHER
 import app.tellyscope.data.ActionFailed
 import app.tellyscope.data.HistoryBook
 import app.tellyscope.data.HistoryEntry
 import app.tellyscope.data.ResetRecord
+import app.tellyscope.data.SharedLists
 import app.tellyscope.data.UiText
 import app.tellyscope.data.UiTextException
 import app.tellyscope.data.fireHomeBack
+import app.tellyscope.data.fireRemoteHome
 import app.tellyscope.data.fireServiceHolder
 import app.tellyscope.data.fireServiceHome
 import app.tellyscope.data.firstHomeService
+import app.tellyscope.data.grant
+import app.tellyscope.data.mayTurnOn
 import app.tellyscope.data.switchHome
 import app.tellyscope.data.undoFireResetHome
 import app.tellyscope.data.undoHomeSwitch
 import java.io.File
 import java.io.IOException
+import java.security.MessageDigest
 import kotlinx.coroutines.test.runTest
 import okio.Sink
 import okio.Source
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 private const val TV_HOME = "com.google.android.tvlauncher"
 private const val PROJECTIVY = "com.spocky.projengmenu"
 private const val FLAUNCHER = "me.efesser.flauncher"
 private const val PROJECTIVY_SERVICE = "$PROJECTIVY/.HomeService"
+/** On Fire OS only by its service, which takes the Home key like Projectivy's. */
+private const val MONET = "com.klevico.monet"
+private const val MONET_SERVICE = "$MONET/.HomeKeyService"
 
-/** A TV with its own launcher and two the user added; Projectivy has an accessibility service. */
-private class LauncherTv(var home: String?) : AdbSession {
-    val activities = mapOf(TV_HOME to "$TV_HOME/.MainActivity", PROJECTIVY to "$PROJECTIVY/.Main", FLAUNCHER to "$FLAUNCHER/.MainActivity")
+/**
+ * A TV with its own launcher and two the user added; Projectivy has an accessibility service, and so does Monet.
+ * [fire] adds Amazon's launcher, as on a Fire TV.
+ */
+private class LauncherTv(var home: String?, fire: Boolean = false) : AdbSession {
+    val activities = mapOf(TV_HOME to "$TV_HOME/.MainActivity", PROJECTIVY to "$PROJECTIVY/.Main", FLAUNCHER to "$FLAUNCHER/.MainActivity") +
+        if (fire) mapOf(FIRE_TV_LAUNCHER to "$FIRE_TV_LAUNCHER/.ui.HomeActivity") else emptyMap()
     val enabled = activities.keys.toMutableSet()
     val user = setOf(PROJECTIVY, FLAUNCHER)
     val services = mutableListOf<String>()
+    /** The versionName `dumpsys package` gives; the list's Projectivy has its service from 4.72. */
+    val versions = mutableMapOf(PROJECTIVY to "4.72", FLAUNCHER to "0.18.0")
     /** False: `am start` can't open a home screen, as on a TV that refuses it. */
     var opens = true
     val ran = mutableListOf<String>()
+    /** A command starting with this throws, as a link that drops there would. */
+    var dropOn: String? = null
 
     override suspend fun shell(command: String): ShellResult {
+        dropOn?.let { if (command.startsWith(it)) throw IOException("link gone") }
         ran += command
         val pkg = command.substringAfter("--user 0 ").substringBefore(' ')
         val quoted = command.substringAfter("'").substringBefore("'")
@@ -60,7 +87,10 @@ private class LauncherTv(var home: String?) : AdbSession {
             command.startsWith("pm list packages -3") -> ok(user.joinToString("") { "package:$it\n" })
             command.startsWith("pm disable-user") -> ok("Package $pkg new state: disabled-user\n").also { enabled -= pkg }
             command.startsWith("pm enable") -> ok("Package $pkg new state: enabled\n").also { enabled += pkg }
-            command.startsWith("cmd package query-services") -> ok("$PROJECTIVY_SERVICE\n")
+            command.startsWith("cmd package query-services") -> ok("$PROJECTIVY_SERVICE\n$MONET_SERVICE\n")
+            command.startsWith("dumpsys package ") -> command.removePrefix("dumpsys package ").let { p ->
+                ok(versions[p]?.let { "Packages:\n  Package [$p] (1a2b3c):\n    versionCode=1 minSdk=21 targetSdk=34\n    versionName=$it\n" }.orEmpty())
+            }
             command.startsWith("settings get secure enabled_accessibility_services") -> ok(services.joinToString(":").ifEmpty { "null" } + "\n")
             command.startsWith("settings put secure enabled_accessibility_services") -> ok("").also { services.clear(); services += quoted.split(':') }
             command.startsWith("settings delete secure enabled_accessibility_services") -> ok("").also { services.clear() }
@@ -82,19 +112,33 @@ private class LauncherTv(var home: String?) : AdbSession {
     override fun close() = Unit
 }
 
-/** The switch rule: only the TV's own launcher goes off, and Undo reverses exactly what the switch did. */
+/**
+ * The switch rule: only the TV's own launcher goes off, and Undo reverses exactly what the switch did.
+ * Under Robolectric for org.json: `grant` reads [SharedLists], seeded from the fixtures.
+ */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class HomeSwitchTest {
+    @get:Rule val tmp = TemporaryFolder()
     private val book = HistoryBook()
 
-    private suspend fun switch(tv: LauncherTv, pkg: String, withService: Boolean = true): HistoryEntry =
-        switchHome(Actions(tv), pkg, withService, setOf(PROJECTIVY), { it }, { UiText.Raw(it.name) }) { from, undo, previous ->
+    @After fun reseed() = SharedLists.reseed()
+
+    private suspend fun switch(
+        tv: LauncherTv,
+        pkg: String,
+        withService: Boolean = true,
+        on: Set<String> = setOf(PROJECTIVY),
+        off: Set<String> = setOf(PROJECTIVY),
+    ): HistoryEntry =
+        switchHome(Actions(tv), pkg, withService, on, off, { it }, { UiText.Raw(it.name) }, { id, extra, undo -> book.amend(id, extra, undo = undo) }) { from, undo, previous ->
             book.record("tv", 0, Action.Home, from, pkg, undo, previous = previous)
         }
 
     /** What Undo in History runs for a switch: its old launcher on again, then the rest. */
     private suspend fun undo(tv: LauncherTv, entry: HistoryEntry) {
         Actions(tv).run(AdbAction.ENABLE, entry.packageName)
-        assertTrue(undoHomeSwitch(Actions(tv), entry))
+        assertNull(undoHomeSwitch(Actions(tv), entry) { it })
     }
 
     @Test fun theTvsOwnLauncherIsTurnedOffAndUndoTurnsItBackOn() = runTest {
@@ -102,7 +146,7 @@ class HomeSwitchTest {
         val entry = switch(tv, FLAUNCHER)
         assertEquals(FLAUNCHER, tv.home)
         assertFalse(TV_HOME in tv.enabled)
-        assertEquals(listOf(TV_HOME), HistoryBook.leftDisabled(book.entries("tv")))
+        assertEquals(setOf(TV_HOME), book.restorable("tv").apps.keys)
         undo(tv, entry)
         assertEquals(TV_HOME, tv.home)
         assertTrue(TV_HOME in tv.enabled)
@@ -114,7 +158,7 @@ class HomeSwitchTest {
         assertEquals(PROJECTIVY, tv.home)
         assertTrue(FLAUNCHER in tv.enabled)
         // Nothing went off, so Restore has nothing to turn on.
-        assertEquals(emptyList<String>(), HistoryBook.leftDisabled(book.entries("tv")))
+        assertEquals(emptySet<String>(), book.restorable("tv").apps.keys)
         undo(tv, entry)
         assertEquals(FLAUNCHER, tv.home)
     }
@@ -130,6 +174,23 @@ class HomeSwitchTest {
         assertEquals(listOf(PROJECTIVY_SERVICE), tv.services)
     }
 
+    /** Off doesn't wait for a signature: a service left on is the screen reader we guard against. */
+    @Test fun withDataUnverifiedSwitchingAwayStillTurnsTheServiceOff() = runTest {
+        val launchers = """{"schema":1,"launchers":[{"package":"$PROJECTIVY","name":"Projectivy Launcher","accessibility":"4.72"},{"package":"$FLAUNCHER","name":"FLauncher"}]}""".toByteArray()
+        val sha = MessageDigest.getInstance("SHA-256").digest(launchers).joinToString("") { "%02x".format(it) }
+        val index = """{"schema": 1, "version": 2026110301, "lists": {"launchers": {"file": "launchers.json", "sha256": "$sha"}}}""".toByteArray()
+        val served = mapOf("index.json" to index, "launchers.json" to launchers)
+        val data = DeviceLists(tmp.newFolder(), DATA_BASE, DATA_KEYS) { url -> served[url.removePrefix(DATA_BASE)] ?: throw IOException("404 $url") }
+        SharedLists.load(data, DeviceLists(tmp.newFolder()) { throw IOException("offline $it") }, fresh = true)
+        assertEquals(DATA_BASE, SharedLists.unverified)
+        assertEquals(emptySet<String>(), SharedLists.serviceLaunchers)
+
+        val tv = LauncherTv(home = PROJECTIVY).apply { services += PROJECTIVY_SERVICE }
+        switch(tv, FLAUNCHER, on = SharedLists.serviceLaunchers, off = SharedLists.listedServiceLaunchers)
+        assertEquals(FLAUNCHER, tv.home)
+        assertTrue(tv.services.isEmpty())
+    }
+
     @Test fun switchingToAServiceLauncherTurnsItsServiceOnAndUndoOff() = runTest {
         val tv = LauncherTv(home = TV_HOME)
         val entry = switch(tv, PROJECTIVY)
@@ -137,6 +198,49 @@ class HomeSwitchTest {
         undo(tv, entry)
         assertEquals(TV_HOME, tv.home)
         assertTrue(tv.services.isEmpty())
+    }
+
+    /** The list's version is a minimum: an older copy, or one with no readable version, gets no service. */
+    @Test fun belowTheListsVersionTheServiceStaysOff() = runTest {
+        for (version in listOf("4.71", "unknown", null)) {
+            val tv = LauncherTv(home = TV_HOME).apply { if (version == null) versions -= PROJECTIVY else versions[PROJECTIVY] = version }
+            assertFalse(version.toString(), Actions(tv).mayTurnOn(PROJECTIVY))
+            assertFalse(version.toString(), Actions(tv).grant(PROJECTIVY_SERVICE))
+            assertTrue(version.toString(), tv.services.isEmpty())
+        }
+        val tv = LauncherTv(home = TV_HOME).apply { versions[PROJECTIVY] = "4.80" }
+        assertTrue(Actions(tv).mayTurnOn(PROJECTIVY))
+    }
+
+    /**
+     * Undo goes through [grant] too: a copy downgraded below the list's version doesn't get the service
+     * back, and Undo says so instead of counting the switch undone.
+     */
+    @Test fun undoBelowTheListsVersionLeavesTheServiceOffAndSaysSo() = runTest {
+        val tv = LauncherTv(home = PROJECTIVY).apply { services += PROJECTIVY_SERVICE }
+        val entry = switch(tv, FLAUNCHER)
+        assertTrue(tv.services.isEmpty())
+        tv.versions[PROJECTIVY] = "4.70"
+        Actions(tv).run(AdbAction.ENABLE, entry.packageName)
+        val left = undoHomeSwitch(Actions(tv), entry) { it }
+        assertEquals(
+            "$PROJECTIVY is Home now, but its accessibility service didn't turn on, so the TV's Home button may still open its own launcher",
+            left?.text(),
+        )
+        assertEquals(PROJECTIVY, tv.home)
+        assertTrue(tv.services.isEmpty())
+    }
+
+    /** A link that drops after Home moved still leaves the switch in History, with the service it turned on. */
+    @Test fun aLinkThatDropsAfterHomeMovedStillLeavesTheSwitch() = runTest {
+        val tv = LauncherTv(home = TV_HOME).apply { dropOn = "am " }
+        assertTrue(runCatching { switch(tv, PROJECTIVY) }.exceptionOrNull() is IOException)
+        assertEquals(PROJECTIVY, tv.home)
+        assertFalse(TV_HOME in tv.enabled)
+        val entry = book.entries("tv").single()
+        assertEquals(TV_HOME, entry.packageName)
+        assertEquals(Action.Enable, entry.undo)
+        assertEquals(PROJECTIVY_SERVICE, entry.previous?.get("service"))
     }
 
     @Test fun withNoDefaultTheTvsOwnLauncherBecomesTheDefaultWithNothingTurnedOff() = runTest {
@@ -196,8 +300,8 @@ class HomeSwitchTest {
     }
 
     private suspend fun fire(tv: LauncherTv, withService: Boolean = true): HistoryEntry =
-        fireServiceHome(Actions(tv), PROJECTIVY, withService, { it }) { previous ->
-            book.record("tv", 0, Action.Home, PROJECTIVY, PROJECTIVY, Action.Enable.takeIf { previous.isNotEmpty() }, previous = previous)
+        fireServiceHome(Actions(tv), PROJECTIVY, withService, listOf(PROJECTIVY, MONET), { it }) { previous ->
+            book.record("tv", 0, Action.Home, PROJECTIVY, PROJECTIVY, Action.Enable.takeIf { "service" in previous }, previous = previous)
         }
 
     @Test fun onFireOsOnlyTheServiceGoesOnAndItsUndoIsTheServiceAlone() = runTest {
@@ -208,12 +312,24 @@ class HomeSwitchTest {
         assertEquals(TV_HOME, tv.home)
         assertTrue(TV_HOME in tv.enabled)
         assertFalse(tv.ran.toString(), tv.ran.any { it.startsWith("pm disable-user") || it.startsWith("cmd package set-home-activity") })
-        assertEquals(emptyList<String>(), HistoryBook.leftDisabled(book.entries("tv")))
+        assertEquals(emptySet<String>(), book.restorable("tv").apps.keys)
         // A home with nothing replaced: its Undo is the service alone.
         assertEquals(PROJECTIVY_SERVICE, entry.firstHomeService)
         assertEquals(Action.Enable, entry.undo)
         // Then Projectivy opens, so the TV shows it without a Home press.
         assertTrue(tv.ran.toString(), tv.ran.any { it.startsWith("am start") && it.contains(tv.activities.getValue(PROJECTIVY)) })
+    }
+
+    @Test fun onFireOsTheOtherLaunchersServiceGoesOffBeforeTheNewOneOpens() = runTest {
+        // Monet's service still on would take the Home key too, and either could win.
+        val tv = LauncherTv(home = TV_HOME).apply { services += MONET_SERVICE }
+        val entry = fire(tv)
+        assertEquals(listOf(PROJECTIVY_SERVICE), tv.services)
+        assertEquals(mapOf("service" to PROJECTIVY_SERVICE, "fromService" to MONET_SERVICE), entry.previous)
+        assertEquals(Action.Enable, entry.undo)
+        val off = tv.ran.indexOfLast { it.startsWith("settings put secure enabled_accessibility_services") }
+        val opened = tv.ran.indexOfFirst { it.startsWith("am start") && it.contains(tv.activities.getValue(PROJECTIVY)) }
+        assertTrue(tv.ran.toString(), off >= 0 && opened > off)
     }
 
     @Test fun onFireOsAServiceAlreadyOnChangesNothing() = runTest {
@@ -239,6 +355,29 @@ class HomeSwitchTest {
         assertNull(Actions(tv).fireServiceHolder(listOf(FLAUNCHER, PROJECTIVY)))
         tv.services += PROJECTIVY_SERVICE
         assertEquals(PROJECTIVY to PROJECTIVY_SERVICE, Actions(tv).fireServiceHolder(listOf(FLAUNCHER, PROJECTIVY)))
+    }
+
+    @Test fun onFireOsTheRemotesHomeOpensTheLauncherTheUserSet() = runTest {
+        val tv = LauncherTv(home = FLAUNCHER)
+        // A default Android keeps, though Amazon's Home key never reaches it.
+        assertEquals(tv.activities.getValue(FLAUNCHER), Actions(tv).fireRemoteHome(listOf(FLAUNCHER, PROJECTIVY)))
+        // The launcher whose service holds Home comes first.
+        tv.services += PROJECTIVY_SERVICE
+        assertEquals(tv.activities.getValue(PROJECTIVY), Actions(tv).fireRemoteHome(listOf(FLAUNCHER, PROJECTIVY)))
+    }
+
+    @Test fun onFireOsWithAmazonsLauncherTheDefaultTheRemotesHomeStaysTheKey() = runTest {
+        // What a Fire TV resolves Home to with no service on: Amazon's own, which the key opens anyway.
+        val tv = LauncherTv(home = FIRE_TV_LAUNCHER, fire = true)
+        assertNull(Actions(tv).fireRemoteHome(listOf(FLAUNCHER, PROJECTIVY)))
+        // A service on still wins over Amazon's default.
+        tv.services += PROJECTIVY_SERVICE
+        assertEquals(tv.activities.getValue(PROJECTIVY), Actions(tv).fireRemoteHome(listOf(FLAUNCHER, PROJECTIVY)))
+    }
+
+    @Test fun onFireOsWithNoLauncherSetTheRemotesHomeStaysTheKey() = runTest {
+        // Android would ask, and no service holds Home.
+        assertNull(Actions(LauncherTv(home = null)).fireRemoteHome(listOf(FLAUNCHER, PROJECTIVY)))
     }
 
     @Test fun onFireOsGoingBackTurnsTheServiceOffAndItsUndoOn() = runTest {

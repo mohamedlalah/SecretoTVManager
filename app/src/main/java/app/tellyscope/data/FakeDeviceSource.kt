@@ -17,6 +17,7 @@ import app.tellyscope.adb.TvFacts
 import app.tellyscope.adb.TvFile
 import app.tellyscope.adb.TvFolder
 import app.tellyscope.adb.Tweak
+import app.tellyscope.adb.UpdateScreen
 import java.io.File
 import java.io.IOException
 import java.time.YearMonth
@@ -162,18 +163,38 @@ class FakeDeviceSource(
                     ramMb = (it.ramMb * (0.97 + random.nextDouble() * 0.06)).toInt(),
                 )
             }
+        val cpu = procs.sumOf { it.cpuPercent }.toInt()
+        val ramUsed = procs.sumOf { it.ramMb } + 260
+        val rx = 2_200_000L + random.nextLong(-200_000, 200_000)
         return Snapshot(
             at = clock(),
-            cpuPercent = procs.sumOf { it.cpuPercent }.toInt(),
-            ramUsedMb = procs.sumOf { it.ramMb } + 260,
+            cpuPercent = cpu,
+            ramUsedMb = ramUsed,
             ramTotalMb = 2048,
             storageUsedGb = 9.8,
             storageTotalGb = 16.0,
             uptimeSeconds = 3 * 86_400L + 4 * 3_600L,
             screenOn = true,
             procs = procs,
-            netBytesPerSec = 2_400_000L + random.nextLong(-200_000, 200_000),
+            // Home is on screen, so every other running app is in the background.
+            onScreen = "com.spocky.projengmenu",
+            netBytesPerSec = rx + 200_000,
             softwareMonth = YearMonth.of(2023, 5),
+            // Four cores around the average; apps and system add up to it, as on a real TV.
+            cores = listOf(6, -2, 4, -8).map { (cpu + it).coerceIn(0, 100) },
+            cpuApps = cpu * 2 / 3,
+            cpuSystem = cpu - cpu * 2 / 3,
+            cpuWaiting = cpu / 15,
+            chip = "Amlogic S905X4",
+            clockMhz = 1800,
+            ramCachedMb = (2048 - ramUsed) * 5 / 8,
+            ramFreeMb = (2048 - ramUsed) - (2048 - ramUsed) * 5 / 8,
+            swapUsedMb = 280,
+            swapTotalMb = 1024,
+            rxBytesPerSec = rx,
+            txBytesPerSec = 200_000L,
+            rxTotalBytes = 2_800_000_000L,
+            txTotalBytes = 126_000_000L,
         )
     }
 
@@ -206,11 +227,11 @@ class FakeDeviceSource(
     override suspend fun act(deviceId: String, action: Action, packageName: String, undoing: Long?): HistoryEntry {
         delay(400)
         val list = appsFor(deviceId)
-        if (!book.hasBaseline(deviceId)) book.setBaseline(deviceId, list.filter { !it.enabled }.map { it.packageName }.toSet())
         if (action == Action.Reset) {
             val reset = book.entries(deviceId).first { it.id == undoing }
             val on = ResetRecord.list(reset.previous, ResetRecord.ON)
             list.replaceAll { if (it.packageName in on) it.copy(enabled = false) else it }
+            Tweak.entries.forEach { tweak -> ResetRecord.setting(reset.previous, tweak)?.let(settingsFor(deviceId)::putAll) }
             return book.record(deviceId, clock(), Action.Change, packageName, UiText(R.string.data_history_reset_undone).text(), null, undoing)
         }
         val i = list.indexOfFirst { it.packageName == packageName }
@@ -234,18 +255,28 @@ class FakeDeviceSource(
 
     override suspend fun history(deviceId: String): List<HistoryEntry> = book.entries(deviceId)
 
-    override suspend fun restoreAll(deviceId: String): List<HistoryEntry> {
-        val off = appsFor(deviceId).filter { !it.enabled }.map { it.packageName }.toSet()
-        return restoreEach(book.restorable(deviceId).filter { it in off }) { pkg ->
-            act(deviceId, Action.Enable, pkg, undoing = book.openDisable(deviceId, pkg))
+    override suspend fun restorable(deviceId: String): Restorable = book.restorable(deviceId)
+
+    /** Apps and settings, as [AdbDeviceSource.restoreAll] puts them back; the demo TV has no Home to switch. */
+    override suspend fun restoreAll(deviceId: String): RestoreResult {
+        val target = book.restorable(deviceId)
+        val plan = target.plan { pkg -> appsFor(deviceId).firstOrNull { it.packageName == pkg }?.let { if (it.enabled) Was.On else Was.Off } ?: Was.Gone }
+        val run = RestoreRun()
+        fun app(pkg: String) = (appsFor(deviceId).firstOrNull { it.packageName == pkg }?.label ?: pkg).asUiText()
+        for (pkg in plan.turnOn) run.step(app(pkg)) { act(deviceId, Action.Enable, pkg, undoing = book.openDisable(deviceId, pkg)) }
+        for (pkg in plan.turnOff) run.step(app(pkg)) { act(deviceId, Action.Disable, pkg, undoing = book.openEnable(deviceId, pkg)) }
+        for ((tweak, before) in target.settings) {
+            if (before.any { (k, v) -> settingsFor(deviceId)[k] != v }) run.step(TvSettings.name(tweak)) { change(deviceId, tweak, before, null) }
         }
+        return run.result()
     }
 
     /** The demo TV's apps that are off and came with it, as if someone had turned them off by hand. */
     override suspend fun resetPlan(deviceId: String): ResetPlan {
         delay(400)
         val off = appsFor(deviceId).filter { it.system && !it.enabled }.map { ResetApp(it.packageName, it.label) }
-        return ResetPlan(turnOn = off, ownHome = "Google TV Home")
+        fun offDefault(tweak: Tweak) = tweak.keys.associateWith { settingsFor(deviceId)[it] }.takeIf { TvSettings.offDefault(tweak, it) }
+        return ResetPlan(turnOn = off, ownHome = "Google TV Home", dns = offDefault(Tweak.PRIVATE_DNS), animations = offDefault(Tweak.ANIMATIONS))
     }
 
     override suspend fun reset(deviceId: String, plan: ResetPlan, into: Long?, onProgress: (ResetProgress) -> Unit): Pair<Long?, List<ResetFailure>> {
@@ -255,9 +286,19 @@ class FakeDeviceSource(
             delay(300)
             list.replaceAll { if (it.packageName == app.packageName) it.copy(enabled = true) else it }
         }
-        if (plan.turnOn.isEmpty()) return into to emptyList()
+        val s = settingsFor(deviceId)
+        val settings = listOfNotNull(
+            plan.dns?.let { Triple(ResetPart.Dns, Tweak.PRIVATE_DNS, it) },
+            plan.animations?.let { Triple(ResetPart.Animations, Tweak.ANIMATIONS, it) },
+        ).flatMap { (part, tweak, was) ->
+            onProgress(ResetProgress(part, 0, 1))
+            delay(300)
+            tweak.keys.forEach { s.remove(it) }
+            was.entries.map { it.toPair() } + (ResetRecord.mark(tweak) to "1")
+        }
+        if (plan.turnOn.isEmpty() && settings.isEmpty()) return into to emptyList()
         val on = plan.turnOn.joinToString(",") { it.packageName }
-        val entry = book.record(deviceId, clock(), Action.Reset, "reset", ResetRecord.label(plan.changes).text(), Action.Reset, previous = mapOf(ResetRecord.ON to on))
+        val entry = book.record(deviceId, clock(), Action.Reset, "reset", ResetRecord.label(plan.changes).text(), Action.Reset, previous = mapOf(ResetRecord.ON to on) + settings)
         return entry.id to emptyList()
     }
 
@@ -350,9 +391,9 @@ class FakeDeviceSource(
         return true
     }
 
-    override suspend fun openUpdates(deviceId: String): Boolean {
+    override suspend fun openUpdates(deviceId: String): UpdateScreen {
         delay(300)
-        return true
+        return UpdateScreen.UPDATES
     }
 
     override suspend fun launch(deviceId: String, packageName: String): Boolean {

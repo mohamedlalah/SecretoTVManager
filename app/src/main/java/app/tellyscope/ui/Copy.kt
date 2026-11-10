@@ -6,15 +6,18 @@ import app.tellyscope.R
 import app.tellyscope.adb.InstallKind
 import app.tellyscope.adb.InstallRefusal
 import app.tellyscope.adb.Peripheral
+import app.tellyscope.adb.Tweak
 import app.tellyscope.adb.TvFolder
 import app.tellyscope.data.Action
 import app.tellyscope.data.AppNames
 import app.tellyscope.data.DeviceState
 import app.tellyscope.data.ResetPart
 import app.tellyscope.data.ResetProgress
+import app.tellyscope.data.RestoreSummary
 import app.tellyscope.data.Snapshot
 import app.tellyscope.data.TvSettings
 import app.tellyscope.data.UiText
+import app.tellyscope.data.asUiText
 import app.tellyscope.data.sourceName
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -94,11 +97,9 @@ object Copy {
     fun builtIn(off: Boolean) = UiText(if (off) R.string.copy_built_in_off else R.string.copy_built_in)
 
     val CURRENT = UiText(R.string.copy_current)
-    val KEEPS_HOME = UiText(R.string.copy_keeps_home)
     val MAKE_HOME = UiText(R.string.copy_make_home)
-    val GET_LAUNCHER = UiText(R.string.copy_get_launcher)
-    val GET_LAUNCHER_TEXT = UiText(R.string.copy_get_launcher_text)
-    val GET_PROJECTIVY_TEXT = UiText(R.string.copy_get_projectivy_text)
+    val CHANGE_HOME = UiText(R.string.copy_change_home)
+    val CHANGE_HOME_TEXT = UiText(R.string.copy_change_home_text)
 
     /** The Apps tab's launcher rows: switching lives in the card, this opens it. */
     val HOME_SETTINGS = UiText(R.string.copy_home_settings)
@@ -199,13 +200,19 @@ object Copy {
     /** After [CHOOSE_HOME_TEXT] when Download directly is offered. */
     val CAN_DOWNLOAD = UiText(R.string.copy_can_download)
     val NO_LAUNCHER_LIST = UiText(R.string.copy_no_launcher_list)
+    /** The picker's heading over the launchers from `launchers.json`: Editor's choice. */
     val RECOMMENDED = UiText(R.string.copy_recommended)
-    /** The picker's section for launchers on the TV that Recommended doesn't list. */
+    /** The picker's section for launchers on the TV that Editor's choice doesn't list. */
     val ON_THIS_TV = UiText(R.string.copy_on_this_tv)
     val INSTALLED = UiText(R.string.copy_installed)
-    val HOME_NOW = UiText(R.string.copy_home_now)
+    /** Fire OS's picker: installs the chosen launcher, named on its row. */
+    val INSTALL = UiText(R.string.copy_install)
     /** Shows a launcher on the TV, from the picker. */
     val OPEN = UiText(R.string.copy_open)
+    /** A launcher's screenshot in the picker, for screen readers. */
+    fun homeScreenOf(name: String) = UiText(R.string.copy_home_screen_of, name)
+    /** In a launcher's screenshot box when the picture couldn't be had; [TRY_AGAIN] under it loads it again. */
+    val PICTURE_FAILED = UiText(R.string.copy_picture_failed)
     val USES_SERVICE = UiText(R.string.copy_uses_service)
     val NO_SERVICE = UiText(R.string.copy_no_service)
     /** Under the picker's list: any other launcher works too, and comes back as On this TV. */
@@ -244,16 +251,17 @@ object Copy {
     /** The Store closed without an install: back on the picker, still chosen. */
     fun wasntInstalled(name: String) = UiText(R.string.copy_wasnt_installed, name)
 
-    /** Install Projectivy on Fire OS: Tellyscope downloads it from its developer's GitHub and installs it over adb. */
-    val INSTALL_PROJECTIVY = UiText(R.string.copy_install_projectivy)
+    /** Install a launcher on Fire OS: Tellyscope downloads it from its developer's GitHub and installs it over adb. */
+    fun installLauncher(name: String) = UiText(R.string.copy_install_launcher, name)
     val FIRE_INSTALL_TEXT = UiText(R.string.copy_fire_install_text)
+    val FIRE_PICK_TEXT = UiText(R.string.copy_fire_pick_text)
 
     fun downloadsFrom(name: String) = UiText(R.string.copy_downloads_from, name)
 
     fun release(version: String, size: Long) = UiText(R.string.copy_release, version, bytes(size))
 
     val WHERE_FROM = UiText(R.string.copy_where_from)
-    val SIGNED_CHECK = UiText(R.string.copy_signed_check)
+    fun signedCheck(name: String) = UiText(R.string.copy_signed_check, name)
     val DOWNLOAD_AND_INSTALL = UiText(R.string.copy_download_and_install)
 
     /** Download directly on a TV with the Play Store: what Tellyscope checks, what it doesn't, and the safer way. */
@@ -264,17 +272,17 @@ object Copy {
     val DOWNLOAD_ANYWAY = UiText(R.string.copy_download_anyway)
     val STORE_INSTEAD = UiText(R.string.copy_store_instead)
 
-    /** Install Projectivy's steps, one panel: download (or the picked file), the check, the install. */
+    /** The launcher install's steps, one panel: download (or the picked file), the check, the install. */
     fun installing(name: String) = UiText(R.string.copy_installing, name)
     val STEP_DOWNLOAD = UiText(R.string.copy_step_download)
     val STEP_DOWNLOADED = UiText(R.string.copy_step_downloaded)
     fun downloading(percent: Int, done: Long, total: Long) = UiText(R.string.copy_downloading, percent, bytes(done), bytes(total))
     val STEP_PICKED = UiText(R.string.copy_step_picked)
-    val STEP_CHECK = UiText(R.string.copy_step_check)
-    val STEP_CHECKING = UiText(R.string.copy_step_checking)
-    val STEP_CHECKED = UiText(R.string.copy_step_checked)
+    fun stepCheck(name: String) = UiText(R.string.copy_step_check, name)
+    fun stepChecking(name: String) = UiText(R.string.copy_step_checking, name)
+    fun stepChecked(name: String) = UiText(R.string.copy_step_checked, name)
     val STEP_CHECKED_TEXT = UiText(R.string.copy_step_checked_text)
-    val STEP_FAILED = UiText(R.string.copy_step_failed)
+    fun stepFailed(name: String) = UiText(R.string.copy_step_failed, name)
     val STEP_FAILED_TEXT = UiText(R.string.copy_step_failed_text)
     fun installOn(tv: String) = UiText(R.string.copy_install_on, tv)
 
@@ -286,25 +294,33 @@ object Copy {
     val STOP = UiText(R.string.copy_stop)
     val KEEP_DOWNLOADING = UiText(R.string.copy_keep_downloading)
 
-    val NOT_PROJECTIVY = UiText(R.string.copy_not_projectivy)
-    val NOT_PROJECTIVY_TEXT = UiText(R.string.copy_not_projectivy_text)
-    val NOT_PROJECTIVY_FILE = UiText(R.string.copy_not_projectivy_file)
-    val NOT_PROJECTIVY_FILE_TEXT = UiText(R.string.copy_not_projectivy_file_text)
+    fun wrongApk(name: String) = UiText(R.string.copy_wrong_apk, name)
+    fun wrongApkText(name: String) = UiText(R.string.copy_wrong_apk_text, name)
+    fun wrongApkFile(name: String) = UiText(R.string.copy_wrong_apk_file, name)
+    fun wrongApkFileText(name: String) = UiText(R.string.copy_wrong_apk_file_text, name)
     val CANT_READ_FILE = UiText(R.string.copy_cant_read_file)
     fun cantInstall(name: String) = UiText(R.string.copy_cant_install, name)
 
     /** Couldn't download: GitHub's limit for the network ([until] is a clock time), or no way to reach it. */
-    val NO_DOWNLOAD = UiText(R.string.copy_no_download)
+    fun noDownload(name: String) = UiText(R.string.copy_no_download, name)
     val NO_DOWNLOAD_OFFLINE = UiText(R.string.copy_no_download_offline)
     fun noDownloadLimited(until: String?) =
         if (until != null) UiText(R.string.copy_no_download_limited_until, until) else UiText(R.string.copy_no_download_limited)
     val OR_YOURSELF = UiText(R.string.copy_or_yourself)
     val YOURSELF_PAGE = UiText(R.string.copy_yourself_page)
-    fun yourselfPick(file: String?) = if (file != null) UiText(R.string.copy_yourself_pick_file, file) else UiText(R.string.copy_yourself_pick)
+    fun yourselfPick(file: String?, name: String) =
+        if (file != null) UiText(R.string.copy_yourself_pick_file, file, name) else UiText(R.string.copy_yourself_pick, name)
     val LATEST_RELEASE = UiText(R.string.copy_latest_release)
     val PICK_DOWNLOADED = UiText(R.string.copy_pick_downloaded)
     val PICK_ANOTHER = UiText(R.string.copy_pick_another)
     val TRY_DOWNLOAD_AGAIN = UiText(R.string.copy_try_download_again)
+
+    /** A launcher from a list that failed its signature check: shown, and ticked, before anything installs. */
+    val UNVERIFIED_TITLE = UiText(R.string.copy_unverified_title)
+    val UNVERIFIED_TEXT = UiText(R.string.copy_unverified_text)
+    val UNVERIFIED_LIST = UiText(R.string.copy_unverified_list)
+    val UNVERIFIED_SIGNER = UiText(R.string.copy_unverified_signer)
+    val UNVERIFIED_TRUST = UiText(R.string.copy_unverified_trust)
 
     val NOT_INSTALLED_TEXT = UiText(R.string.copy_not_installed_text)
 
@@ -335,17 +351,6 @@ object Copy {
         }
     }
 
-    fun uptime(s: Long): UiText {
-        val d = s / 86_400
-        val h = (s % 86_400) / 3600
-        val m = (s % 3600) / 60
-        return when {
-            d > 0 -> UiText(R.string.copy_uptime_days_hours, d, h)
-            h > 0 -> UiText(R.string.copy_uptime_hours_minutes, h, m)
-            else -> UiText(R.string.copy_uptime_minutes, m)
-        }
-    }
-
     /** Uptime for people: the largest unit or two, spelled out. */
     fun upFor(s: Long): UiText {
         val d = UiText.plural(R.plurals.copy_days, (s / 86_400).toInt())
@@ -361,6 +366,9 @@ object Copy {
 
     /** "May 2023", in the phone's language. */
     fun month(m: YearMonth): String = m.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+
+    /** "Sep 2025", for a half-width cell. */
+    fun shortMonth(m: YearMonth): String = m.format(DateTimeFormatter.ofPattern("MMM yyyy"))
 
     /** Network speed in the same units as [bytes], so a download's size and speed line up. */
     fun speed(bytesPerSec: Long) = UiText(R.string.copy_speed, bytes(bytesPerSec))
@@ -399,7 +407,10 @@ object Copy {
 
     /** Running, with no word from the TV. */
     val TV_OFFLINE = UiText(R.string.copy_tv_offline)
+    val PHONE_OFF_WIFI = UiText(R.string.scan_off_wifi_title)
+    val OFF_WIFI_LINE = UiText(R.string.copy_off_wifi_line)
     val RUNNING_OFFLINE = UiText(R.string.copy_running_offline)
+    val APPS_OFFLINE = UiText(R.string.copy_apps_offline)
 
     val ANDROID_SYSTEM = AppNames.SYSTEM
 
@@ -559,6 +570,7 @@ object Copy {
 
     fun saved(name: String) = UiText(R.string.copy_saved, name)
     fun sendFailed(name: String) = UiText(R.string.copy_send_failed, name)
+    fun sendFailedOffWifi(name: String) = UiText(R.string.copy_send_failed_off_wifi, name)
     fun saveFailed(name: String) = UiText(R.string.copy_save_failed, name)
 
     val CANCELLED_SEND = UiText(R.string.copy_cancelled_send)
@@ -574,6 +586,8 @@ object Copy {
     val REMOTE_LOST = UiText(R.string.copy_remote_lost)
     val NO_UPDATE_SCREEN = UiText(R.string.copy_no_update_screen)
     val UPDATES_OPENED = UiText(R.string.copy_updates_opened)
+    val FIRE_SETTINGS_OPENED = UiText(R.string.copy_fire_settings_opened)
+    val NO_FIRE_UPDATE_SCREEN = UiText(R.string.copy_no_fire_update_screen)
     val REBOOT_REFUSED = UiText(R.string.copy_reboot_refused)
     val REBOOT_IGNORED = UiText(R.string.copy_reboot_ignored)
     val REMOTE_OFFLINE_WAKE = UiText(R.string.copy_remote_offline_wake)
@@ -587,12 +601,14 @@ object Copy {
     val SCREEN_ON_REFUSED = UiText(R.string.copy_screen_on_refused)
 
     fun cantType(text: String): UiText {
+        val control = text.firstOrNull { it.isISOControl() }
         val odd = text.firstOrNull { it !in ' '..'~' }
         return when {
             text.isEmpty() -> UiText(R.string.copy_cant_type_empty)
             text.length > app.tellyscope.adb.Remote.MAX_TEXT ->
                 UiText.plural(R.plurals.copy_cant_type_too_long, app.tellyscope.adb.Remote.MAX_TEXT)
-            odd == '\n' || odd == '\t' -> UiText(R.string.copy_cant_type_one_line)
+            control == '\n' || control == '\t' -> UiText(R.string.copy_cant_type_one_line)
+            control != null -> UiText(R.string.copy_cant_type_odd, control.toString())
             odd != null -> UiText(R.string.copy_cant_type_odd, odd.toString())
             else -> UiText(R.string.copy_cant_type_percent_s)
         }
@@ -624,6 +640,10 @@ object Copy {
     fun buttonsHint(cap: Int) = UiText(R.string.copy_buttons_hint, cap)
     fun notOnTv(name: String) = UiText(R.string.copy_not_on_tv, name)
     fun cantOpen(label: String) = UiText(R.string.copy_cant_open, label)
+    fun storeOpened(name: String) = UiText(R.string.copy_store_opened, name)
+    fun storeCantOpen(name: String) = UiText(R.string.copy_store_cant_open, name)
+    val OPEN_AN_APP = UiText(R.string.copy_open_an_app)
+    fun openAnAppHint(tv: String) = UiText(R.string.copy_open_an_app_hint, tv)
 
     fun leftDock(labels: List<String>) =
         if (labels.size == 1) UiText(R.string.copy_left_dock_one, labels[0])
@@ -648,6 +668,7 @@ object Copy {
         else UiText(R.string.copy_animations_state_off)
     val CACHES_TITLE = UiText(R.string.copy_caches_title)
     val CACHES_TEXT = UiText(R.string.copy_caches_text)
+    val CACHES_TOO_OLD = UiText(R.string.copy_caches_too_old)
     val CACHES_BUTTON = UiText(R.string.copy_caches_button)
     fun cachesCleared(freedKb: Long?) =
         if (freedKb == null || freedKb <= 0) UiText(R.string.copy_caches_cleared) else UiText(R.string.copy_caches_cleared_freed, bytes(freedKb * 1024))
@@ -713,6 +734,24 @@ object Copy {
         " ",
     )
 
+    val RESET_DNS = UiText(R.string.copy_reset_dns)
+    val RESET_ANIMATIONS = UiText(R.string.copy_reset_animations)
+    /** "Was …", under a setting Reset found: the Private DNS provider, or the animation scale. */
+    fun resetWas(was: UiText) = UiText(R.string.copy_reset_was, was)
+
+    /** Private DNS as [values] have it, off Automatic: the provider, or off. */
+    fun dnsWas(values: Map<String, String?>): UiText = when (val mode = values["private_dns_mode"]) {
+        "hostname" -> values["private_dns_specifier"].orEmpty().asUiText()
+        "off" -> UiText(R.string.copy_dns_off)
+        else -> mode.orEmpty().asUiText()
+    }
+
+    /** The first animation scale in [values] that isn't 1×, as "0.5×". */
+    fun animationsWas(values: Map<String, String?>): UiText {
+        val v = values.values.firstOrNull { it != null && it.toFloatOrNull() != 1f }.orEmpty()
+        return UiText(R.string.copy_animation_scale, v.toFloatOrNull()?.toString()?.removeSuffix(".0") ?: v)
+    }
+
     val NOTHING_TO_RESET = UiText(R.string.copy_nothing_to_reset_title)
     fun nothingToReset(ownHome: String?, maker: String?): UiText = UiText.Join(
         listOf(
@@ -728,6 +767,8 @@ object Copy {
                 ResetPart.TurnOn -> UiText(R.string.copy_resetting_turn_on, p.done, p.of)
                 ResetPart.BringBack -> UiText(R.string.copy_resetting_bring_back, p.done, p.of)
                 ResetPart.Home -> UiText(R.string.copy_resetting_home, home ?: TV_OWN_LAUNCHER)
+                ResetPart.Dns -> UiText(R.string.copy_resetting_dns)
+                ResetPart.Animations -> UiText(R.string.copy_resetting_animations)
             },
             UiText(R.string.copy_keep_tv_on),
         ),
@@ -739,11 +780,27 @@ object Copy {
 
     val RESET_DONE = UiText(R.string.copy_reset_done)
     val RESET_PARTLY = UiText(R.string.copy_reset_partly)
-    fun resetDoneText(apps: Int, home: String?): UiText = when {
-        apps != 0 && home != null -> UiText.plural(R.plurals.copy_reset_done_apps_home, apps, apps, home)
-        apps != 0 -> UiText.plural(R.plurals.copy_reset_done_apps, apps)
-        home != null -> UiText(R.string.copy_reset_done_home, home)
-        else -> UiText(R.string.copy_reset_done_nothing)
+    /** After a reset: the apps and Home, then the settings it put back, then that data stayed. */
+    fun resetDoneText(apps: Int, home: String?, dns: Boolean = false, animations: Boolean = false): UiText {
+        val settings = when {
+            dns && animations -> UiText(R.string.copy_reset_done_settings)
+            dns -> UiText(R.string.copy_reset_done_dns)
+            animations -> UiText(R.string.copy_reset_done_animations)
+            else -> null
+        }
+        return UiText.Join(
+            listOfNotNull(
+                when {
+                    apps != 0 && home != null -> UiText.plural(R.plurals.copy_reset_done_apps_home, apps, apps, home)
+                    apps != 0 -> UiText.plural(R.plurals.copy_reset_done_apps, apps)
+                    home != null -> UiText(R.string.copy_reset_done_home, home)
+                    else -> null
+                },
+                settings,
+                UiText(R.string.copy_reset_kept_data),
+            ),
+            " ",
+        )
     }
     fun resetPartlyText(failed: Int) = UiText.plural(R.plurals.copy_reset_partly_text, failed)
     fun turnedOn(done: Int, of: Int) =
@@ -752,6 +809,10 @@ object Copy {
         if (done == of) UiText.plural(R.plurals.copy_brought_back_all, of) else UiText.plural(R.plurals.copy_brought_back_some, of, done, of)
     fun isHome(app: String) = UiText(R.string.copy_is_home, app)
     fun stillHome(app: String) = UiText(R.string.copy_still_home, app)
+    val DNS_AUTOMATIC = UiText(R.string.copy_dns_automatic)
+    fun dnsStill(was: UiText) = UiText(R.string.copy_dns_still, was)
+    val ANIMATIONS_NORMAL = UiText(R.string.copy_animations_normal)
+    fun animationsStill(was: UiText) = UiText(R.string.copy_animations_still, was)
     fun tryAgain(app: String?) = if (app != null) UiText(R.string.copy_try_app_again, app) else UiText(R.string.copy_try_again)
 
     /** Debloat while it turns the ticked apps off, then its result. */
@@ -765,10 +826,24 @@ object Copy {
         if (done == of) UiText.plural(R.plurals.copy_turned_off_all, of) else UiText.plural(R.plurals.copy_turned_off_some, of, done, of)
     fun stillOn(app: String) = UiText(R.string.copy_still_on, app)
 
-    /** Under History in the menu, and on top of the History screen: apps Restore everything turns back on. */
-    fun stillOff(n: Int) = UiText.plural(R.plurals.copy_still_off, n)
-    fun stillOffTitle(n: Int) = UiText.plural(R.plurals.copy_still_off_title, n)
-    val STILL_OFF_TEXT = UiText(R.string.copy_still_off_text)
+    /** Under History in the menu, and on top of the History screen: the changes Restore everything puts back. */
+    fun toPutBack(n: Int) = UiText.plural(R.plurals.copy_to_put_back, n)
+    fun putBackTitle(n: Int) = UiText.plural(R.plurals.copy_put_back_title, n)
+    val PUT_BACK_TEXT = UiText(R.string.copy_put_back_text)
+
+    /** Restore everything's steps, one line each, then the apps that can't come back; on the card and in the confirm. */
+    fun restoreLines(r: RestoreSummary): List<UiText> = listOfNotNull(
+        UiText.plural(R.plurals.copy_restore_on, r.turnOn).takeIf { r.turnOn > 0 },
+        UiText.plural(R.plurals.copy_restore_off, r.turnOff).takeIf { r.turnOff > 0 },
+        UiText.plural(R.plurals.copy_restore_remove, r.remove).takeIf { r.remove > 0 },
+        UiText(R.string.copy_restore_home).takeIf { r.home },
+    ) + r.settings.map {
+        when (it) {
+            Tweak.PRIVATE_DNS -> UiText(R.string.copy_restore_dns)
+            Tweak.ANIMATIONS -> UiText(R.string.copy_restore_animations)
+        }
+    } + listOfNotNull(UiText.plural(R.plurals.copy_restore_gone, r.gone).takeIf { r.gone > 0 })
+        .map { UiText(R.string.copy_restore_line, it) }
     fun othersConnected(n: Int) = UiText.plural(R.plurals.copy_others_connected, n)
     fun connections(n: Int) = UiText.plural(R.plurals.copy_connections, n)
     fun connectedFrom(address: String, n: Int) = UiText.plural(R.plurals.copy_connected_from, n, address, n)

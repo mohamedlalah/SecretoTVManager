@@ -27,12 +27,14 @@ def secret_path(path):
 
 def prepare(fetch_dependency_sources=False):
     os.chdir(ROOT)
-    apk = ROOT / 'app/build/outputs/apk/release/app-release-unsigned.apk'
+    from check_release import identity
+    app_id, version_name, version_code = identity((ROOT / 'app/build.gradle.kts').read_text())
+    apk = ROOT / 'app/build/outputs/apk/github/release/app-github-release-unsigned.apk'
     if not apk.is_file():
         raise SystemExit('Build the unsigned release first; signed APKs are not accepted here')
     metadata = json.loads((apk.parent / 'output-metadata.json').read_text())
-    if metadata.get('applicationId') != 'com.secreto.tvmanager' or any(
-            (e.get('versionName'), e.get('versionCode')) != ('1.0.0', 1) for e in metadata.get('elements', [])) or not metadata.get('elements'):
+    if metadata.get('applicationId') != app_id or any(
+            (e.get('versionName'), e.get('versionCode')) != (version_name, version_code) for e in metadata.get('elements', [])) or not metadata.get('elements'):
         raise SystemExit('APK metadata does not match the approved release identity/version')
     # Reject archives containing signing certificates; apksigner verification is also required before release.
     with zipfile.ZipFile(apk) as z:
@@ -67,14 +69,14 @@ def prepare(fetch_dependency_sources=False):
         if re.search(rb'(?m)^-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----\r?\n(?:[A-Za-z0-9+/=]{16,}\r?\n)+-----END (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----', data):
             raise SystemExit('Private key detected; refusing source export (contents withheld)')
         snapshot.append((name, hashlib.sha256(data).hexdigest()))
-    out = ROOT / 'app/build/release-materials'
+    out = ROOT / ('app/build/release-materials-' + version_name)
     if out.exists():
         shutil.rmtree(out)  # dedicated generated output only
     out.mkdir(parents=True)
-    shutil.copy2(apk, out / 'Secreto-TV-Manager-1.0.0-UNSIGNED.apk')
-    with tarfile.open(out / 'Secreto-TV-Manager-1.0.0-project-source.tar.gz', 'w:gz') as tar:
+    shutil.copy2(apk, out / f'Secreto-TV-Manager-{version_name}-UNSIGNED.apk')
+    with tarfile.open(out / f'Secreto-TV-Manager-{version_name}-project-source.tar.gz', 'w:gz') as tar:
         for name, _ in snapshot:
-            tar.add(ROOT / name, arcname='SecretoTVManager-1.0.0/' + name, recursive=False)
+            tar.add(ROOT / name, arcname=f'SecretoTVManager-{version_name}/' + name, recursive=False)
     for name, data in legal.items():
         target = out / 'legal' / name
         if '..' in Path(name).parts or Path(name).is_absolute():
@@ -133,7 +135,7 @@ def prepare(fetch_dependency_sources=False):
         'status': 'unsigned review only; not published',
         'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
         'dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'])),
-        'applicationId': 'com.secreto.tvmanager', 'versionName': '1.0.0', 'versionCode': 1,
+        'applicationId': 'com.secreto.tvmanager', 'versionName': version_name, 'versionCode': version_code,
         'projectSourceFiles': dict(snapshot),
         'dependencySourceReview': 'See legal/SOURCE_AVAILABILITY.md; full transitive-source review remains required',
     }
@@ -144,7 +146,7 @@ def prepare(fetch_dependency_sources=False):
             checksums.append(hashlib.sha256(p.read_bytes()).hexdigest() + '  ' + p.relative_to(out).as_posix())
     (out / 'SHA256SUMS').write_text('\n'.join(checksums) + '\n')
     print('Dependency source archive entries still missing:', sum(v is None for v in source_inventory.values()))
-    print('Unsigned review materials prepared in app/build/release-materials; no publication performed')
+    print('Unsigned review materials prepared in a versioned app/build/release-materials directory; no publication performed')
 
 
 if __name__ == '__main__':

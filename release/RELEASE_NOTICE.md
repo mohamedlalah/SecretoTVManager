@@ -1,10 +1,10 @@
-# Secreto TV Manager 1.0.0 — release preparation notice
+# Secreto TV Manager 1.1.0 — development notice
 
 SecretoTools / Mohamed LALAH maintains this customized fork of Tellyscope.
 The original code remains Copyright (C) 2026 Tellyscope contributors, under GPL-3.0-only.
-Original LICENSE, NOTICE, CHANGELOG.md and source credits are preserved without alteration.
+Original LICENSE, NOTICE, CHANGELOG.md and source credits are preserved, with upstream updates and their original legal meaning retained.
 Fork changes include Secreto branding, Ocean Blue presentation, Arabic/French localization,
-social/project links and fork-specific update checks; see SECRETO_CHANGELOG.md.
+social/project links, fork-specific update checks and integration of upstream v0.16.0; see SECRETO_CHANGELOG.md.
 
 Distribute LICENSE, NOTICE, this notice, SOURCE_AVAILABILITY.md and licenses/ alongside
 any APK. The APK also contains these in assets/legal/, together with the resolved runtime

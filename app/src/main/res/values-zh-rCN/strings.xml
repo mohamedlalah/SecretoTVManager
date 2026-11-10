@@ -35,11 +35,9 @@
     <string name="copy_built_in">电视内置</string>
     <string name="copy_built_in_off">电视内置 · 已停用</string>
     <string name="copy_current">当前</string>
-    <string name="copy_keeps_home">通过无障碍服务保持为主屏幕</string>
     <string name="copy_make_home">设为主屏幕</string>
-    <string name="copy_get_launcher">获取其他启动器</string>
-    <string name="copy_get_launcher_text">从 Play 商店安装一个，例如 Projectivy 或 FLauncher。随时可以切换回来。</string>
-    <string name="copy_get_projectivy_text">安装 Projectivy。随时可以切换回来。</string>
+    <string name="copy_change_home">更换主屏幕</string>
+    <string name="copy_change_home_text">从编辑精选中安装其他启动器，或切换到电视上已有的启动器。</string>
     <string name="copy_home_settings">主屏幕设置</string>
     <string name="copy_make_home_title">要将 %1$s 设为主屏幕吗？</string>
     <string name="copy_explain_replace_opens">按主页键将打开 %1$s。为防止电视自行切换回去，Secreto TV Manager 会停用电视内置的启动器 %2$s。</string>
@@ -76,11 +74,13 @@
     <string name="copy_choose_home_text">每一个都会替换电视的主屏幕。Secreto TV Manager 会在电视上的 Play 商店中打开它，你用遥控器进行安装。</string>
     <string name="copy_can_download">部分也可以直接下载。</string>
     <string name="copy_no_launcher_list">无法加载主屏幕列表。请检查手机的网络连接，然后重试。</string>
-    <string name="copy_recommended">推荐</string>
+    <string name="copy_recommended">编辑精选</string>
     <string name="copy_on_this_tv">在此电视上</string>
     <string name="copy_installed">已安装</string>
-    <string name="copy_home_now">当前主屏幕</string>
+    <string name="copy_install">安装</string>
     <string name="copy_open">打开</string>
+    <string name="copy_home_screen_of">%1$s 的主屏幕</string>
+    <string name="copy_picture_failed">无法加载图片</string>
     <string name="copy_uses_service">使用无障碍服务</string>
     <string name="copy_no_service">开源 · 不使用无障碍服务</string>
     <string name="copy_other_launcher">想用其他启动器？在电视上的 Play 商店中安装后再回到这里，它会显示在“%1$s”下。</string>
@@ -106,8 +106,9 @@
     <string name="copy_not_installed">%1$s 未安装</string>
     <string name="copy_wasnt_installed">%1$s 未安装成功</string>
     <string name="copy_not_installed_text">安装完成前，电视上的 Play 商店已关闭。如果商店提示此电视无法使用该应用，请选择其他启动器。</string>
-    <string name="copy_install_projectivy">安装 Projectivy</string>
+    <string name="copy_install_launcher">安装 %1$s</string>
     <string name="copy_fire_install_text">没有广告的主屏幕。Secreto TV Manager 会为你在电视上安装，无需在电视上进行任何操作。</string>
+    <string name="copy_fire_pick_text">没有广告的主屏幕。先在浏览器中下载，然后在这里选择该文件。Secreto TV Manager 会将其安装到电视上。</string>
     <string name="copy_downloads_from">Secreto TV Manager 从开发者自己的发布页面下载 %1$s：</string>
     <string name="copy_release">版本 %1$s · %2$s</string>
     <string name="copy_where_from">来源</string>
@@ -123,11 +124,11 @@
     <string name="copy_step_downloaded">已下载</string>
     <string name="copy_downloading">正在下载 · %1$d%% · %2$s / %3$s</string>
     <string name="copy_step_picked">已选择文件</string>
-    <string name="copy_step_check">确认是 Projectivy</string>
-    <string name="copy_step_checking">正在确认是否为 Projectivy…</string>
-    <string name="copy_step_checked">确认是 Projectivy</string>
+    <string name="copy_step_check">确认是 %1$s</string>
+    <string name="copy_step_checking">正在确认是否为 %1$s…</string>
+    <string name="copy_step_checked">确认是 %1$s</string>
     <string name="copy_step_checked_text">由其开发者签名</string>
-    <string name="copy_step_failed">不是 Projectivy</string>
+    <string name="copy_step_failed">不是 %1$s</string>
     <string name="copy_step_failed_text">软件包名称或签名不匹配</string>
     <string name="copy_install_on">安装到 %1$s</string>
     <string name="copy_stop_title">要停止下载吗？</string>
@@ -135,13 +136,13 @@
     <string name="copy_stop">停止</string>
     <string name="copy_keep_downloading">继续下载</string>
     <string name="copy_installing_on">正在安装到 %1$s…</string>
-    <string name="copy_not_projectivy">下载的文件不是 Projectivy</string>
-    <string name="copy_not_projectivy_text">从 GitHub 下载的文件与 Projectivy 的软件包名称或其开发者签名不匹配，因此 Secreto TV Manager 没有在电视上安装任何内容。</string>
-    <string name="copy_not_projectivy_file">该文件不是 Projectivy</string>
-    <string name="copy_not_projectivy_file_text">它与 Projectivy 的软件包名称或其开发者签名不匹配，因此 Secreto TV Manager 没有在电视上安装任何内容。</string>
+    <string name="copy_wrong_apk">下载的文件不是 %1$s</string>
+    <string name="copy_wrong_apk_text">从 GitHub 下载的文件与 %1$s 的软件包名称或其开发者签名不匹配，因此 Secreto TV Manager 没有在电视上安装任何内容。</string>
+    <string name="copy_wrong_apk_file">该文件不是 %1$s</string>
+    <string name="copy_wrong_apk_file_text">它与 %1$s 的软件包名称或其开发者签名不匹配，因此 Secreto TV Manager 没有在电视上安装任何内容。</string>
     <string name="copy_cant_read_file">Secreto TV Manager 无法读取该文件。请重新选择，或重新下载。</string>
     <string name="copy_cant_install">无法安装 %1$s</string>
-    <string name="copy_no_download">无法下载 Projectivy</string>
+    <string name="copy_no_download">无法下载 %1$s</string>
     <string name="copy_no_download_offline">手机无法连接到 GitHub。请检查网络连接，然后重试。</string>
     <string name="copy_no_download_limited_until">GitHub 正在限制你所在网络的下载，直到 %1$s。届时再试，或自行下载。</string>
     <string name="copy_no_download_limited">GitHub 暂时限制了你所在网络的下载。请稍后再试，或自行下载。</string>
@@ -153,6 +154,11 @@
     <string name="copy_pick_downloaded">选择已下载的文件</string>
     <string name="copy_pick_another">选择其他文件</string>
     <string name="copy_try_download_again">重新下载</string>
+    <string name="copy_unverified_title">无法验证启动器列表</string>
+    <string name="copy_unverified_text">Tellyscope 无法确认这是它发布的列表。如果列表在几分钟内刚有更改，请稍后再试。只有在你信任此列表及其签名时才立即安装。</string>
+    <string name="copy_unverified_list">列表</string>
+    <string name="copy_unverified_signer">签名 (SHA-256)</string>
+    <string name="copy_unverified_trust">我信任此列表及其签名</string>
     <string name="copy_service_off_text">%1$s 的无障碍服务已关闭，因此电视可能会抢回主屏幕。</string>
     <string name="copy_open_again">再次打开</string>
     <string name="copy_undo">撤消</string>
@@ -169,9 +175,6 @@
     <plurals name="copy_days_ago">
         <item quantity="other">%1$d 天前</item>
     </plurals>
-    <string name="copy_uptime_days_hours">%1$d 天 %2$d 小时</string>
-    <string name="copy_uptime_hours_minutes">%1$d 小时 %2$d 分钟</string>
-    <string name="copy_uptime_minutes">%1$d 分钟</string>
     <plurals name="copy_days">
         <item quantity="other">%1$d 天</item>
     </plurals>
@@ -208,7 +211,9 @@
     <string name="copy_reading_apps">正在读取电视上的应用…</string>
     <string name="copy_reading_apps_line">这需要几秒钟。</string>
     <string name="copy_tv_offline">电视离线</string>
+    <string name="copy_off_wifi_line">连接到电视所在的 Wi-Fi。一连上，Secreto TV Manager 就会重新连接。</string>
     <string name="copy_running_offline">电视连接后，这里会显示正在运行的应用。</string>
+    <string name="copy_apps_offline">电视连接后，这里会显示应用。</string>
     <string name="copy_state_online">已连接</string>
     <string name="copy_state_offline">离线</string>
     <string name="copy_state_not_allowed">未获允许</string>
@@ -277,6 +282,7 @@
     <string name="copy_sent_renamed">由于 %3$s 已存在，已以 %2$s 为名发送到 %1$s</string>
     <string name="copy_saved">已将 %1$s 保存到你的手机</string>
     <string name="copy_send_failed">无法发送 %1$s。请检查电视是否仍连接并有足够空间。</string>
+    <string name="copy_send_failed_off_wifi">无法发送 %1$s。这部手机没有连接 Wi-Fi。</string>
     <string name="copy_save_failed">无法保存 %1$s。请检查电视是否仍连接，以及手机是否有足够空间。</string>
     <string name="copy_cancelled_send">已取消。电视上没有留下任何内容。</string>
     <string name="copy_cancelled_save">已取消。没有保存任何内容。</string>
@@ -288,6 +294,10 @@
     <string name="copy_remote_lost">与电视断开连接。请确认电视仍开机并已连接。</string>
     <string name="copy_no_update_screen">此电视没有 Secreto TV Manager 可以打开的更新界面。请在电视的“设置”中查看“系统”或“关于”。</string>
     <string name="copy_updates_opened">已在电视上打开更新界面。请在电视上检查更新。</string>
+    <string name="copy_store_opened">已在电视上打开 %1$s。</string>
+    <string name="copy_store_cant_open">电视无法打开 %1$s。</string>
+    <string name="copy_fire_settings_opened">已在电视上打开设置。请依次进入“My Fire TV”（电视上为“Device &amp; Software”）、“About”、“Check for updates”。</string>
+    <string name="copy_no_fire_update_screen">Secreto TV Manager 无法在此电视上打开设置。请在电视上依次进入“Settings”、“My Fire TV”（电视上为“Device &amp; Software”）、“About”、“Check for updates”。</string>
     <string name="copy_reboot_refused">电视拒绝重启。请改用电视自带的遥控器或电源键。</string>
     <string name="copy_reboot_ignored">电视没有重启。请改用电视自带的遥控器或电源键。</string>
     <string name="copy_remote_offline_wake">重新连接后即可恢复使用</string>
@@ -305,7 +315,7 @@
     </plurals>
     <string name="copy_cant_type_one_line">电视每次只能接收一行文字。</string>
     <string name="copy_cant_type_odd">电视只能输入普通字母、数字和符号，无法输入“%1$s”。</string>
-    <string name="copy_cant_type_percent_s">电视会把“%s”识别为空格，因此无法输入它。</string>
+    <string name="copy_cant_type_percent_s" formatted="false">电视会把“%s”识别为空格，因此无法输入它。</string>
     <string name="copy_remote_restart">重启电视</string>
     <string name="copy_reboot_title">要重启电视吗？</string>
     <string name="copy_reboot_text">电视会关机后重新开机。电视恢复后 Secreto TV Manager 会自动重新连接，通常在一分钟内。</string>
@@ -319,6 +329,8 @@
     <string name="copy_restart_lost">仍无法连接到 %1$s</string>
     <string name="copy_back_online">已恢复在线。%1$s 已重新连接。</string>
     <string name="copy_remote_buttons">遥控器按钮</string>
+    <string name="copy_open_an_app">打开应用</string>
+    <string name="copy_open_an_app_hint">%1$s 上的流媒体应用。点按即可打开。</string>
     <string name="copy_more">更多选项</string>
     <string name="copy_buttons_hint">最多选择 %1$d 个。拖动可调整顺序。如需选择其他项，请先取消勾选一个。</string>
     <string name="copy_not_on_tv">此电视上没有 %1$s。请在电视上的 Play 商店中安装。</string>
@@ -344,6 +356,7 @@
     <string name="copy_animations_state_off">已关闭。开启后菜单响应更灵敏。</string>
     <string name="copy_caches_title">清除所有应用缓存</string>
     <string name="copy_caches_text">清除所有应用的临时文件以释放空间。应用数据和登录信息会保留。</string>
+    <string name="copy_caches_too_old">需要 Android 8 或更高版本。此电视版本较旧。</string>
     <string name="copy_caches_button">清除缓存</string>
     <string name="copy_caches_cleared">已清除应用缓存</string>
     <string name="copy_caches_cleared_freed">已清除应用缓存，释放了 %1$s</string>
@@ -393,6 +406,11 @@
     <string name="copy_reset_home">将 %1$s 设为主屏幕</string>
     <string name="copy_reset_home_text">替代 %1$s。%1$s 仍保持安装。</string>
     <string name="copy_reset_home_text_service">替代 %1$s，并关闭其无障碍服务。%1$s 仍保持安装。</string>
+    <string name="copy_reset_dns">私人 DNS 恢复为“自动”</string>
+    <string name="copy_reset_animations">动画恢复正常速度</string>
+    <string name="copy_reset_was">原为 %1$s</string>
+    <string name="copy_dns_off">关闭</string>
+    <string name="copy_animation_scale">%1$s×</string>
     <plurals name="copy_reset_leaves_off">
         <item quantity="other">%2$s 出厂时就停用的 %1$d 个应用保持停用。</item>
     </plurals>
@@ -405,6 +423,8 @@
     <string name="copy_resetting_turn_on">正在启用应用：%1$d / %2$d。</string>
     <string name="copy_resetting_bring_back">正在恢复应用：%1$d / %2$d。</string>
     <string name="copy_resetting_home">正在将 %1$s 设为主屏幕。</string>
+    <string name="copy_resetting_dns">正在将私人 DNS 恢复为“自动”。</string>
+    <string name="copy_resetting_animations">正在将动画恢复正常速度。</string>
     <string name="copy_keep_tv_on">请保持电视开机并保持连接。</string>
     <string name="copy_resetting">正在重置…</string>
     <string name="copy_reset_apps_stale">重置已完成，但应用列表未刷新。请重新打开电视查看。</string>
@@ -412,13 +432,16 @@
     <string name="copy_reset_done">电视已恢复为出厂时的状态</string>
     <string name="copy_reset_partly">重置部分完成</string>
     <plurals name="copy_reset_done_apps_home">
-        <item quantity="other">%1$d 个预装应用已恢复，且 %2$s 是主屏幕。应用数据和登录信息均已保留。</item>
+        <item quantity="other">%1$d 个预装应用已恢复，且 %2$s 是主屏幕。</item>
     </plurals>
     <plurals name="copy_reset_done_apps">
-        <item quantity="other">%1$d 个预装应用已恢复。应用数据和登录信息均已保留。</item>
+        <item quantity="other">%1$d 个预装应用已恢复。</item>
     </plurals>
-    <string name="copy_reset_done_home">%1$s 是主屏幕。应用数据和登录信息均已保留。</string>
-    <string name="copy_reset_done_nothing">。应用数据和登录信息均已保留。</string>
+    <string name="copy_reset_done_home">%1$s 是主屏幕。</string>
+    <string name="copy_reset_done_settings">私人 DNS 和动画已恢复为默认设置。</string>
+    <string name="copy_reset_done_dns">私人 DNS 已恢复为“自动”。</string>
+    <string name="copy_reset_done_animations">动画已恢复正常速度。</string>
+    <string name="copy_reset_kept_data">应用数据和登录信息均已保留。</string>
     <plurals name="copy_reset_partly_text">
         <item quantity="other">有 %1$d 个步骤未成功。其他所有内容都已恢复为出厂状态，没有丢失任何内容。</item>
     </plurals>
@@ -436,6 +459,10 @@
     </plurals>
     <string name="copy_is_home">%1$s 是主屏幕</string>
     <string name="copy_still_home">%1$s 仍是主屏幕</string>
+    <string name="copy_dns_automatic">私人 DNS 为“自动”</string>
+    <string name="copy_dns_still">私人 DNS 仍为 %1$s</string>
+    <string name="copy_animations_normal">动画为正常速度</string>
+    <string name="copy_animations_still">动画仍为 %1$s</string>
     <string name="copy_try_app_again">重试 %1$s</string>
     <string name="copy_try_again">重试</string>
     <string name="copy_disabling_apps">正在停用应用：%1$d / %2$d。请保持电视开机并保持连接。</string>
@@ -451,13 +478,29 @@
         <item quantity="other">已停用 %1$d 个应用（共 %2$d 个）</item>
     </plurals>
     <string name="copy_still_on">%1$s 仍处于启用状态</string>
-    <plurals name="copy_still_off">
-        <item quantity="other">%1$d 个应用仍处于停用状态</item>
+    <plurals name="copy_to_put_back">
+        <item quantity="other">%1$d 处更改待恢复</item>
     </plurals>
-    <plurals name="copy_still_off_title">
-        <item quantity="other">Secreto TV Manager 停用的 %1$d 个应用仍处于停用状态</item>
+    <plurals name="copy_put_back_title">
+        <item quantity="other">Secreto TV Manager 做出的 %1$d 处更改仍然有效</item>
     </plurals>
-    <string name="copy_still_off_text">“全部恢复”会重新启用它们。在 Secreto TV Manager 首次更改之前就已停用的应用会保持停用。</string>
+    <string name="copy_put_back_text">“全部恢复”会把此电视恢复到 Secreto TV Manager 首次更改之前的状态：</string>
+    <plurals name="copy_restore_on">
+        <item quantity="other">重新启用 %1$d 个应用</item>
+    </plurals>
+    <plurals name="copy_restore_off">
+        <item quantity="other">重新停用 %1$d 个应用</item>
+    </plurals>
+    <plurals name="copy_restore_remove">
+        <item quantity="other">移除“重置电视”找回的 %1$d 个应用</item>
+    </plurals>
+    <string name="copy_restore_home">恢复主屏幕</string>
+    <string name="copy_restore_dns">恢复私人 DNS</string>
+    <string name="copy_restore_animations">恢复动画速度</string>
+    <plurals name="copy_restore_gone">
+        <item quantity="other">%1$d 个应用已卸载，无法恢复</item>
+    </plurals>
+    <string name="copy_restore_line">• %1$s</string>
     <plurals name="copy_others_connected">
         <item quantity="other">当前还有 %1$d 个其他连接</item>
     </plurals>
@@ -546,9 +589,12 @@
     <string name="vm_not_an_ip">这看起来不像 IP 地址。它应该是用点分隔的四组数字，就像电视网络设置中显示的那样。</string>
     <string name="vm_bad_port">冒号后的端口应为 1 到 65535 之间的数字，例如 5555。</string>
     <string name="vm_didnt_work">操作未成功。</string>
-    <string name="vm_nothing_to_turn_on">没有需要重新启用的内容。</string>
-    <plurals name="vm_turned_back_on">
-        <item quantity="other">已重新启用 %1$d 个应用。</item>
+    <string name="vm_nothing_to_put_back">没有需要恢复的内容。</string>
+    <plurals name="vm_put_back">
+        <item quantity="other">已恢复 %1$d 处更改。</item>
+    </plurals>
+    <plurals name="vm_put_back_partly">
+        <item quantity="other">已恢复 %2$d 处更改中的 %1$d 处。%3$d 处未能恢复，其中 %4$s：%5$s</item>
     </plurals>
     <string name="vm_tv_refused">电视拒绝了</string>
     <string name="vm_tv_didnt_answer">电视没有响应。</string>
@@ -586,10 +632,9 @@
     <string name="data_no_home_to_switch_back">没有可切换回去的主屏幕</string>
     <string name="data_uninstall_after_service">%1$s。未卸载任何内容</string>
     <string name="data_uninstall_home_not_back">主屏幕未能切换回去：%1$s。未卸载任何内容</string>
-    <string name="data_restore_none">无法重新启用应用：%1$s</string>
-    <plurals name="data_restore_some">
-        <item quantity="other">已重新启用 %1$d 个应用，随后停止：%2$s</item>
-    </plurals>
+    <string name="data_restore_home">主屏幕</string>
+    <string name="data_restore_dns">私人 DNS</string>
+    <string name="data_restore_animations">动画速度</string>
     <string name="data_no_reset_to_undo">没有可撤消的重置</string>
     <string name="data_reset_already_undone">该重置已被撤消</string>
     <string name="data_reset_tv_kept_home">电视仍将 %1$s 作为主屏幕</string>
@@ -607,6 +652,7 @@
     <string name="data_lists_not_a_list">此来源不是 Secreto TV Manager 列表</string>
     <string name="data_app_names_system">Android 系统</string>
     <string name="data_history_service_off">已关闭 %1$s 的无障碍服务</string>
+    <string name="data_history_service_on">已开启 %1$s 的无障碍服务</string>
     <string name="data_history_reset_undone">已恢复“重置电视”所做的更改</string>
     <plurals name="data_history_reset">
         <item quantity="other">重置电视 · %1$d 处更改</item>
@@ -662,6 +708,8 @@
     <string name="tabs_android_version">Android %1$s</string>
     <string name="tabs_updated">更新于 %1$s</string>
     <string name="tabs_check_updates">检查更新</string>
+    <string name="tabs_store_sub">获取应用和应用更新</string>
+    <string name="tabs_store_off">已在此电视上停用</string>
     <string name="lists_apps_on_tv">此电视上的应用</string>
     <string name="lists_which_tv">这是哪台电视？</string>
     <string name="lists_debloat">精简</string>
@@ -710,31 +758,18 @@
     <string name="lists_about_libraries">使用了 Kadb（Apache 2.0）和 spake2-java（GPL v3）。完整许可文本见 NOTICE 文件。</string>
     <string name="lists_about_close">关闭</string>
     <string name="advanced_back">返回电视页面</string>
-    <string name="advanced_this_tv">此电视</string>
-    <string name="advanced_ip_address">IP 地址</string>
-    <string name="advanced_port">端口</string>
-    <string name="advanced_maker">制造商</string>
-    <string name="advanced_network_name">网络名称</string>
     <string name="advanced_loading">正在加载统计信息…</string>
-    <string name="advanced_cpu_by_app">各应用 CPU 占用</string>
-    <string name="advanced_ram_by_app">各应用 RAM 占用</string>
-    <string name="advanced_processes">进程</string>
     <string name="advanced_network">网络</string>
     <string name="advanced_cpu">CPU</string>
     <string name="advanced_ram">RAM</string>
-    <string name="advanced_app">应用</string>
     <string name="advanced_on_for">已开机</string>
     <string name="advanced_screen">屏幕</string>
     <string name="advanced_screen_on">开启</string>
     <string name="advanced_screen_off">关闭</string>
     <string name="advanced_percent">%1$d%%</string>
     <string name="advanced_percent_whole">%1$.0f%%</string>
-    <string name="advanced_percent_tenths">%1$.1f%%</string>
-    <string name="advanced_as_of">截至 %1$s</string>
     <string name="advanced_memory">内存</string>
     <string name="advanced_storage">存储空间</string>
-    <string name="advanced_percent_used">已使用 %1$d%%</string>
-    <string name="advanced_other">其他</string>
     <string name="advanced_connection">连接</string>
     <string name="advanced_wifi">Wi-Fi</string>
     <string name="advanced_ethernet">以太网</string>
@@ -744,10 +779,71 @@
     <string name="advanced_signal_weak">弱（%1$d dBm）</string>
     <string name="advanced_signal_very_weak">很弱（%1$d dBm）</string>
     <string name="advanced_mac">MAC</string>
-    <string name="advanced_link_speed">连接速度</string>
     <string name="advanced_mbps">%1$d Mbps</string>
-    <string name="advanced_data_used">已用流量</string>
-    <string name="advanced_open_connections">活动连接</string>
+    <string name="advanced_copy_address">复制地址</string>
+    <string name="advanced_android">Android</string>
+    <string name="advanced_updated">更新于</string>
+    <string name="advanced_this_tv">这台电视</string>
+    <string name="advanced_offline_as_of">离线 · 截至%1$s</string>
+    <string name="advanced_busiest">最忙</string>
+    <string name="advanced_copy_mac">复制 MAC 地址</string>
+    <string name="advanced_signal_strong_word">强</string>
+    <string name="advanced_signal_good_word">良好</string>
+    <string name="advanced_signal_weak_word">弱</string>
+    <string name="advanced_signal_very_weak_word">很弱</string>
+    <string name="advanced_not_running">未运行</string>
+    <string name="advanced_split_apps">应用</string>
+    <string name="advanced_split_system">系统</string>
+    <string name="advanced_split_waiting">等待存储</string>
+    <string name="advanced_core">核心 %1$d</string>
+    <string name="advanced_ghz">%1$.1f GHz</string>
+    <string name="advanced_in_use">已用</string>
+    <string name="advanced_cached">缓存</string>
+    <string name="advanced_free">空闲</string>
+    <string name="advanced_swap">交换空间 %1$s / %2$s</string>
+    <string name="advanced_wifi_on">Wi-Fi · %1$s</string>
+    <string name="advanced_since_boot">开机以来 ↓ %1$s ↑ %2$s</string>
+    <string name="advanced_minute_ago">60 秒前</string>
+    <string name="advanced_now">现在</string>
+    <string name="advanced_cpu_share">CPU %1$.0f%%</string>
+    <string name="advanced_since_boot_short">开机以来 %1$s</string>
+    <string name="advanced_processes_n">进程 · %1$d</string>
+    <string name="advanced_connections_n">打开的连接 · %1$d</string>
+    <string name="advanced_established">已建立</string>
+    <string name="advanced_connecting">正在连接</string>
+    <string name="advanced_closing">正在关闭</string>
+    <plurals name="advanced_cores">
+        <item quantity="other">%1$d 核</item>
+    </plurals>
+    <plurals name="advanced_processes">
+        <item quantity="other">%1$d 个进程</item>
+    </plurals>
+    <plurals name="advanced_connections">
+        <item quantity="other">%1$d 个连接</item>
+    </plurals>
+    <plurals name="advanced_open_connections">
+        <item quantity="other">%1$d 个打开的连接</item>
+    </plurals>
+    <plurals name="advanced_apps_running">
+        <item quantity="other">%1$d 个应用正在运行</item>
+    </plurals>
+    <string name="shell_open">Shell</string>
+    <string name="shell_close">关闭 Shell</string>
+    <string name="shell_title">%1$s · %2$s</string>
+    <string name="shell_banner">已连接到 %1$s（%2$s）。\n输入 exit 或点按 ✕ 关闭。</string>
+    <string name="shell_trimmed">较早的行已移除：只显示最后 %1$d 行。</string>
+    <string name="shell_offline_hint">电视恢复连接后即可再次运行命令。</string>
+    <string name="shell_key_paste">粘贴</string>
+    <string name="shell_key_up">上一条命令</string>
+    <string name="shell_key_down">下一条命令</string>
+    <string name="shell_confirm">这会更改电视。要运行吗？[y/N]</string>
+    <string name="shell_confirm_answered">这会更改电视。要运行吗？[y/N] %1$s</string>
+    <string name="shell_no_history">Shell 中运行的命令不会记入历史记录，因此无法一键撤消。</string>
+    <string name="shell_not_run">未运行。</string>
+    <string name="shell_not_shell">这里只能运行 adb shell 命令。</string>
+    <string name="shell_full_screen">%1$s 需要全屏终端，这里不支持。</string>
+    <string name="shell_dropped_prefix">（已去掉“adb shell”）</string>
+    <string name="shell_lost">命令完成前与电视断开连接。它可能只运行了一部分。</string>
     <string name="report_title_new_tv">帮忙添加这台电视</string>
     <string name="report_title_problem">报告问题</string>
     <string name="report_subtitle_new_tv">在 GitHub 上打开 cleanyourtv 的“My TV”表单</string>
@@ -797,10 +893,10 @@
     <string name="device_disable_title">要停用 %1$s 吗？</string>
     <string name="device_cancel">取消</string>
     <plurals name="device_restore_title">
-        <item quantity="other">要重新启用 %1$d 个应用吗？</item>
+        <item quantity="other">要恢复 %1$d 处更改吗？</item>
     </plurals>
     <string name="device_restore_text">重新启用 Secreto TV Manager 在此电视上停用的所有应用。在 Secreto TV Manager 首次更改之前就已停用的应用会保持停用。</string>
-    <string name="device_restore_button">重新启用</string>
+    <string name="device_restore_button">恢复</string>
     <string name="device_rename_title">重命名此电视</string>
     <string name="device_rename_text">只有此手机能看到这个名称。电视上不会有任何更改。</string>
     <string name="device_save">保存</string>
@@ -819,6 +915,8 @@
     <string name="device_nothing_matches">没有与“%1$s”匹配的内容。</string>
     <string name="device_app_disabled">已停用</string>
     <string name="device_app_running">正在运行</string>
+    <string name="device_app_background">正在后台运行</string>
+    <string name="device_app_on_screen">显示在屏幕上</string>
     <string name="device_app_not_running">未运行</string>
     <string name="device_app_protected">受保护：%1$s</string>
     <string name="guide_brand_other">其他</string>
@@ -870,6 +968,11 @@
     <string name="remote_mute">静音或取消静音</string>
     <string name="remote_volume_up">音量加</string>
     <string name="remote_volume_down">音量减</string>
+    <string name="remote_volume_fixed">通过 HDMI 时音量是固定的。请使用电视的遥控器。</string>
+    <string name="remote_dpad">方向键</string>
+    <string name="remote_touchpad">触控板</string>
+    <string name="remote_touchpad_swipe">滑动以移动</string>
+    <string name="remote_touchpad_tap">轻点即确定</string>
     <string name="remote_back">返回</string>
     <string name="remote_home">主页</string>
     <string name="remote_menu">菜单</string>
@@ -997,6 +1100,7 @@
     <string name="scan_back">返回</string>
     <string name="scan_title">添加你的电视</string>
     <string name="scan_no_lan">你未连接 Wi-Fi，因此只会显示主动广播自身的电视。请连接电视所在的 Wi-Fi。</string>
+    <string name="scan_vpn">VPN 已开启，因此 Secreto TV Manager 无法搜索你的 Wi-Fi。主动广播自身的电视仍会显示。请通过 IP 地址添加电视，或在 VPN 应用中允许访问本地网络。</string>
     <string name="scan_same_wifi">请让手机和电视连接同一 Wi-Fi。</string>
     <string name="scan_add_by_ip">通过 IP 地址添加</string>
     <string name="scan_cant_find">找不到你的电视？</string>
@@ -1035,7 +1139,7 @@
     <string name="launcher_ok">确定</string>
     <string name="history_empty_title">尚未进行任何更改</string>
     <string name="history_empty_text">你停止、停用或启用的任何应用都会显示在这里，并可撤消。</string>
-    <string name="history_restoring">正在重新启用应用…</string>
+    <string name="history_restoring">正在恢复…</string>
     <string name="history_restore_all">全部恢复（%1$d）</string>
     <string name="history_undone">已撤消</string>
     <string name="debloat_title">精简</string>
@@ -1061,8 +1165,12 @@
     <string name="welcome_step_1">在电视上开启调试。下一个界面会显示适用于你的品牌的操作方法。</string>
     <string name="welcome_step_2">Secreto TV Manager 会在你的 Wi-Fi 上找到电视。</string>
     <string name="welcome_step_3">输入电视上显示的代码，或在电视询问时选择“允许”。</string>
-
-    <!-- SecretoTools fork developer integration. -->
+    <string name="copy_not_projectivy_text">从 GitHub 下载的文件与 Projectivy 的软件包名称或其开发者签名不匹配，因此 Secreto TV Manager 没有在电视上安装任何内容。</string>
+    <string name="copy_not_projectivy_file_text">它与 Projectivy 的软件包名称或其开发者签名不匹配，因此 Secreto TV Manager 没有在电视上安装任何内容。</string>
+    <plurals name="copy_still_off_title">
+        <item quantity="other">Secreto TV Manager 停用的 %1$d 个应用仍处于停用状态</item>
+    </plurals>
+    <string name="copy_still_off_text">“全部恢复”会重新启用它们。在 Secreto TV Manager 首次更改之前就已停用的应用会保持停用。</string>
     <string name="developer_about">关于与开发者</string>
     <string name="developer_version">版本 %1$s · 构建 %2$d</string>
     <string name="developer_credit">由 SecretoTools 定制和维护</string>
@@ -1070,7 +1178,6 @@
     <string name="developer_website">SecretoTools 官方网站</string>
     <string name="developer_source">GitHub 上的分支源代码</string>
     <string name="developer_youtube_description">Android TV、Google TV、电视盒子、教程和 SecretoTools 应用。</string>
-
     <string name="developer_visit_channel">在 YouTube 访问 SecretofNet</string>
     <string name="developer_subscribe">在 YouTube 订阅</string>
     <string name="developer_original">原始项目与开源致谢</string>
@@ -1082,8 +1189,6 @@
     <string name="developer_features">通过 Wi-Fi 管理电视、应用和文件。停用多余应用并可撤销更改，使用遥控器、调整设置和监控性能。</string>
     <string name="developer_visit_website">访问 SecretoTools 网站</string>
     <string name="welcome_by_secreto">由 SecretoTools 制作</string>
-
-    <!-- Voluntary SecretofNet social actions. -->
     <string name="social_follow">关注 SecretofNet</string>
     <string name="social_open_youtube">在 YouTube 打开 SecretofNet</string>
     <string name="social_open_instagram">在 Instagram 打开 SecretofNet</string>

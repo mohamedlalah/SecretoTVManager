@@ -255,7 +255,7 @@
     <string name="launcher_ok">موافق</string>
     <string name="history_empty_title">لا توجد تغييرات بعد</string>
     <string name="history_empty_text">يظهر هنا كل تطبيق توقفه أو تعطّله أو تفعّله، مع إمكانية التراجع.</string>
-    <string name="history_restoring">جارٍ إعادة تفعيل التطبيقات…</string>
+    <string name="history_restoring">جارٍ استعادة التغييرات…</string>
     <string name="history_restore_all">استعادة الكل (%1$d)</string>
     <string name="history_undone">تم التراجع</string>
     <string name="debloat_title">إزالة التطبيقات الزائدة</string>
@@ -272,30 +272,30 @@
     <string name="update_cancel">إلغاء</string>
     <string name="advanced_back">العودة إلى صفحة التلفاز</string>
     <string name="advanced_this_tv">هذا التلفاز</string>
-    <string name="advanced_ip_address">عنوان IP</string>
-    <string name="advanced_port">المنفذ</string>
-    <string name="advanced_maker">الشركة المصنّعة</string>
-    <string name="advanced_network_name">اسم الشبكة</string>
+
+
+
+
     <string name="advanced_loading">جارٍ تحميل الإحصاءات…</string>
-    <string name="advanced_cpu_by_app">المعالج حسب التطبيق</string>
-    <string name="advanced_ram_by_app">الذاكرة حسب التطبيق</string>
-    <string name="advanced_processes">العمليات</string>
+
+
+    <plurals name="advanced_processes"><item quantity="zero">عدد العمليات: %1$d</item><item quantity="one">عدد العمليات: %1$d</item><item quantity="two">عدد العمليات: %1$d</item><item quantity="few">عدد العمليات: %1$d</item><item quantity="many">عدد العمليات: %1$d</item><item quantity="other">عدد العمليات: %1$d</item></plurals>
     <string name="advanced_network">الشبكة</string>
     <string name="advanced_cpu">المعالج</string>
     <string name="advanced_ram">ذاكرة الوصول العشوائي</string>
-    <string name="advanced_app">التطبيق</string>
+
     <string name="advanced_on_for">مدة التشغيل</string>
     <string name="advanced_screen">الشاشة</string>
     <string name="advanced_screen_on">قيد التشغيل</string>
     <string name="advanced_screen_off">متوقف</string>
     <string name="advanced_percent">%1$d%%</string>
     <string name="advanced_percent_whole">%1$.0f%%</string>
-    <string name="advanced_percent_tenths">%1$.1f%%</string>
-    <string name="advanced_as_of">الحالة %1$s</string>
+
+
     <string name="advanced_memory">الذاكرة</string>
     <string name="advanced_storage">التخزين</string>
-    <string name="advanced_percent_used">المستخدم %1$d%%</string>
-    <string name="advanced_other">أخرى</string>
+
+
     <string name="advanced_connection">الاتصال</string>
     <string name="advanced_wifi">Wi-Fi</string>
     <string name="advanced_ethernet">إيثرنت</string>
@@ -305,10 +305,10 @@
     <string name="advanced_signal_weak">ضعيفة (%1$d dBm)</string>
     <string name="advanced_signal_very_weak">ضعيفة جدًا (%1$d dBm)</string>
     <string name="advanced_mac">MAC</string>
-    <string name="advanced_link_speed">سرعة الاتصال</string>
+
     <string name="advanced_mbps">%1$d ميغابت/ث</string>
-    <string name="advanced_data_used">البيانات المستخدمة</string>
-    <string name="advanced_open_connections">الاتصالات المفتوحة</string>
+
+    <plurals name="advanced_open_connections"><item quantity="zero">الاتصالات المفتوحة: %1$d</item><item quantity="one">الاتصالات المفتوحة: %1$d</item><item quantity="two">الاتصالات المفتوحة: %1$d</item><item quantity="few">الاتصالات المفتوحة: %1$d</item><item quantity="many">الاتصالات المفتوحة: %1$d</item><item quantity="other">الاتصالات المفتوحة: %1$d</item></plurals>
     <string name="device_as_of">الحالة %1$s</string>
     <string name="device_internal_storage">التخزين الداخلي</string>
     <string name="device_gb_used">المستخدم %1$s</string>
@@ -319,7 +319,7 @@
     <string name="device_disable_title">هل تريد تعطيل %1$s؟</string>
     <string name="device_cancel">إلغاء</string>
     <string name="device_restore_text">يعيد تفعيل جميع التطبيقات التي عطّلها Secreto TV Manager على هذا التلفاز. تبقى التطبيقات التي كانت معطلة قبل أول تغيير كما هي.</string>
-    <string name="device_restore_button">إعادة التفعيل</string>
+    <string name="device_restore_button">استعادة</string>
     <string name="device_rename_title">إعادة تسمية هذا التلفاز</string>
     <string name="device_rename_text">يظهر الاسم على هذا الهاتف فقط. لا يتغير شيء على التلفاز.</string>
     <string name="device_save">حفظ</string>
@@ -416,7 +416,7 @@
     <string name="copy_built_in">مدمج في التلفاز</string>
     <string name="copy_built_in_off">مدمج في التلفاز · معطل</string>
     <string name="copy_current">الحالي</string>
-    <string name="copy_keeps_home">يحافظ على الشاشة الرئيسية باستخدام خدمة تسهيل الاستخدام</string>
+
     <string name="copy_make_home">تعيين كشاشة رئيسية</string>
     <string name="copy_not_now">ليس الآن</string>
     <string name="copy_state_online">متصل</string>
@@ -456,9 +456,9 @@
     <string name="copy_debloat_done">اكتملت إزالة التطبيقات الزائدة</string>
     <string name="copy_debloat_partly">اكتملت إزالة بعض التطبيقات الزائدة</string>
     <string name="copy_debloat_result_text">لم يُحذف شيء؛ يمكنك التراجع عن أي تغيير من السجل.</string>
-    <string name="copy_get_launcher">الحصول على مشغّل آخر</string>
-    <string name="copy_get_launcher_text">ثبّت مشغّلًا مثل Projectivy أو FLauncher من Play Store. يمكنك العودة إلى السابق في أي وقت.</string>
-    <string name="copy_get_projectivy_text">ثبّت Projectivy. يمكنك العودة إلى السابق في أي وقت.</string>
+
+
+
     <string name="copy_home_settings">إعدادات الشاشة الرئيسية</string>
     <string name="copy_make_home_title">تعيين %1$s شاشة رئيسية؟</string>
     <string name="copy_explain_replace_opens">يفتح زر الرئيسية %1$s. لمنع التلفاز من العودة تلقائيًا، يعطّل Secreto TV Manager المشغّل المدمج %2$s.</string>
@@ -494,10 +494,10 @@
     <string name="copy_choose_home_text">يستبدل كل منها الشاشة الرئيسية للتلفاز. يفتح Secreto TV Manager صفحته في Play Store على التلفاز، وثبّته باستخدام جهاز التحكم.</string>
     <string name="copy_can_download">يمكن أيضًا تنزيل بعضها مباشرة.</string>
     <string name="copy_no_launcher_list">تعذّر تحميل قائمة الشاشات الرئيسية. تحقق من إنترنت الهاتف وأعد المحاولة.</string>
-    <string name="copy_recommended">موصى به</string>
+    <string name="copy_recommended">اختيارات المحرر</string>
     <string name="copy_on_this_tv">على هذا التلفاز</string>
     <string name="copy_installed">مثبت</string>
-    <string name="copy_home_now">الشاشة الرئيسية الحالية</string>
+
     <string name="copy_open">فتح</string>
     <string name="copy_uses_service">يستخدم خدمة تسهيل الاستخدام</string>
     <string name="copy_no_service">مفتوح المصدر · دون خدمة تسهيل الاستخدام</string>
@@ -524,7 +524,7 @@
     <string name="copy_not_installed">%1$s غير مثبت</string>
     <string name="copy_wasnt_installed">لم يتم تثبيت %1$s</string>
     <string name="copy_not_installed_text">أُغلق Play Store على التلفاز قبل التثبيت. إذا أشار المتجر إلى عدم توفره لهذا التلفاز، فاختر مشغّلًا آخر.</string>
-    <string name="copy_install_projectivy">تثبيت Projectivy</string>
+
     <string name="copy_fire_install_text">شاشة رئيسية دون إعلانات. يثبّتها Secreto TV Manager لك؛ لا يلزم فعل شيء على التلفاز.</string>
     <string name="copy_downloads_from">ينزّل Secreto TV Manager تطبيق %1$s من صفحة إصدارات المطوّر الأصلية:</string>
     <string name="copy_release">الإصدار %1$s · %2$s</string>
@@ -541,11 +541,11 @@
     <string name="copy_step_downloaded">تم التنزيل</string>
     <string name="copy_downloading">جارٍ التنزيل · %1$d%% · %2$s من %3$s</string>
     <string name="copy_step_picked">تم اختيار ملف</string>
-    <string name="copy_step_check">التحقق من Projectivy</string>
-    <string name="copy_step_checking">جارٍ التحقق من Projectivy…</string>
-    <string name="copy_step_checked">تم التحقق من Projectivy</string>
+    <string name="copy_step_check">التحقق من أنه %1$s</string>
+    <string name="copy_step_checking">جارٍ التحقق من أنه %1$s…</string>
+    <string name="copy_step_checked">إنه %1$s</string>
     <string name="copy_step_checked_text">موقّع من مطوّره</string>
-    <string name="copy_step_failed">ليس Projectivy</string>
+    <string name="copy_step_failed">ليس %1$s</string>
     <string name="copy_step_failed_text">اسم الحزمة أو التوقيع غير مطابق</string>
     <string name="copy_install_on">التثبيت على %1$s</string>
     <string name="copy_stop_title">إيقاف التنزيل؟</string>
@@ -553,13 +553,13 @@
     <string name="copy_stop">إيقاف</string>
     <string name="copy_keep_downloading">متابعة التنزيل</string>
     <string name="copy_installing_on">جارٍ التثبيت على %1$s…</string>
-    <string name="copy_not_projectivy">هذا التنزيل ليس Projectivy</string>
+
     <string name="copy_not_projectivy_text">لم يطابق ملف GitHub اسم حزمة Projectivy أو توقيع مطوّره، لذا لم يثبّت Secreto TV Manager شيئًا على التلفاز.</string>
-    <string name="copy_not_projectivy_file">هذا الملف ليس Projectivy</string>
+
     <string name="copy_not_projectivy_file_text">لم يطابق اسم حزمة Projectivy أو توقيع مطوّره، لذا لم يثبّت Secreto TV Manager شيئًا على التلفاز.</string>
     <string name="copy_cant_read_file">تعذّر على Secreto TV Manager قراءة الملف. اختره أو نزّله مجددًا.</string>
     <string name="copy_cant_install">تعذّر تثبيت %1$s</string>
-    <string name="copy_no_download">تعذّر تنزيل Projectivy</string>
+    <string name="copy_no_download">تعذّر تنزيل %1$s</string>
     <string name="copy_no_download_offline">يتعذّر على الهاتف الوصول إلى GitHub. تحقق من الإنترنت ثم أعد المحاولة.</string>
     <string name="copy_no_download_limited_until">يقيّد GitHub التنزيلات من شبكتك حتى %1$s. حاول لاحقًا أو نزّله بنفسك.</string>
     <string name="copy_no_download_limited">يقيّد GitHub التنزيلات من شبكتك مؤقتًا. حاول لاحقًا أو نزّله بنفسك.</string>
@@ -575,9 +575,9 @@
     <string name="copy_open_again">فتح مجددًا</string>
     <string name="copy_undo">تراجع</string>
     <string name="copy_just_now">الآن</string>
-    <string name="copy_uptime_days_hours">%1$d ي %2$d س</string>
-    <string name="copy_uptime_hours_minutes">%1$d س %2$d د</string>
-    <string name="copy_uptime_minutes">%1$d د</string>
+
+
+
     <string name="copy_days_hours">%1$s، %2$s</string>
     <string name="copy_speed">%1$s/ث</string>
     <string name="copy_size_gb">%1$.1f غيغابايت</string>
@@ -748,8 +748,8 @@
     <string name="copy_reset_button">استعادة التلفاز</string>
     <string name="copy_reset_done">تمت استعادة حالة التلفاز الأصلية</string>
     <string name="copy_reset_partly">اكتملت الاستعادة جزئيًا</string>
-    <string name="copy_reset_done_home">%1$s هو الشاشة الرئيسية. تم الاحتفاظ ببيانات التطبيقات وتسجيلات الدخول.</string>
-    <string name="copy_reset_done_nothing">. تم الاحتفاظ ببيانات التطبيقات وتسجيلات الدخول.</string>
+    <string name="copy_reset_done_home">%1$s هي الشاشة الرئيسية.</string>
+
     <string name="copy_is_home">%1$s هو الشاشة الرئيسية</string>
     <string name="copy_still_home">ما زال %1$s هو الشاشة الرئيسية</string>
     <string name="copy_try_app_again">إعادة محاولة %1$s</string>
@@ -834,7 +834,7 @@
     <string name="vm_not_an_ip">لا يبدو هذا عنوان IP. يجب أن يكون أربعة أرقام تفصل بينها نقاط، مثل العنوان الموجود في إعدادات شبكة التلفاز.</string>
     <string name="vm_bad_port">يجب أن يكون المنفذ بعد النقطتين رقمًا من 1 إلى 65535، مثل 5555.</string>
     <string name="vm_didnt_work">لم تنجح العملية.</string>
-    <string name="vm_nothing_to_turn_on">لا يوجد ما يمكن إعادة تفعيله.</string>
+
     <string name="vm_tv_refused">رفض التلفاز</string>
     <string name="vm_tv_didnt_answer">لم يستجب التلفاز.</string>
     <string name="vm_tv_didnt_answer_reason">لم يستجب التلفاز</string>
@@ -871,7 +871,7 @@
     <string name="data_no_home_to_switch_back">لا توجد شاشة رئيسية سابقة للعودة إليها</string>
     <string name="data_uninstall_after_service">%1$s. لم يُلغَ تثبيت شيء</string>
     <string name="data_uninstall_home_not_back">لم تُستعد الشاشة الرئيسية: %1$s. لم يُلغَ تثبيت شيء</string>
-    <string name="data_restore_none">تعذّرت إعادة تفعيل التطبيقات: %1$s</string>
+
     <string name="data_no_reset_to_undo">لا توجد استعادة للتراجع عنها</string>
     <string name="data_reset_already_undone">تم التراجع عن هذه الاستعادة بالفعل</string>
     <string name="data_reset_tv_kept_home">احتفظ التلفاز بـ %1$s شاشة رئيسية</string>
@@ -1059,20 +1059,20 @@
         <item quantity="other">تبقى التطبيقات التي قدمتها %2$s معطلة كما هي. عددها: %1$d.</item>
     </plurals>
     <plurals name="copy_reset_done_apps_home">
-        <item quantity="zero">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d، وأصبح %2$s الشاشة الرئيسية. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="one">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d، وأصبح %2$s الشاشة الرئيسية. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="two">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d، وأصبح %2$s الشاشة الرئيسية. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="few">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d، وأصبح %2$s الشاشة الرئيسية. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="many">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d، وأصبح %2$s الشاشة الرئيسية. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="other">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d، وأصبح %2$s الشاشة الرئيسية. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
+        <item quantity="zero">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d، والشاشة الرئيسية هي %2$s.</item>
+        <item quantity="one">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d، والشاشة الرئيسية هي %2$s.</item>
+        <item quantity="two">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d، والشاشة الرئيسية هي %2$s.</item>
+        <item quantity="few">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d، والشاشة الرئيسية هي %2$s.</item>
+        <item quantity="many">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d، والشاشة الرئيسية هي %2$s.</item>
+        <item quantity="other">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d، والشاشة الرئيسية هي %2$s.</item>
     </plurals>
     <plurals name="copy_reset_done_apps">
-        <item quantity="zero">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="one">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="two">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="few">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="many">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
-        <item quantity="other">أُعيدت التطبيقات المثبتة مسبقًا وعددها %1$d. تم الاحتفاظ بالبيانات وتسجيلات الدخول.</item>
+        <item quantity="zero">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d.</item>
+        <item quantity="one">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d.</item>
+        <item quantity="two">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d.</item>
+        <item quantity="few">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d.</item>
+        <item quantity="many">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d.</item>
+        <item quantity="other">التطبيقات المثبتة مسبقًا التي أُعيدت: %1$d.</item>
     </plurals>
     <plurals name="copy_reset_partly_text">
         <item quantity="zero">عدد الخطوات التي لم تنجح: %1$d. أُعيد الباقي إلى حالته الأصلية. لم يُفقد شيء.</item>
@@ -1130,14 +1130,7 @@
         <item quantity="many">تم تعطيل %1$d من %2$d من التطبيقات</item>
         <item quantity="other">تم تعطيل %1$d من %2$d من التطبيقات</item>
     </plurals>
-    <plurals name="copy_still_off">
-        <item quantity="zero">عدد التطبيقات التي ما زالت معطلة: %1$d</item>
-        <item quantity="one">عدد التطبيقات التي ما زالت معطلة: %1$d</item>
-        <item quantity="two">عدد التطبيقات التي ما زالت معطلة: %1$d</item>
-        <item quantity="few">عدد التطبيقات التي ما زالت معطلة: %1$d</item>
-        <item quantity="many">عدد التطبيقات التي ما زالت معطلة: %1$d</item>
-        <item quantity="other">عدد التطبيقات التي ما زالت معطلة: %1$d</item>
-    </plurals>
+
     <plurals name="copy_still_off_title">
         <item quantity="zero">عدد التطبيقات التي عطّلها Secreto TV Manager وما زالت معطلة: %1$d</item>
         <item quantity="one">عدد التطبيقات التي عطّلها Secreto TV Manager وما زالت معطلة: %1$d</item>
@@ -1178,22 +1171,8 @@
         <item quantity="many">آخر ظهور قبل %1$d ي</item>
         <item quantity="other">آخر ظهور قبل %1$d ي</item>
     </plurals>
-    <plurals name="vm_turned_back_on">
-        <item quantity="zero">عدد التطبيقات التي أُعيد تفعيلها: %1$d.</item>
-        <item quantity="one">عدد التطبيقات التي أُعيد تفعيلها: %1$d.</item>
-        <item quantity="two">عدد التطبيقات التي أُعيد تفعيلها: %1$d.</item>
-        <item quantity="few">عدد التطبيقات التي أُعيد تفعيلها: %1$d.</item>
-        <item quantity="many">عدد التطبيقات التي أُعيد تفعيلها: %1$d.</item>
-        <item quantity="other">عدد التطبيقات التي أُعيد تفعيلها: %1$d.</item>
-    </plurals>
-    <plurals name="data_restore_some">
-        <item quantity="zero">أُعيد تفعيل التطبيقات وعددها %1$d ثم توقفت العملية: %2$s</item>
-        <item quantity="one">أُعيد تفعيل التطبيقات وعددها %1$d ثم توقفت العملية: %2$s</item>
-        <item quantity="two">أُعيد تفعيل التطبيقات وعددها %1$d ثم توقفت العملية: %2$s</item>
-        <item quantity="few">أُعيد تفعيل التطبيقات وعددها %1$d ثم توقفت العملية: %2$s</item>
-        <item quantity="many">أُعيد تفعيل التطبيقات وعددها %1$d ثم توقفت العملية: %2$s</item>
-        <item quantity="other">أُعيد تفعيل التطبيقات وعددها %1$d ثم توقفت العملية: %2$s</item>
-    </plurals>
+
+
     <plurals name="data_reset_undo_partial">
         <item quantity="zero">تم التراجع عن %1$d من %2$d من التغييرات. %3$s. يحاول التراجع مجددًا إكمال الباقي</item>
         <item quantity="one">تم التراجع عن %1$d من %2$d من التغييرات. %3$s. يحاول التراجع مجددًا إكمال الباقي</item>
@@ -1259,12 +1238,12 @@
         <item quantity="other">عدد التطبيقات التي لم يتسع لها الرابط: %1$d. تساعد إضافتها cleanyourtv في كتابة القائمة كاملة.</item>
     </plurals>
     <plurals name="device_restore_title">
-        <item quantity="zero">هل تريد إعادة تفعيل التطبيقات وعددها %1$d؟</item>
-        <item quantity="one">هل تريد إعادة تفعيل التطبيقات وعددها %1$d؟</item>
-        <item quantity="two">هل تريد إعادة تفعيل التطبيقات وعددها %1$d؟</item>
-        <item quantity="few">هل تريد إعادة تفعيل التطبيقات وعددها %1$d؟</item>
-        <item quantity="many">هل تريد إعادة تفعيل التطبيقات وعددها %1$d؟</item>
-        <item quantity="other">هل تريد إعادة تفعيل التطبيقات وعددها %1$d؟</item>
+        <item quantity="zero">هل تريد استعادة التغييرات وعددها %1$d؟</item>
+        <item quantity="one">هل تريد استعادة التغييرات وعددها %1$d؟</item>
+        <item quantity="two">هل تريد استعادة التغييرات وعددها %1$d؟</item>
+        <item quantity="few">هل تريد استعادة التغييرات وعددها %1$d؟</item>
+        <item quantity="many">هل تريد استعادة التغييرات وعددها %1$d؟</item>
+        <item quantity="other">هل تريد استعادة التغييرات وعددها %1$d؟</item>
     </plurals>
     <plurals name="connect_more_digits">
         <item quantity="zero">عدد الأرقام المتبقية: %1$d</item>
@@ -1314,4 +1293,124 @@
     <string name="about_credits">الاعتمادات والتراخيص</string>
     <string name="about_show_credits">عرض الاعتمادات والتراخيص</string>
     <string name="about_hide_credits">إخفاء الاعتمادات والتراخيص</string>
+    <string name="copy_change_home">تغيير الشاشة الرئيسية</string>
+    <string name="copy_change_home_text">ثبّت شاشة أخرى من اختيارات المحرر أو اختر شاشة مثبتة على التلفاز.</string>
+    <string name="copy_install">تثبيت</string>
+    <string name="copy_home_screen_of">الشاشة الرئيسية لـ %1$s</string>
+    <string name="copy_picture_failed">تعذّر تحميل الصورة</string>
+    <string name="copy_install_launcher">تثبيت %1$s</string>
+    <string name="copy_fire_pick_text">شاشة رئيسية بلا إعلانات. نزّلها من المتصفح، ثم اختر الملف هنا ليُثبّتها Secreto TV Manager على التلفاز.</string>
+    <string name="copy_wrong_apk">الملف المنزّل ليس %1$s</string>
+    <string name="copy_wrong_apk_text">اسم حزمة الملف من GitHub أو توقيع مطوّره لا يطابق %1$s، لذلك لم يثبّت Secreto TV Manager أي شيء.</string>
+    <string name="copy_wrong_apk_file">هذا الملف ليس %1$s</string>
+    <string name="copy_wrong_apk_file_text">اسم حزمة الملف أو توقيع مطوّره لا يطابق %1$s، لذلك لم يثبّت Secreto TV Manager أي شيء.</string>
+    <string name="copy_unverified_title">تعذّر التحقق من قائمة المشغّلات</string>
+    <string name="copy_unverified_text">تعذّر التحقق من أن Tellyscope نشرت هذه القائمة. إذا تغيّرت حديثًا، أعد المحاولة لاحقًا. لا تثبّت إلا إذا كنت تثق بالقائمة وموقّعها.</string>
+    <string name="copy_unverified_list">القائمة</string>
+    <string name="copy_unverified_signer">الموقّع (SHA-256)</string>
+    <string name="copy_unverified_trust">أثق بهذه القائمة وموقّعها</string>
+    <string name="copy_off_wifi_line">اتصل بشبكة Wi-Fi نفسها الخاصة بالتلفاز. يُعيد Secreto TV Manager الاتصال تلقائيًا.</string>
+    <string name="copy_apps_offline">تظهر التطبيقات هنا بعد الاتصال بالتلفاز.</string>
+    <string name="copy_send_failed_off_wifi">تعذّر إرسال %1$s. الهاتف غير متصل بشبكة Wi-Fi.</string>
+    <string name="copy_store_opened">تم فتح %1$s على التلفاز.</string>
+    <string name="copy_store_cant_open">تعذّر فتح %1$s على التلفاز.</string>
+    <string name="copy_fire_settings_opened">تم فتح الإعدادات على التلفاز. انتقل إلى My Fire TV (الجهاز والبرامج على أجهزة التلفاز)، ثم حول، ثم البحث عن تحديثات.</string>
+    <string name="copy_no_fire_update_screen">تعذّر فتح إعدادات هذا التلفاز. انتقل على التلفاز إلى الإعدادات، ثم My Fire TV (الجهاز والبرامج)، ثم حول، ثم البحث عن تحديثات.</string>
+    <string name="copy_open_an_app">فتح تطبيق</string>
+    <string name="copy_open_an_app_hint">تطبيقات البث على %1$s. اضغط لفتح تطبيق.</string>
+    <string name="copy_caches_too_old">يتطلب Android 8 أو أحدث. هذا التلفاز أقدم.</string>
+    <string name="copy_reset_dns">إعادة DNS الخاص إلى تلقائي</string>
+    <string name="copy_reset_animations">إعادة الرسوم المتحركة إلى السرعة العادية</string>
+    <string name="copy_reset_was">كان %1$s</string>
+    <string name="copy_dns_off">متوقف</string>
+    <string name="copy_animation_scale">%1$s×</string>
+    <string name="copy_resetting_dns">جارٍ إعادة DNS الخاص إلى تلقائي.</string>
+    <string name="copy_resetting_animations">جارٍ إعادة سرعة الرسوم المتحركة إلى العادية.</string>
+    <string name="copy_reset_done_settings">أُعيد DNS الخاص والرسوم المتحركة إلى الإعدادات الافتراضية.</string>
+    <string name="copy_reset_done_dns">أُعيد DNS الخاص إلى تلقائي.</string>
+    <string name="copy_reset_done_animations">أُعيدت سرعة الرسوم المتحركة إلى العادية.</string>
+    <string name="copy_reset_kept_data">لم تتغير بيانات التطبيقات وتسجيلات الدخول.</string>
+    <string name="copy_dns_automatic">DNS الخاص تلقائي</string>
+    <string name="copy_dns_still">لا يزال DNS الخاص %1$s</string>
+    <string name="copy_animations_normal">الرسوم المتحركة بالسرعة العادية</string>
+    <string name="copy_animations_still">لا تزال الرسوم المتحركة %1$s</string>
+    <plurals name="copy_to_put_back"><item quantity="zero">التغييرات المطلوب استعادتها: %1$d</item><item quantity="one">التغييرات المطلوب استعادتها: %1$d</item><item quantity="two">التغييرات المطلوب استعادتها: %1$d</item><item quantity="few">التغييرات المطلوب استعادتها: %1$d</item><item quantity="many">التغييرات المطلوب استعادتها: %1$d</item><item quantity="other">التغييرات المطلوب استعادتها: %1$d</item></plurals>
+    <plurals name="copy_put_back_title"><item quantity="zero">التغييرات التي أجراها Secreto TV Manager ولا تزال مطبّقة: %1$d</item><item quantity="one">التغييرات التي أجراها Secreto TV Manager ولا تزال مطبّقة: %1$d</item><item quantity="two">التغييرات التي أجراها Secreto TV Manager ولا تزال مطبّقة: %1$d</item><item quantity="few">التغييرات التي أجراها Secreto TV Manager ولا تزال مطبّقة: %1$d</item><item quantity="many">التغييرات التي أجراها Secreto TV Manager ولا تزال مطبّقة: %1$d</item><item quantity="other">التغييرات التي أجراها Secreto TV Manager ولا تزال مطبّقة: %1$d</item></plurals>
+    <string name="copy_put_back_text">تعيد استعادة الكل هذا التلفاز إلى حالته قبل أول تغيير أجراه Secreto TV Manager:</string>
+    <plurals name="copy_restore_on"><item quantity="zero">إعادة تفعيل التطبيقات، العدد: %1$d</item><item quantity="one">إعادة تفعيل التطبيقات، العدد: %1$d</item><item quantity="two">إعادة تفعيل التطبيقات، العدد: %1$d</item><item quantity="few">إعادة تفعيل التطبيقات، العدد: %1$d</item><item quantity="many">إعادة تفعيل التطبيقات، العدد: %1$d</item><item quantity="other">إعادة تفعيل التطبيقات، العدد: %1$d</item></plurals>
+    <plurals name="copy_restore_off"><item quantity="zero">إعادة تعطيل التطبيقات، العدد: %1$d</item><item quantity="one">إعادة تعطيل التطبيقات، العدد: %1$d</item><item quantity="two">إعادة تعطيل التطبيقات، العدد: %1$d</item><item quantity="few">إعادة تعطيل التطبيقات، العدد: %1$d</item><item quantity="many">إعادة تعطيل التطبيقات، العدد: %1$d</item><item quantity="other">إعادة تعطيل التطبيقات، العدد: %1$d</item></plurals>
+    <plurals name="copy_restore_remove"><item quantity="zero">إزالة التطبيقات التي أعادتها إعادة الضبط، العدد: %1$d</item><item quantity="one">إزالة التطبيقات التي أعادتها إعادة الضبط، العدد: %1$d</item><item quantity="two">إزالة التطبيقات التي أعادتها إعادة الضبط، العدد: %1$d</item><item quantity="few">إزالة التطبيقات التي أعادتها إعادة الضبط، العدد: %1$d</item><item quantity="many">إزالة التطبيقات التي أعادتها إعادة الضبط، العدد: %1$d</item><item quantity="other">إزالة التطبيقات التي أعادتها إعادة الضبط، العدد: %1$d</item></plurals>
+    <string name="copy_restore_home">استعادة الشاشة الرئيسية</string>
+    <string name="copy_restore_dns">استعادة DNS الخاص</string>
+    <string name="copy_restore_animations">استعادة سرعة الرسوم المتحركة</string>
+    <plurals name="copy_restore_gone"><item quantity="zero">التطبيقات التي أُزيلت ولا يمكن استعادتها: %1$d</item><item quantity="one">التطبيقات التي أُزيلت ولا يمكن استعادتها: %1$d</item><item quantity="two">التطبيقات التي أُزيلت ولا يمكن استعادتها: %1$d</item><item quantity="few">التطبيقات التي أُزيلت ولا يمكن استعادتها: %1$d</item><item quantity="many">التطبيقات التي أُزيلت ولا يمكن استعادتها: %1$d</item><item quantity="other">التطبيقات التي أُزيلت ولا يمكن استعادتها: %1$d</item></plurals>
+    <string name="copy_restore_line">• %1$s</string>
+    <string name="vm_nothing_to_put_back">لا توجد تغييرات لاستعادتها.</string>
+    <plurals name="vm_put_back"><item quantity="zero">التغييرات المستعادة: %1$d.</item><item quantity="one">التغييرات المستعادة: %1$d.</item><item quantity="two">التغييرات المستعادة: %1$d.</item><item quantity="few">التغييرات المستعادة: %1$d.</item><item quantity="many">التغييرات المستعادة: %1$d.</item><item quantity="other">التغييرات المستعادة: %1$d.</item></plurals>
+    <plurals name="vm_put_back_partly"><item quantity="zero">تمت استعادة %1$d من %2$d. عدد التغييرات التي تعذّرت استعادتها: %3$d، منها %4$s: %5$s</item><item quantity="one">تمت استعادة %1$d من %2$d. عدد التغييرات التي تعذّرت استعادتها: %3$d، منها %4$s: %5$s</item><item quantity="two">تمت استعادة %1$d من %2$d. عدد التغييرات التي تعذّرت استعادتها: %3$d، منها %4$s: %5$s</item><item quantity="few">تمت استعادة %1$d من %2$d. عدد التغييرات التي تعذّرت استعادتها: %3$d، منها %4$s: %5$s</item><item quantity="many">تمت استعادة %1$d من %2$d. عدد التغييرات التي تعذّرت استعادتها: %3$d، منها %4$s: %5$s</item><item quantity="other">تمت استعادة %1$d من %2$d. عدد التغييرات التي تعذّرت استعادتها: %3$d، منها %4$s: %5$s</item></plurals>
+    <string name="data_restore_home">الشاشة الرئيسية</string>
+    <string name="data_restore_dns">DNS الخاص</string>
+    <string name="data_restore_animations">سرعة الرسوم المتحركة</string>
+    <string name="data_history_service_on">تم تفعيل خدمة تسهيل الاستخدام لـ %1$s</string>
+    <string name="tabs_store_sub">الحصول على التطبيقات وتحديثاتها</string>
+    <string name="tabs_store_off">معطّل على هذا التلفاز</string>
+    <string name="advanced_copy_address">نسخ العنوان</string>
+    <string name="advanced_android">Android</string>
+    <string name="advanced_updated">آخر تحديث</string>
+    <string name="advanced_offline_as_of">غير متصل · منذ %1$s</string>
+    <string name="advanced_busiest">الأكثر نشاطًا</string>
+    <string name="advanced_copy_mac">نسخ عنوان MAC</string>
+    <string name="advanced_signal_strong_word">قوية</string>
+    <string name="advanced_signal_good_word">جيدة</string>
+    <string name="advanced_signal_weak_word">ضعيفة</string>
+    <string name="advanced_signal_very_weak_word">ضعيفة جدًا</string>
+    <string name="advanced_not_running">غير قيد التشغيل</string>
+    <string name="advanced_split_apps">التطبيقات</string>
+    <string name="advanced_split_system">النظام</string>
+    <string name="advanced_split_waiting">انتظار التخزين</string>
+    <string name="advanced_core">النواة %1$d</string>
+    <string name="advanced_ghz">%1$.1f GHz</string>
+    <string name="advanced_in_use">قيد الاستخدام</string>
+    <string name="advanced_cached">مخزنة مؤقتًا</string>
+    <string name="advanced_free">متاحة</string>
+    <string name="advanced_swap">التبديل %1$s من %2$s</string>
+    <string name="advanced_wifi_on">Wi-Fi · %1$s</string>
+    <string name="advanced_since_boot">منذ التشغيل ↓ %1$s ↑ %2$s</string>
+    <string name="advanced_minute_ago">قبل 60 ثانية</string>
+    <string name="advanced_now">الآن</string>
+    <string name="advanced_cpu_share">%1$.0f%% من المعالج</string>
+    <string name="advanced_since_boot_short">%1$s منذ التشغيل</string>
+    <string name="advanced_processes_n">العمليات · %1$d</string>
+    <string name="advanced_connections_n">الاتصالات المفتوحة · %1$d</string>
+    <string name="advanced_established">متصل</string>
+    <string name="advanced_connecting">جارٍ الاتصال</string>
+    <string name="advanced_closing">جارٍ الإغلاق</string>
+    <plurals name="advanced_cores"><item quantity="zero">عدد الأنوية: %1$d</item><item quantity="one">عدد الأنوية: %1$d</item><item quantity="two">عدد الأنوية: %1$d</item><item quantity="few">عدد الأنوية: %1$d</item><item quantity="many">عدد الأنوية: %1$d</item><item quantity="other">عدد الأنوية: %1$d</item></plurals>
+    <plurals name="advanced_connections"><item quantity="zero">عدد الاتصالات: %1$d</item><item quantity="one">عدد الاتصالات: %1$d</item><item quantity="two">عدد الاتصالات: %1$d</item><item quantity="few">عدد الاتصالات: %1$d</item><item quantity="many">عدد الاتصالات: %1$d</item><item quantity="other">عدد الاتصالات: %1$d</item></plurals>
+    <plurals name="advanced_apps_running"><item quantity="zero">التطبيقات قيد التشغيل: %1$d</item><item quantity="one">التطبيقات قيد التشغيل: %1$d</item><item quantity="two">التطبيقات قيد التشغيل: %1$d</item><item quantity="few">التطبيقات قيد التشغيل: %1$d</item><item quantity="many">التطبيقات قيد التشغيل: %1$d</item><item quantity="other">التطبيقات قيد التشغيل: %1$d</item></plurals>
+    <string name="shell_open">الطرفية</string>
+    <string name="shell_close">إغلاق الطرفية</string>
+    <string name="shell_title">%1$s · %2$s</string>
+    <string name="shell_banner">متصل بـ %1$s (%2$s).\nاكتب exit أو اضغط ✕ للإغلاق.</string>
+    <string name="shell_trimmed">حُذفت الأسطر السابقة: تُعرض آخر %1$d سطرًا.</string>
+    <string name="shell_offline_hint">تعمل الأوامر مجددًا عند عودة التلفاز.</string>
+    <string name="shell_key_paste">لصق</string>
+    <string name="shell_key_up">الأمر السابق</string>
+    <string name="shell_key_down">الأمر التالي</string>
+    <string name="shell_confirm">هذا يغيّر التلفاز. هل تريد التنفيذ؟ [y/N]</string>
+    <string name="shell_confirm_answered">هذا يغيّر التلفاز. هل تريد التنفيذ؟ [y/N] %1$s</string>
+    <string name="shell_no_history">لا تُسجّل أوامر الطرفية في السجل، ولا يمكن التراجع عنها بضغطة واحدة.</string>
+    <string name="shell_not_run">لم يُنفّذ.</string>
+    <string name="shell_not_shell">يمكن تنفيذ أوامر adb shell فقط هنا.</string>
+    <string name="shell_full_screen">يتطلب %1$s طرفية بملء الشاشة، وهي غير مدعومة هنا.</string>
+    <string name="shell_dropped_prefix">(حُذفت بادئة \"adb shell\")</string>
+    <string name="shell_lost">انقطع الاتصال قبل اكتمال الأمر. ربما نُفّذ جزئيًا.</string>
+    <string name="device_app_background">يعمل في الخلفية</string>
+    <string name="device_app_on_screen">ظاهر على الشاشة</string>
+    <string name="remote_volume_fixed">مستوى الصوت ثابت عبر HDMI. استخدم جهاز تحكم التلفاز.</string>
+    <string name="remote_dpad">لوحة الاتجاهات</string>
+    <string name="remote_touchpad">لوحة اللمس</string>
+    <string name="remote_touchpad_swipe">اسحب للتحرك</string>
+    <string name="remote_touchpad_tap">اضغط للموافقة</string>
+    <string name="scan_vpn">اتصال VPN نشط، لذلك يتعذّر البحث في شبكة Wi-Fi. تظهر الأجهزة التي تعلن عن نفسها. أضف التلفاز بعنوان IP أو اسمح بالوصول إلى الشبكة المحلية في تطبيق VPN.</string>
 </resources>

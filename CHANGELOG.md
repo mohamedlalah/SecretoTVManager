@@ -6,11 +6,79 @@ for the people using the app. Headings are `## <version> — <date>`, where
 **New:**, **Improved:** or **Fixed:**, in that order within a section, then a
 plain line of at most about twelve words, ending with a link to its PR.
 
-Changes merged into `dev` collect under `## Unreleased`. A release renames
-that heading to its version and date. A pull request into `main` fails CI
-until this file has a section for its version.
+Pull requests don't edit this file. Each one puts its line in its
+description instead, as `Changelog: **Fixed:** …`. The `[release]` pull
+request for an alpha copies the lines of the pull requests merged since the
+last release under `## Unreleased`, and changes nothing else. A release
+renames that heading to its version and date. A pull request into `main`
+fails CI until this file has a section for its version.
 
 ## Unreleased
+
+## 0.16.0 — 2026-11-06
+
+- **New:** The Remote has an Apps key that shows the streaming apps installed on the TV. [#373](../../pull/373), [#384](../../pull/384)
+- **New:** More home screens to choose from, on Fire TV too. [#367](../../pull/367), [#381](../../pull/381)
+- **New:** Apps has a row that opens the TV's app store: Play Store, or Appstore on Fire TV. [#385](../../pull/385)
+- **New:** Remote quick actions support more streaming apps, including regional, music and self-hosted ones. [#384](../../pull/384)
+- **Improved:** On Fire TV, the Android card shows the Fire OS version, and Check for updates opens About or Fire TV Settings with directions to the update screen. [#365](../../pull/365)
+- **Improved:** The Remote now has its own round button, in a notch in the middle of the bottom bar, on every tab. [#368](../../pull/368), [#388](../../pull/388)
+- **Improved:** "Get a better home screen" moved from Apps to the Overview page. [#368](../../pull/368)
+- **Improved:** One tap on the Remote's volume keys moves the volume in a single jump, without the lag of several key presses. [#372](../../pull/372)
+- **Improved:** The home screen suggestion now appears after the TV is debloated, not on first connect. [#374](../../pull/374)
+- **Improved:** Tweaks › Home screen always offers Change home screen, and the picker opens on your current launcher. [#386](../../pull/386)
+- **Improved:** Each app on Apps shows Open and Stop by state, and one remove button. [#403](../../pull/403)
+- **Fixed:** On Fire TV, Tweaks › Home screen no longer offers Firehomestarter as a launcher. [#409](../../pull/409), [#411](../../pull/411)
+- **Fixed:** Screenshots and files saved from the TV no longer fail when you rename them in the save picker. [#369](../../pull/369)
+- **Fixed:** A dropped connection no longer logs you out of a TV. [#402](../../pull/402)
+- **Fixed:** A TV added by IP:port is found again after its port changes. [#402](../../pull/402)
+- **Fixed:** Pairing gives up after 30 seconds instead of hanging. [#402](../../pull/402)
+- **Fixed:** Tweaks › Private DNS: a provider that doesn't work is undone. [#400](../../pull/400)
+- **Fixed:** History keeps a Home switch or reset even if the TV drops mid-way. [#399](../../pull/399)
+- **Fixed:** An unsigned list never replaces Tellyscope's signed one. [#392](../../pull/392)
+
+## 0.15.1 — 2026-11-06
+
+- **Improved:** Reset TV to how it shipped also puts Private DNS back to Automatic and animations back to normal speed, when they've been changed. Undo puts them back too. [#360](../../pull/360)
+- **Fixed:** Fire TVs no longer offer Faster animations, which broke their side menu. [#359](../../pull/359)
+- **Fixed:** Started off Wi-Fi, the Remote's app buttons now load once the phone is back online, without a restart. [#341](../../pull/341)
+- **Fixed:** Forgetting your last TV starts looking for TVs right away. [#358](../../pull/358)
+- **Fixed:** With a VPN on, the scan says so instead of "not on Wi-Fi". [#354](../../pull/354)
+- **Fixed:** TVs on wireless debugging reconnect on their own after their port changes. [#353](../../pull/353)
+- **Fixed:** History's Restore everything count now matches what Restore actually turns back on. [#336](../../pull/336)
+- **Fixed:** Restore everything puts the TV back as it was before Tellyscope's first change: apps on or off however often they flipped, Home, Private DNS and animation speed. A step the TV refuses no longer stops the rest. [#340](../../pull/340)
+
+## 0.15.0 — 2026-11-04
+
+- **New:** Advanced has a Shell for any `adb shell` command; changes ask first. [#314](../../pull/314)
+- **New:** The Remote has a touchpad: swipe to move, tap for OK. [#312](../../pull/312)
+  - Switch between it and the D-pad in the Remote's ⋮ menu.
+- **Improved:** Advanced is split into four tabs: This TV, CPU, RAM and Network. [#314](../../pull/314)
+  - This TV shows CPU, memory and storage rings, network speed, Wi-Fi, signal and MAC.
+  - CPU, RAM and Network open with a summary over a list of apps.
+  - Tap an app to see its processes and connections.
+  - Tap This TV's memory ring or network graph to open its tab.
+  - Swipe sideways to switch tabs on Advanced and Apps.
+- **Improved:** On the Remote, the text box hides until you tap the keyboard key. [#312](../../pull/312)
+- **Improved:** Launchers, app names and streaming services come from Tellyscope's own signed list. [#323](../../pull/323)
+  - If the list can't be verified, you confirm it; installing a launcher shows the list and its signer.
+  - The signed list decides which launchers get accessibility access; if it can't be verified, none do.
+  - A copy of a launcher too old to have one is skipped.
+- **Fixed:** Off Wi-Fi or offline, Tellyscope now says why instead of blaming the TV. [#313](../../pull/313)
+  - Off Wi-Fi, screens and failed sends say the phone isn't on Wi-Fi.
+  - Reconnect on Overview opens the Wi-Fi panel.
+  - Installed and Built-in say why they're empty, not "Nothing here yet."
+  - Reconnecting to a TV no longer leaves every action saying it's offline.
+- **Fixed:** Installing or sending a file from phone storage no longer drops the TV. [#301](../../pull/301)
+  - Picking an app right after the link dropped no longer fails partway through.
+  - A file the phone can't read, or a TV that doesn't answer, says which.
+  - The install dialog no longer closes by itself after picking an app.
+- **Fixed:** On fixed-volume Fire TVs and HDMI boxes, mute and volume gray out. [#307](../../pull/307)
+  - A line says to use the TV's own remote instead.
+- **Fixed:** On the Remote, a perfectly still tap on empty space closes the keyboard. [#300](../../pull/300)
+- **Fixed:** Apps without a name no longer show a Java class name. [#303](../../pull/303)
+- **Fixed:** Philips Help stays on; turning it off broke the HDMI input picker. [#299](../../pull/299)
+- **Fixed:** On Android 7 and older, Clear caches says it needs Android 8, not an error. [#304](../../pull/304)
 
 ## 0.14.0 — 2026-10-30
 

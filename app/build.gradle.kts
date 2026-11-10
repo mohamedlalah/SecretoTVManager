@@ -3,6 +3,7 @@
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 import com.android.build.api.artifact.SingleArtifact
+import com.android.build.api.variant.HostTestBuilder
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
@@ -24,14 +25,37 @@ android {
         minSdk = 26
         targetSdk = 37
         // A PR into main must raise both past the latest v* tag (.github/workflows/release-check.yml).
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         // An alpha tag (release.yml, vX.Y.Z-alpha.N on dev) passes -Ptellyscope.alpha=N:
         // a separate app ID, so it installs next to the release.
         providers.gradleProperty("tellyscope.alpha").orNull?.let { run ->
             applicationIdSuffix = ".alpha"
             versionNameSuffix = "-alpha.$run"
+        }
+
+        // Where the launcher, app name and streaming lists are downloaded from (DATA_BASE): dev/data/
+        // for an alpha, so a data/ change reaches alpha before prod, and main/data/ for a release.
+        // -Ptellyscope.data=<raw folder URL ending in /> overrides both, e.g. to try a branch.
+        val dataBranch = if (providers.gradleProperty("tellyscope.alpha").isPresent) "dev" else "main"
+        val data = providers.gradleProperty("tellyscope.data").orNull ?: "https://raw.githubusercontent.com/man15h/tellyscope/$dataBranch/data/"
+        buildConfigField("String", "DATA_BASE", "\"$data\"")
+    }
+
+    // Two builds of one app: the same app ID and release key. github is the APK on GitHub releases;
+    // play is the Play Store's AAB. The update check and the Projectivy download are in src/github
+    // only, so the Play build never compiles them (src/play has the stubs); BuildConfig.PLAY is for
+    // what differs on screen. checkPlayRelease*NoGitHubApi below proves it on every Play build.
+    flavorDimensions += "store"
+    productFlavors {
+        create("github") {
+            dimension = "store"
+            buildConfigField("boolean", "PLAY", "false")
+        }
+        create("play") {
+            dimension = "store"
+            buildConfigField("boolean", "PLAY", "true")
         }
     }
 
@@ -43,7 +67,7 @@ android {
         generateLocaleConfig = true
     }
 
-    // Only CI signs, from repo secrets; without RELEASE_KEYSTORE the release APK is unsigned.
+    // Optional external signing; without RELEASE_KEYSTORE the release APK is unsigned.
     val keystore = providers.environmentVariable("RELEASE_KEYSTORE").orNull
     signingConfigs {
         if (keystore != null) {
@@ -81,6 +105,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     // The helpers' pure parts (BannerColors) are unit-tested like app code.
@@ -192,14 +217,6 @@ abstract class BundleReleaseNotices : DefaultTask() {
     }
 }
 
-val bundleReleaseNotices by tasks.registering(BundleReleaseNotices::class) {
-    legalFiles.from(rootProject.files("LICENSE", "NOTICE", "release/licenses", "release/SOURCE_AVAILABILITY.md", "release/RELEASE_NOTICE.md"))
-    runtimeArtifacts.from(configurations.named("releaseRuntimeClasspath"))
-    artifactIds.set(configurations.named("releaseRuntimeClasspath").flatMap { it.incoming.artifacts.resolvedArtifacts }
-        .map { artifacts -> artifacts.map { it.id.componentIdentifier.displayName } })
-    outputDir = layout.buildDirectory.dir("generated/releaseNotices/assets")
-}
-
 /** Enforce a measured fork budget: legal-complete unsigned v1.0.0 exceeds upstream's 3.5 MB.
  * 4 MB retains notices and leaves limited signing/growth headroom; see docs/RELEASE_PREPARATION.md.
  */
@@ -219,11 +236,47 @@ abstract class CheckApkSize : DefaultTask() {
     }
 }
 
+/**
+ * Fails the build when the Play build's code names GitHub's API. The update check and the Projectivy download,
+ * the only code that calls it, live in src/github; the debloat lists come from raw.githubusercontent.com.
+ */
+abstract class CheckNoGitHubApi : DefaultTask() {
+    @get:InputFiles abstract val archives: ConfigurableFileCollection
+
+    @TaskAction fun check() {
+        val files = archives.asFileTree.files.filter { it.extension == "apk" || it.extension == "aab" }
+        check(files.isNotEmpty()) { "no APK or AAB in ${archives.files}" }
+        for (f in files) {
+            ZipFile(f).use { zip ->
+                for (e in zip.entries().asSequence().filter { it.name.endsWith(".dex") }) {
+                    val dex = zip.getInputStream(e).use { it.readBytes() }.decodeToString()
+                    check("api.github.com" !in dex) { "${f.name}: ${e.name} names api.github.com, which only the GitHub build may call" }
+                }
+            }
+            logger.lifecycle("${f.name}: no api.github.com")
+        }
+    }
+}
+
 androidComponents {
+    // The unit tests cover the GitHub build, which has every path; the Play build's differences are tested there
+    // through the same seams (a pick-only LauncherPick, no Updates), and its code is checked by CheckNoGitHubApi.
+    beforeVariants(selector().withFlavor("store" to "play")) { variant ->
+        variant.hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.enable = false
+    }
     onVariants { variant ->
         variant.sources.assets?.addGeneratedSourceDirectory(dexLabelHelper, DexLabelHelper::outputDir)
         variant.sources.assets?.addGeneratedSourceDirectory(bundleChangelog, BundleChangelog::outputDir)
-        variant.sources.assets?.addGeneratedSourceDirectory(bundleReleaseNotices, BundleReleaseNotices::outputDir)
+        val legalName = variant.name.replaceFirstChar { it.uppercase() }
+        val runtime = configurations.named("${variant.name}RuntimeClasspath")
+        val notices = tasks.register<BundleReleaseNotices>("bundle${legalName}ReleaseNotices") {
+            legalFiles.from(rootProject.files("LICENSE", "NOTICE", "release/licenses", "release/SOURCE_AVAILABILITY.md", "release/RELEASE_NOTICE.md"))
+            runtimeArtifacts.from(runtime)
+            artifactIds.set(runtime.flatMap { it.incoming.artifacts.resolvedArtifacts }
+                .map { artifacts -> artifacts.map { it.id.componentIdentifier.displayName } })
+            outputDir = layout.buildDirectory.dir("generated/${variant.name}/releaseNotices/assets")
+        }
+        variant.sources.assets?.addGeneratedSourceDirectory(notices, BundleReleaseNotices::outputDir)
     }
     onVariants(selector().withBuildType("release")) { variant ->
         val name = variant.name.replaceFirstChar { it.uppercase() }
@@ -232,6 +285,18 @@ androidComponents {
             maxBytes = 4_000_000L
         }
         afterEvaluate { tasks.named("assemble$name") { finalizedBy(sizeCheck) } }
+        if (variant.flavorName == "play") {
+            val apkCheck = tasks.register<CheckNoGitHubApi>("check${name}ApkNoGitHubApi") {
+                archives.from(variant.artifacts.get(SingleArtifact.APK))
+            }
+            val bundleCheck = tasks.register<CheckNoGitHubApi>("check${name}BundleNoGitHubApi") {
+                archives.from(variant.artifacts.get(SingleArtifact.BUNDLE))
+            }
+            afterEvaluate {
+                tasks.named("assemble$name") { finalizedBy(apkCheck) }
+                tasks.named("bundle$name") { finalizedBy(bundleCheck) }
+            }
+        }
     }
 }
 

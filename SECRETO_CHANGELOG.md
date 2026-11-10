@@ -3,7 +3,20 @@
 This file describes this fork only. The entry below is prepared for release; it does not assert publication.
 Original Tellyscope history remains in CHANGELOG.md, with its copyright and GPL-3.0 attribution preserved.
 
-## 1.0.0 — prepared, not published
+## 1.1.0 — in development
+
+Integrates original Tellyscope v0.16.0 (including its v0.15.x changes).
+
+- More reliable pairing, reconnects after port changes and dropped links, and VPN/offline guidance.
+- Private DNS validation and rollback; history restores original app, launcher, DNS and animation settings.
+- Signed-list verification and protection against unsigned replacement.
+- Remote touchpad, streaming app picker, volume improvements and physical RTL D-pad directions.
+- App-store shortcuts, app-state actions, save-picker fixes and Fire TV improvements.
+- Expanded monitoring and an advanced shell with change confirmation and no automatic history undo.
+- Secreto branding, eight languages, fork-only metadata updater, signing and legal materials retained.
+- No Secreto Launcher download or promotion added.
+
+## 1.0.0 — 2026-11-02
 
 First SecretoTools / Mohamed LALAH release candidate based on Tellyscope.
 

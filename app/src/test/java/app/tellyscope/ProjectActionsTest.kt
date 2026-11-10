@@ -56,8 +56,9 @@ class ProjectActionsTest {
         val text = RuntimeEnvironment.getApplication().assets.open(Changelog.ASSET).bufferedReader().use { it.readText() }
         assertTrue(text.startsWith("# Secreto TV Manager changelog"))
         val releases = Changelog.parse(text)
-        assertEquals(listOf("1.0.0"), releases.map { it.version })
-        assertEquals("prepared, not published", releases.single().date)
+        assertEquals(listOf("1.1.0", "1.0.0"), releases.map { it.version })
+        assertEquals("in development", releases.first().date)
+        assertEquals("2026-11-02", releases.last().date)
         assertFalse(text.contains("## 0.14.0"))
     }
 }

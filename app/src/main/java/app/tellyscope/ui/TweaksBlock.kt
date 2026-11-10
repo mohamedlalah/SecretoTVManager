@@ -33,6 +33,7 @@ import app.tellyscope.R
 import app.tellyscope.adb.Tweak
 import app.tellyscope.adb.Tweaks
 import app.tellyscope.data.TvSettings
+import app.tellyscope.data.TvTweaks
 import app.tellyscope.data.resolve
 
 /**
@@ -55,13 +56,25 @@ fun TweaksBlock(ui: DeviceUi, actions: DeviceActions) {
         if (on) askDns = true else actions.setDns(null)
     }
     val fast = tweaks?.animationScale == TvSettings.FAST
-    SwitchRow(Copy.ANIMATIONS_TITLE.resolve(), Copy.animationsState(tweaks?.animationScale).resolve(), fast, enabled = tweaks != null && ui.busy == null) {
-        actions.setFastAnimations(it)
+    if (fastAnimationsShown(tweaks)) {
+        SwitchRow(Copy.ANIMATIONS_TITLE.resolve(), Copy.animationsState(tweaks?.animationScale).resolve(), fast, enabled = tweaks != null && ui.busy == null) {
+            actions.setFastAnimations(it)
+        }
     }
-    ButtonRow(Copy.CACHES_TITLE.resolve(), Copy.CACHES_TEXT.resolve(), Copy.CACHES_BUTTON.resolve(), enabled = ui.busy == null, actions.clearCaches)
+    val cachesOk = tweaks?.cachesSupported != false
+    ButtonRow(
+        Copy.CACHES_TITLE.resolve(),
+        if (cachesOk) Copy.CACHES_TEXT.resolve() else Copy.CACHES_TOO_OLD.resolve(),
+        Copy.CACHES_BUTTON.resolve(),
+        enabled = cachesOk && ui.busy == null,
+        actions.clearCaches,
+    )
     ButtonRow(Copy.SCREENSHOT_TITLE.resolve(), Copy.SCREENSHOT_TEXT.resolve(), Copy.SCREENSHOT_BUTTON.resolve(), enabled = ui.busy == null, actions.screenshot)
     if (askDns) DnsDialog(onDismiss = { askDns = false }) { host -> askDns = false; actions.setDns(host) }
 }
+
+/** On Fire OS the row shows only while it's on, left from an older version, so it can be turned off (#356). */
+internal fun fastAnimationsShown(tweaks: TvTweaks?) = tweaks?.fireOs != true || tweaks.animationScale == TvSettings.FAST
 
 @Composable
 private fun SwitchRow(title: String, state: String, checked: Boolean, enabled: Boolean, onChange: (Boolean) -> Unit) {

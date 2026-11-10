@@ -13,6 +13,7 @@ import app.tellyscope.data.Action
 import app.tellyscope.data.AppInfo
 import app.tellyscope.data.DeviceList
 import app.tellyscope.data.HistoryEntry
+import app.tellyscope.data.RestoreSummary
 import app.tellyscope.data.Suggested
 import app.tellyscope.data.SuggestedGroup
 import app.tellyscope.data.Suggestions
@@ -40,7 +41,6 @@ class BusyGatingTest {
     @Test fun appButtonsWaitWhileTheTvIsBusy() {
         compose.setContent { AppRow(app, emptyList(), null, busy = false, actions = DeviceActions(), locked = true) }
         compose.onNodeWithText("Example").performClick()
-        compose.onNodeWithText(Copy.button(Action.Disable).text()).assertIsNotEnabled()
         compose.onNodeWithText(Copy.button(Action.Uninstall).text()).assertIsNotEnabled()
     }
 
@@ -48,7 +48,7 @@ class BusyGatingTest {
         // Away, what the row last heard is stale: no status line, and a tap opens nothing.
         compose.setContent { AppRow(app, emptyList(), null, busy = false, actions = DeviceActions(), offline = true) }
         compose.onNodeWithText("Example").performClick()
-        compose.onAllNodesWithText(Copy.button(Action.Disable).text()).assertCountEquals(0)
+        compose.onAllNodesWithText(Copy.button(Action.Uninstall).text()).assertCountEquals(0)
         compose.onAllNodesWithText("Not running").assertCountEquals(0)
     }
 
@@ -60,21 +60,21 @@ class BusyGatingTest {
 
     @Test fun undoAndRestoreWaitWhileTheTvIsBusy() {
         val history = listOf(HistoryEntry(1, "tv", 0L, Action.Disable, pkg, "Example", Action.Enable, null))
-        compose.setContent { HistoryList(history, 0L, onUndo = {}, busy = true) }
+        compose.setContent { HistoryList(history, 0L, onUndo = {}, restore = RestoreSummary(turnOn = 1), busy = true) }
         compose.onNodeWithText(Copy.undo(Action.Enable).text()).assertIsNotEnabled()
         compose.onNodeWithText("Restore everything (1)").assertIsNotEnabled()
     }
 
     @Test fun restoreKeepsItsOwnLabel() {
         val history = listOf(HistoryEntry(1, "tv", 0L, Action.Disable, pkg, "Example", Action.Enable, null))
-        compose.setContent { HistoryList(history, 0L, onUndo = {}, restoring = true) }
-        compose.onNodeWithText("Turning apps back on…").assertIsNotEnabled()
+        compose.setContent { HistoryList(history, 0L, onUndo = {}, restore = RestoreSummary(turnOn = 1), restoring = true) }
+        compose.onNodeWithText("Putting back…").assertIsNotEnabled()
         compose.onNodeWithText(Copy.undo(Action.Enable).text()).assertIsNotEnabled()
     }
 
     @Test fun idleUndoStillWorks() {
         val history = listOf(HistoryEntry(1, "tv", 0L, Action.Disable, pkg, "Example", Action.Enable, null))
-        compose.setContent { HistoryList(history, 0L, onUndo = {}) }
+        compose.setContent { HistoryList(history, 0L, onUndo = {}, restore = RestoreSummary(turnOn = 1)) }
         compose.onNodeWithText(Copy.undo(Action.Enable).text()).assertIsEnabled()
     }
 

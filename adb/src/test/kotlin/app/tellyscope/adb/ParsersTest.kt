@@ -17,9 +17,73 @@ class ParsersTest {
 
     @Test fun memoryPrefersMemAvailable() {
         val m = Parsers.memory("MemTotal:        2048000 kB\nMemFree:  100000 kB\nMemAvailable:    900000 kB\nCached: 5 kB\n")
-        assertEquals(Parsers.Memory(2048000, 900000), m)
-        assertEquals(Parsers.Memory(10, 7), Parsers.memory("MemTotal: 10 kB\nMemFree: 4 kB\nCached: 3 kB\n"))
+        assertEquals(Parsers.Memory(2048000, 900000, freeKb = 100000), m)
+        assertEquals(Parsers.Memory(10, 7, freeKb = 4), Parsers.memory("MemTotal: 10 kB\nMemFree: 4 kB\nCached: 3 kB\n"))
         assertNull(Parsers.memory(""))
+    }
+
+    @Test fun memoryReadsSwap() {
+        val m = Parsers.memory("MemTotal: 2000 kB\nMemFree: 190 kB\nMemAvailable: 500 kB\nSwapTotal: 1000 kB\nSwapFree: 720 kB\n")
+        assertEquals(Parsers.Memory(2000, 500, freeKb = 190, swapTotalKb = 1000, swapFreeKb = 720), m)
+    }
+
+    @Test fun eachCoreAndTheSplitComeFromProcStat() {
+        val a = "cpu  100 0 100 700 100 0 0 0\ncpu0 60 0 40 300 0 0 0 0\ncpu1 40 0 60 400 100 0 0 0\nintr 1 2\n"
+        val b = "cpu  160 0 120 780 140 0 0 0\ncpu0 100 0 50 330 20 0 0 0\ncpu1 60 0 70 450 120 0 0 0\n"
+        val prev = Parsers.coreTimes(a)
+        val now = Parsers.coreTimes(b)
+        assertEquals(setOf(0, 1), now.keys)
+        assertEquals(50.0, Parsers.cpuPercent(prev.getValue(0), now.getValue(0)))
+        assertEquals(30.0, Parsers.cpuPercent(prev.getValue(1), now.getValue(1)))
+        // 200 ticks: 60 user, 20 system, 40 waiting on storage.
+        assertEquals(Parsers.CpuSplit(30.0, 10.0, 20.0), Parsers.cpuSplit(Parsers.cpuTimes(a)!!, Parsers.cpuTimes(b)!!))
+    }
+
+    @Test fun chipPrefersSocModelThenPlatform() {
+        assertEquals("Amlogic S905X4", Parsers.chip(mapOf("ro.soc.manufacturer" to "Amlogic", "ro.soc.model" to "S905X4")))
+        // The maker isn't said twice.
+        assertEquals("MediaTek MT9612", Parsers.chip(mapOf("ro.soc.manufacturer" to "MediaTek", "ro.soc.model" to "MediaTek MT9612")))
+        assertEquals("mt8696", Parsers.chip(mapOf("ro.soc.model" to "", "ro.board.platform" to "mt8696")))
+        assertNull(Parsers.chip(emptyMap()))
+    }
+
+    @Test fun clockIsTheFastestCore() {
+        assertEquals(1_696_000L, Parsers.clockKhz("1200000\n1696000\n1696000\n"))
+        assertNull(Parsers.clockKhz("cat: /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq: Permission denied\n"))
+    }
+
+    @Test fun addressIsTheFirstInterfaceOnTheNetwork() {
+        val ip = """
+            1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+                link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+                inet 127.0.0.1/8 scope host lo
+            2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+                link/ether 02:00:00:00:00:01 brd ff:ff:ff:ff:ff:ff
+            5: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN group default qlen 1000
+            15: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 3000
+                link/ether 02:00:00:aa:bb:cc brd ff:ff:ff:ff:ff:ff
+                inet 192.0.2.23/24 brd 192.0.2.255 scope global wlan0
+                   valid_lft forever preferred_lft forever
+        """.trimIndent()
+        assertEquals(Parsers.Address("wlan0", "192.0.2.23", "02:00:00:aa:bb:cc"), Parsers.address(ip))
+        assertNull(Parsers.address("request send failed: Permission denied\n"))
+    }
+
+    @Test fun wifiFromCmdWifiStatus() {
+        val status = """
+            Wifi is enabled
+            Wifi is connected to "Living room"
+            WifiInfo: SSID: XXX, BSSID: XXX, MAC: XXX, Supplicant state: COMPLETED, RSSI: -69, Link speed: 216Mbps, Tx Link speed: 216Mbps, Max Supported Tx Link speed: -1Mbps, Rx Link speed: -1Mbps, Frequency: 5745MHz
+        """.trimIndent()
+        assertEquals(Parsers.Wifi("Living room", -69, 216), Parsers.wifi(status))
+    }
+
+    @Test fun wifiFromAnOlderTvsDumpsys() {
+        val line = "mWifiInfo SSID: \"Living room\", BSSID: 02:00:00:00:00:00, MAC: 02:00:00:00:00:00, Supplicant state: COMPLETED, RSSI: -58, Link speed: 433Mbps, Frequency: 5180MHz"
+        assertEquals(Parsers.Wifi("Living room", -58, 433), Parsers.wifi(line))
+        // Hidden from apps: the strength still shows.
+        assertEquals(Parsers.Wifi(null, -58, 433), Parsers.wifi(line.replace("\"Living room\"", "<unknown ssid>")))
+        assertNull(Parsers.wifi("Wifi is disabled\n"))
     }
 
     @Test fun storageHandlesWrappedFilesystemName() {
@@ -106,6 +170,15 @@ class ParsersTest {
         assertNull(Parsers.screenOn(""))
     }
 
+    @Test fun resumedPackageUpToAndFromAndroid14() {
+        assertEquals("com.netflix.ninja", Parsers.resumedPackage("    mResumedActivity: ActivityRecord{4a1f u0 com.netflix.ninja/.MainActivity t31}\n"))
+        assertEquals(
+            "com.google.android.youtube.tv",
+            Parsers.resumedPackage("  topResumedActivity=ActivityRecord{1d2 u0 com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity t12}\n"),
+        )
+        assertNull(Parsers.resumedPackage(""))
+    }
+
     @Test fun tcpSocketsDecodeKernelByteOrder() {
         val tcp = """
               sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode
@@ -180,7 +253,7 @@ class ParsersTest {
              wlan0:1200000    900    0    0    0     0          0         0   300000     400    0    0    0     0       0          0
               eth0:     10       1    0    0    0     0          0         0       20       1    0    0    0     0       0          0
         """.trimIndent()
-        assertEquals(1_500_030L, Parsers.netBytes(dev))
+        assertEquals(Parsers.NetBytes(1_200_010, 300_020), Parsers.netBytes(dev))
         assertEquals(null, Parsers.netBytes("cat: /proc/net/dev: Permission denied\n"))
     }
 
@@ -192,6 +265,18 @@ class ParsersTest {
         // 1600000000 is 13 September 2020, UTC.
         assertEquals(java.time.YearMonth.of(2020, 9), Parsers.softwareMonth(mapOf("ro.build.date.utc" to "1600000000")))
         assertEquals(null, Parsers.softwareMonth(mapOf("ro.build.version.security_patch" to "", "ro.build.date.utc" to "0")))
+    }
+
+    @Test fun fireOsVersionFromItsBuildName() {
+        val amazon = mapOf("ro.product.manufacturer" to "Amazon")
+        assertEquals("8.1.4.9", Parsers.fireOsVersion(amazon + ("ro.build.version.name" to "Fire OS 8.1.4.9 (RS8149/3133)")))
+        assertEquals("7.7.1.7", Parsers.fireOsVersion(amazon + ("ro.build.version.name" to "7.7.1.7 (PS7717/5741)")))
+        // Fire OS 5 has its own prop, read first.
+        assertEquals("5.2.2.0", Parsers.fireOsVersion(mapOf("ro.build.version.fireos" to "5.2.2.0", "ro.build.version.name" to "Fire OS 5.2.2.0 (555164120)")))
+        // Another maker's build name isn't Fire OS.
+        assertEquals(null, Parsers.fireOsVersion(mapOf("ro.product.manufacturer" to "XGIMI", "ro.build.version.name" to "V1.2.3")))
+        assertEquals(null, Parsers.fireOsVersion(amazon + ("ro.build.version.name" to "")))
+        assertEquals(null, Parsers.fireOsVersion(amazon))
     }
 
     @Test fun psProcessesFromToyboxAndToolbox() {

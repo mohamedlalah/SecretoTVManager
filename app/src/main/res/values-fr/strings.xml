@@ -255,7 +255,7 @@
     <string name="launcher_ok">OK</string>
     <string name="history_empty_title">Aucune modification pour le moment</string>
     <string name="history_empty_text">Chaque application arrêtée, désactivée ou activée apparaît ici, avec une option pour annuler.</string>
-    <string name="history_restoring">Réactivation des applications…</string>
+    <string name="history_restoring">Rétablissement des modifications…</string>
     <string name="history_restore_all">Tout rétablir (%1$d)</string>
     <string name="history_undone">Annulé</string>
     <string name="debloat_title">Alléger</string>
@@ -272,30 +272,30 @@
     <string name="update_cancel">Annuler</string>
     <string name="advanced_back">Retour à la page du téléviseur</string>
     <string name="advanced_this_tv">Ce téléviseur</string>
-    <string name="advanced_ip_address">Adresse IP</string>
-    <string name="advanced_port">Port</string>
-    <string name="advanced_maker">Fabricant</string>
-    <string name="advanced_network_name">Nom réseau</string>
+
+
+
+
     <string name="advanced_loading">Chargement des statistiques…</string>
-    <string name="advanced_cpu_by_app">Processeur par application</string>
-    <string name="advanced_ram_by_app">RAM par application</string>
-    <string name="advanced_processes">Processus</string>
+
+
+    <plurals name="advanced_processes"><item quantity="one">%1$d processus</item><item quantity="other">%1$d processus</item><item quantity="many">%1$d processus</item></plurals>
     <string name="advanced_network">Réseau</string>
     <string name="advanced_cpu">Processeur</string>
     <string name="advanced_ram">RAM</string>
-    <string name="advanced_app">Application</string>
+
     <string name="advanced_on_for">Allumé depuis</string>
     <string name="advanced_screen">Écran</string>
     <string name="advanced_screen_on">Allumé</string>
     <string name="advanced_screen_off">Éteint</string>
     <string name="advanced_percent">%1$d%%</string>
     <string name="advanced_percent_whole">%1$.0f%%</string>
-    <string name="advanced_percent_tenths">%1$.1f%%</string>
-    <string name="advanced_as_of">État %1$s</string>
+
+
     <string name="advanced_memory">Mémoire</string>
     <string name="advanced_storage">Stockage</string>
-    <string name="advanced_percent_used">%1$d%% utilisés</string>
-    <string name="advanced_other">Autres</string>
+
+
     <string name="advanced_connection">Connexion</string>
     <string name="advanced_wifi">Wi-Fi</string>
     <string name="advanced_ethernet">Ethernet</string>
@@ -305,10 +305,10 @@
     <string name="advanced_signal_weak">Faible (%1$d dBm)</string>
     <string name="advanced_signal_very_weak">Très faible (%1$d dBm)</string>
     <string name="advanced_mac">MAC</string>
-    <string name="advanced_link_speed">Vitesse de liaison</string>
+
     <string name="advanced_mbps">%1$d Mbit/s</string>
-    <string name="advanced_data_used">Données utilisées</string>
-    <string name="advanced_open_connections">Connexions ouvertes</string>
+
+    <plurals name="advanced_open_connections"><item quantity="one">%1$d connexion ouverte</item><item quantity="other">%1$d connexions ouvertes</item><item quantity="many">%1$d connexions ouvertes</item></plurals>
     <string name="device_as_of">État %1$s</string>
     <string name="device_internal_storage">Stockage interne</string>
     <string name="device_gb_used">%1$s utilisés</string>
@@ -319,7 +319,7 @@
     <string name="device_disable_title">Désactiver %1$s ?</string>
     <string name="device_cancel">Annuler</string>
     <string name="device_restore_text">Réactive toutes les applications désactivées par Secreto TV Manager sur ce téléviseur. Celles déjà désactivées avant sa première modification le restent.</string>
-    <string name="device_restore_button">Réactiver</string>
+    <string name="device_restore_button">Rétablir</string>
     <string name="device_rename_title">Renommer ce téléviseur</string>
     <string name="device_rename_text">Ce nom est visible uniquement sur ce téléphone. Rien ne change sur le téléviseur.</string>
     <string name="device_save">Enregistrer</string>
@@ -416,7 +416,7 @@
     <string name="copy_built_in">Préinstallé sur le téléviseur</string>
     <string name="copy_built_in_off">Préinstallé · désactivé</string>
     <string name="copy_current">Actuel</string>
-    <string name="copy_keeps_home">Maintient l’accueil avec son service d’accessibilité</string>
+
     <string name="copy_make_home">Définir comme accueil</string>
     <string name="copy_not_now">Pas maintenant</string>
     <string name="copy_state_online">Connecté</string>
@@ -456,9 +456,9 @@
     <string name="copy_debloat_done">Allègement terminé</string>
     <string name="copy_debloat_partly">Allègement partiel</string>
     <string name="copy_debloat_result_text">Rien n’a été supprimé. Vous pouvez annuler depuis l’historique.</string>
-    <string name="copy_get_launcher">Obtenir un autre lanceur</string>
-    <string name="copy_get_launcher_text">Installez Projectivy ou FLauncher depuis le Play Store. Vous pourrez revenir en arrière à tout moment.</string>
-    <string name="copy_get_projectivy_text">Installez Projectivy. Retour possible à tout moment.</string>
+
+
+
     <string name="copy_home_settings">Paramètres de l’accueil</string>
     <string name="copy_make_home_title">Définir %1$s comme accueil ?</string>
     <string name="copy_explain_replace_opens">La touche Accueil ouvre %1$s. Pour empêcher le retour automatique, Secreto TV Manager désactive %2$s, le lanceur intégré du téléviseur.</string>
@@ -494,10 +494,10 @@
     <string name="copy_choose_home_text">Chacun remplace l’accueil du téléviseur. Secreto TV Manager ouvre sa page Play Store sur le téléviseur ; installez-le avec la télécommande.</string>
     <string name="copy_can_download">Certains sont aussi téléchargeables directement.</string>
     <string name="copy_no_launcher_list">Impossible de charger les lanceurs. Vérifiez Internet sur le téléphone et réessayez.</string>
-    <string name="copy_recommended">Recommandé</string>
+    <string name="copy_recommended">Sélection de la rédaction</string>
     <string name="copy_on_this_tv">Sur ce téléviseur</string>
     <string name="copy_installed">Installé</string>
-    <string name="copy_home_now">Accueil actuel</string>
+
     <string name="copy_open">Ouvrir</string>
     <string name="copy_uses_service">Utilise un service d’accessibilité</string>
     <string name="copy_no_service">Code ouvert · sans service d’accessibilité</string>
@@ -524,7 +524,7 @@
     <string name="copy_not_installed">%1$s n’est pas installé</string>
     <string name="copy_wasnt_installed">%1$s n’a pas été installé</string>
     <string name="copy_not_installed_text">Le Play Store s’est fermé avant la fin. Si l’application est indisponible pour ce téléviseur, choisissez un autre lanceur.</string>
-    <string name="copy_install_projectivy">Installer Projectivy</string>
+
     <string name="copy_fire_install_text">Un accueil sans publicité. Secreto TV Manager l’installe pour vous ; aucune action nécessaire sur le téléviseur.</string>
     <string name="copy_downloads_from">Secreto TV Manager télécharge %1$s depuis la page officielle des versions du développeur :</string>
     <string name="copy_release">Version %1$s · %2$s</string>
@@ -541,11 +541,11 @@
     <string name="copy_step_downloaded">Téléchargé</string>
     <string name="copy_downloading">Téléchargement · %1$d%% · %2$s sur %3$s</string>
     <string name="copy_step_picked">Fichier choisi</string>
-    <string name="copy_step_check">Vérifier Projectivy</string>
-    <string name="copy_step_checking">Vérification de Projectivy…</string>
-    <string name="copy_step_checked">Projectivy vérifié</string>
+    <string name="copy_step_check">Vérifier qu’il s’agit de %1$s</string>
+    <string name="copy_step_checking">Vérification de %1$s…</string>
+    <string name="copy_step_checked">Il s’agit de %1$s</string>
     <string name="copy_step_checked_text">Signé par son développeur</string>
-    <string name="copy_step_failed">Ce n’est pas Projectivy</string>
+    <string name="copy_step_failed">Ce n’est pas %1$s</string>
     <string name="copy_step_failed_text">Nom du paquet ou signature non conforme</string>
     <string name="copy_install_on">Installer sur %1$s</string>
     <string name="copy_stop_title">Arrêter le téléchargement ?</string>
@@ -553,13 +553,13 @@
     <string name="copy_stop">Arrêter</string>
     <string name="copy_keep_downloading">Continuer le téléchargement</string>
     <string name="copy_installing_on">Installation sur %1$s…</string>
-    <string name="copy_not_projectivy">Ce téléchargement n’est pas Projectivy</string>
+
     <string name="copy_not_projectivy_text">Le fichier GitHub ne correspondait pas au paquet ou à la signature de Projectivy. Secreto TV Manager n’a rien installé.</string>
-    <string name="copy_not_projectivy_file">Ce fichier n’est pas Projectivy</string>
+
     <string name="copy_not_projectivy_file_text">Le paquet ou la signature ne correspondait pas à Projectivy. Secreto TV Manager n’a rien installé.</string>
     <string name="copy_cant_read_file">Secreto TV Manager n’a pas pu lire ce fichier. Choisissez-le ou téléchargez-le à nouveau.</string>
     <string name="copy_cant_install">Impossible d’installer %1$s</string>
-    <string name="copy_no_download">Impossible de télécharger Projectivy</string>
+    <string name="copy_no_download">Impossible de télécharger %1$s</string>
     <string name="copy_no_download_offline">GitHub est inaccessible. Vérifiez Internet sur le téléphone et réessayez.</string>
     <string name="copy_no_download_limited_until">GitHub limite les téléchargements sur votre réseau jusqu’à %1$s. Réessayez ensuite ou téléchargez vous-même.</string>
     <string name="copy_no_download_limited">GitHub limite temporairement les téléchargements sur votre réseau. Réessayez plus tard ou téléchargez vous-même.</string>
@@ -575,9 +575,9 @@
     <string name="copy_open_again">Rouvrir</string>
     <string name="copy_undo">Annuler la modification</string>
     <string name="copy_just_now">à l’instant</string>
-    <string name="copy_uptime_days_hours">%1$d j %2$d h</string>
-    <string name="copy_uptime_hours_minutes">%1$d h %2$d min</string>
-    <string name="copy_uptime_minutes">%1$d min</string>
+
+
+
     <string name="copy_days_hours">%1$s, %2$s</string>
     <string name="copy_speed">%1$s/s</string>
     <string name="copy_size_gb">%1$.1f Go</string>
@@ -748,8 +748,8 @@
     <string name="copy_reset_button">Rétablir le téléviseur</string>
     <string name="copy_reset_done">État d’origine du téléviseur rétabli</string>
     <string name="copy_reset_partly">Rétablissement partiel</string>
-    <string name="copy_reset_done_home">%1$s est l’accueil. Données et connexions conservées.</string>
-    <string name="copy_reset_done_nothing">. Données et connexions conservées.</string>
+    <string name="copy_reset_done_home">%1$s est l’écran d’accueil.</string>
+
     <string name="copy_is_home">%1$s est l’accueil</string>
     <string name="copy_still_home">%1$s est toujours l’accueil</string>
     <string name="copy_try_app_again">Réessayer %1$s</string>
@@ -834,7 +834,7 @@
     <string name="vm_not_an_ip">Adresse IP invalide. Saisissez quatre nombres séparés par des points, comme dans les paramètres réseau du téléviseur.</string>
     <string name="vm_bad_port">Le port après les deux-points doit être un nombre de 1 à 65535, par exemple 5555.</string>
     <string name="vm_didnt_work">L’opération a échoué.</string>
-    <string name="vm_nothing_to_turn_on">Rien à réactiver.</string>
+
     <string name="vm_tv_refused">le téléviseur a refusé</string>
     <string name="vm_tv_didnt_answer">Le téléviseur n’a pas répondu.</string>
     <string name="vm_tv_didnt_answer_reason">le téléviseur n’a pas répondu</string>
@@ -871,7 +871,7 @@
     <string name="data_no_home_to_switch_back">aucun accueil à rétablir</string>
     <string name="data_uninstall_after_service">%1$s. Aucune désinstallation</string>
     <string name="data_uninstall_home_not_back">accueil non rétabli : %1$s. Aucune désinstallation</string>
-    <string name="data_restore_none">réactivation impossible : %1$s</string>
+
     <string name="data_no_reset_to_undo">aucun rétablissement à annuler</string>
     <string name="data_reset_already_undone">ce rétablissement est déjà annulé</string>
     <string name="data_reset_tv_kept_home">le téléviseur a conservé %1$s comme accueil</string>
@@ -1011,14 +1011,14 @@
         <item quantity="other">%1$d applications livrées désactivées par %2$s le restent.</item>
     </plurals>
     <plurals name="copy_reset_done_apps_home">
-        <item quantity="one">%1$d application préinstallée restaurée ; %2$s est l’accueil. Données et connexions conservées.</item>
-        <item quantity="many">%1$d applications préinstallées restaurées ; %2$s est l’accueil. Données et connexions conservées.</item>
-        <item quantity="other">%1$d applications préinstallées restaurées ; %2$s est l’accueil. Données et connexions conservées.</item>
+        <item quantity="one">%1$d application préinstallée rétablie ; %2$s est l’accueil.</item>
+        <item quantity="many">%1$d applications préinstallées rétablies ; %2$s est l’accueil.</item>
+        <item quantity="other">%1$d applications préinstallées rétablies ; %2$s est l’accueil.</item>
     </plurals>
     <plurals name="copy_reset_done_apps">
-        <item quantity="one">%1$d application préinstallée restaurée. Données et connexions conservées.</item>
-        <item quantity="many">%1$d applications préinstallées restaurées. Données et connexions conservées.</item>
-        <item quantity="other">%1$d applications préinstallées restaurées. Données et connexions conservées.</item>
+        <item quantity="one">%1$d application préinstallée rétablie.</item>
+        <item quantity="many">%1$d applications préinstallées rétablies.</item>
+        <item quantity="other">%1$d applications préinstallées rétablies.</item>
     </plurals>
     <plurals name="copy_reset_partly_text">
         <item quantity="one">%1$d étape a échoué. Le reste est rétabli à l’état d’origine. Rien n’a été perdu.</item>
@@ -1055,11 +1055,7 @@
         <item quantity="many">%1$d sur %2$d applications désactivées</item>
         <item quantity="other">%1$d sur %2$d applications désactivées</item>
     </plurals>
-    <plurals name="copy_still_off">
-        <item quantity="one">%1$d application encore désactivée</item>
-        <item quantity="many">%1$d applications encore désactivées</item>
-        <item quantity="other">%1$d applications encore désactivées</item>
-    </plurals>
+
     <plurals name="copy_still_off_title">
         <item quantity="one">%1$d application désactivée par Secreto TV Manager le reste</item>
         <item quantity="many">%1$d applications désactivées par Secreto TV Manager le restent</item>
@@ -1085,16 +1081,8 @@
         <item quantity="many">Vu il y a %1$d jours</item>
         <item quantity="other">Vu il y a %1$d jours</item>
     </plurals>
-    <plurals name="vm_turned_back_on">
-        <item quantity="one">%1$d application réactivée.</item>
-        <item quantity="many">%1$d applications réactivées.</item>
-        <item quantity="other">%1$d applications réactivées.</item>
-    </plurals>
-    <plurals name="data_restore_some">
-        <item quantity="one">%1$d application réactivée, puis arrêt : %2$s</item>
-        <item quantity="many">%1$d applications réactivées, puis arrêt : %2$s</item>
-        <item quantity="other">%1$d applications réactivées, puis arrêt : %2$s</item>
-    </plurals>
+
+
     <plurals name="data_reset_undo_partial">
         <item quantity="one">%1$d sur %2$d modification annulée. %3$s. Réessayez Annuler pour le reste</item>
         <item quantity="many">%1$d sur %2$d modifications annulées. %3$s. Réessayez Annuler pour le reste</item>
@@ -1136,9 +1124,9 @@
         <item quantity="other">%1$d applications ne tenaient pas dans le lien. Ajoutez-les pour aider cleanyourtv à compléter la liste.</item>
     </plurals>
     <plurals name="device_restore_title">
-        <item quantity="one">Réactiver %1$d application ?</item>
-        <item quantity="many">Réactiver %1$d applications ?</item>
-        <item quantity="other">Réactiver %1$d applications ?</item>
+        <item quantity="one">Annuler %1$d modification ?</item>
+        <item quantity="many">Annuler %1$d modifications ?</item>
+        <item quantity="other">Annuler %1$d modifications ?</item>
     </plurals>
     <plurals name="connect_more_digits">
         <item quantity="one">Encore %1$d chiffre</item>
@@ -1182,4 +1170,124 @@
     <string name="about_credits">Crédits et licences</string>
     <string name="about_show_credits">Afficher les crédits et licences</string>
     <string name="about_hide_credits">Masquer les crédits et licences</string>
+    <string name="copy_change_home">Changer l’écran d’accueil</string>
+    <string name="copy_change_home_text">Installez un autre accueil depuis la sélection, ou choisissez-en un déjà installé sur le téléviseur.</string>
+    <string name="copy_install">Installer</string>
+    <string name="copy_home_screen_of">Écran d’accueil de %1$s</string>
+    <string name="copy_picture_failed">Impossible de charger l’image</string>
+    <string name="copy_install_launcher">Installer %1$s</string>
+    <string name="copy_fire_pick_text">Un accueil sans publicité. Téléchargez-le dans votre navigateur, puis sélectionnez le fichier ici. Secreto TV Manager l’installe sur le téléviseur.</string>
+    <string name="copy_wrong_apk">Ce téléchargement n’est pas %1$s</string>
+    <string name="copy_wrong_apk_text">Le nom du paquet ou la signature du fichier GitHub ne correspond pas à %1$s. Secreto TV Manager n’a rien installé.</string>
+    <string name="copy_wrong_apk_file">Ce fichier n’est pas %1$s</string>
+    <string name="copy_wrong_apk_file_text">Le nom du paquet ou la signature du fichier ne correspond pas à %1$s. Secreto TV Manager n’a rien installé.</string>
+    <string name="copy_unverified_title">Impossible de vérifier la liste des lanceurs</string>
+    <string name="copy_unverified_text">Impossible de confirmer que Tellyscope a publié cette liste. Si elle vient de changer, réessayez plus tard. N’installez que si vous faites confiance à la liste et à son signataire.</string>
+    <string name="copy_unverified_list">Liste</string>
+    <string name="copy_unverified_signer">Signataire (SHA-256)</string>
+    <string name="copy_unverified_trust">Je fais confiance à cette liste et à son signataire</string>
+    <string name="copy_off_wifi_line">Connectez-vous au même Wi-Fi que le téléviseur. Secreto TV Manager se reconnectera automatiquement.</string>
+    <string name="copy_apps_offline">Les applications apparaîtront ici une fois le téléviseur connecté.</string>
+    <string name="copy_send_failed_off_wifi">Impossible d’envoyer %1$s. Ce téléphone n’est pas connecté au Wi-Fi.</string>
+    <string name="copy_store_opened">%1$s ouvert sur le téléviseur.</string>
+    <string name="copy_store_cant_open">Impossible d’ouvrir %1$s sur le téléviseur.</string>
+    <string name="copy_fire_settings_opened">Paramètres ouverts sur le téléviseur. Accédez à My Fire TV (Appareil et logiciel sur les téléviseurs), puis À propos, puis Rechercher les mises à jour.</string>
+    <string name="copy_no_fire_update_screen">Impossible d’ouvrir les paramètres. Sur le téléviseur, accédez à Paramètres, My Fire TV (Appareil et logiciel), À propos, puis Rechercher les mises à jour.</string>
+    <string name="copy_open_an_app">Ouvrir une application</string>
+    <string name="copy_open_an_app_hint">Applications de streaming sur %1$s. Appuyez sur une application pour l’ouvrir.</string>
+    <string name="copy_caches_too_old">Nécessite Android 8 ou plus récent. Ce téléviseur est trop ancien.</string>
+    <string name="copy_reset_dns">Rétablir le DNS privé automatique</string>
+    <string name="copy_reset_animations">Rétablir la vitesse normale des animations</string>
+    <string name="copy_reset_was">Ancien réglage : %1$s</string>
+    <string name="copy_dns_off">désactivé</string>
+    <string name="copy_animation_scale">%1$s×</string>
+    <string name="copy_resetting_dns">Rétablissement du DNS privé automatique.</string>
+    <string name="copy_resetting_animations">Rétablissement de la vitesse normale des animations.</string>
+    <string name="copy_reset_done_settings">Le DNS privé et les animations ont retrouvé leurs réglages par défaut.</string>
+    <string name="copy_reset_done_dns">Le DNS privé est de nouveau automatique.</string>
+    <string name="copy_reset_done_animations">Les animations ont retrouvé leur vitesse normale.</string>
+    <string name="copy_reset_kept_data">Les données et connexions des applications ont été conservées.</string>
+    <string name="copy_dns_automatic">Le DNS privé est automatique</string>
+    <string name="copy_dns_still">Le DNS privé est toujours %1$s</string>
+    <string name="copy_animations_normal">Les animations sont à la vitesse normale</string>
+    <string name="copy_animations_still">Les animations sont toujours à %1$s</string>
+    <plurals name="copy_to_put_back"><item quantity="one">%1$d modification à annuler</item><item quantity="other">%1$d modifications à annuler</item><item quantity="many">%1$d modifications à annuler</item></plurals>
+    <plurals name="copy_put_back_title"><item quantity="one">%1$d modification de Secreto TV Manager est encore appliquée</item><item quantity="other">%1$d modifications de Secreto TV Manager sont encore appliquées</item><item quantity="many">%1$d modifications de Secreto TV Manager sont encore appliquées</item></plurals>
+    <string name="copy_put_back_text">Tout restaurer remet ce téléviseur dans son état précédant la première modification de Secreto TV Manager :</string>
+    <plurals name="copy_restore_on"><item quantity="one">Réactive %1$d application</item><item quantity="other">Réactive %1$d applications</item><item quantity="many">Réactive %1$d applications</item></plurals>
+    <plurals name="copy_restore_off"><item quantity="one">Désactive de nouveau %1$d application</item><item quantity="other">Désactive de nouveau %1$d applications</item><item quantity="many">Désactive de nouveau %1$d applications</item></plurals>
+    <plurals name="copy_restore_remove"><item quantity="one">Supprime %1$d application rétablie par la réinitialisation</item><item quantity="other">Supprime %1$d applications rétablies par la réinitialisation</item><item quantity="many">Supprime %1$d applications rétablies par la réinitialisation</item></plurals>
+    <string name="copy_restore_home">Rétablit l’accueil</string>
+    <string name="copy_restore_dns">Rétablit le DNS privé</string>
+    <string name="copy_restore_animations">Rétablit la vitesse des animations</string>
+    <plurals name="copy_restore_gone"><item quantity="one">%1$d application désinstallée ne peut pas être rétablie</item><item quantity="other">%1$d applications désinstallées ne peuvent pas être rétablies</item><item quantity="many">%1$d applications désinstallées ne peuvent pas être rétablies</item></plurals>
+    <string name="copy_restore_line">• %1$s</string>
+    <string name="vm_nothing_to_put_back">Aucune modification à annuler.</string>
+    <plurals name="vm_put_back"><item quantity="one">%1$d modification annulée.</item><item quantity="other">%1$d modifications annulées.</item><item quantity="many">%1$d modifications annulées.</item></plurals>
+    <plurals name="vm_put_back_partly"><item quantity="one">%1$d modification annulée sur %2$d. %3$d non annulée, dont %4$s : %5$s</item><item quantity="other">%1$d modifications annulées sur %2$d. %3$d non annulées, dont %4$s : %5$s</item><item quantity="many">%1$d modifications annulées sur %2$d. %3$d non annulées, dont %4$s : %5$s</item></plurals>
+    <string name="data_restore_home">Accueil</string>
+    <string name="data_restore_dns">DNS privé</string>
+    <string name="data_restore_animations">Vitesse des animations</string>
+    <string name="data_history_service_on">Service d’accessibilité de %1$s activé</string>
+    <string name="tabs_store_sub">Obtenir des applications et leurs mises à jour</string>
+    <string name="tabs_store_off">Désactivé sur ce téléviseur</string>
+    <string name="advanced_copy_address">Copier l’adresse</string>
+    <string name="advanced_android">Android</string>
+    <string name="advanced_updated">Mis à jour</string>
+    <string name="advanced_offline_as_of">Hors ligne · depuis %1$s</string>
+    <string name="advanced_busiest">Les plus actifs</string>
+    <string name="advanced_copy_mac">Copier l’adresse MAC</string>
+    <string name="advanced_signal_strong_word">Fort</string>
+    <string name="advanced_signal_good_word">Bon</string>
+    <string name="advanced_signal_weak_word">Faible</string>
+    <string name="advanced_signal_very_weak_word">Très faible</string>
+    <string name="advanced_not_running">À l’arrêt</string>
+    <string name="advanced_split_apps">Applications</string>
+    <string name="advanced_split_system">Système</string>
+    <string name="advanced_split_waiting">En attente du stockage</string>
+    <string name="advanced_core">Cœur %1$d</string>
+    <string name="advanced_ghz">%1$.1f GHz</string>
+    <string name="advanced_in_use">Utilisée</string>
+    <string name="advanced_cached">En cache</string>
+    <string name="advanced_free">Libre</string>
+    <string name="advanced_swap">Échange : %1$s sur %2$s</string>
+    <string name="advanced_wifi_on">Wi-Fi · %1$s</string>
+    <string name="advanced_since_boot">Depuis le démarrage ↓ %1$s ↑ %2$s</string>
+    <string name="advanced_minute_ago">il y a 60 s</string>
+    <string name="advanced_now">maintenant</string>
+    <string name="advanced_cpu_share">%1$.0f%% CPU</string>
+    <string name="advanced_since_boot_short">%1$s depuis le démarrage</string>
+    <string name="advanced_processes_n">Processus · %1$d</string>
+    <string name="advanced_connections_n">Connexions ouvertes · %1$d</string>
+    <string name="advanced_established">Établie</string>
+    <string name="advanced_connecting">Connexion</string>
+    <string name="advanced_closing">Fermeture</string>
+    <plurals name="advanced_cores"><item quantity="one">%1$d cœur</item><item quantity="other">%1$d cœurs</item><item quantity="many">%1$d cœurs</item></plurals>
+    <plurals name="advanced_connections"><item quantity="one">%1$d connexion</item><item quantity="other">%1$d connexions</item><item quantity="many">%1$d connexions</item></plurals>
+    <plurals name="advanced_apps_running"><item quantity="one">%1$d application en cours</item><item quantity="other">%1$d applications en cours</item><item quantity="many">%1$d applications en cours</item></plurals>
+    <string name="shell_open">Terminal</string>
+    <string name="shell_close">Fermer le terminal</string>
+    <string name="shell_title">%1$s · %2$s</string>
+    <string name="shell_banner">Connecté à %1$s (%2$s).\nSaisissez exit ou appuyez sur ✕ pour fermer.</string>
+    <string name="shell_trimmed">Lignes précédentes supprimées : affichage des %1$d dernières.</string>
+    <string name="shell_offline_hint">Les commandes fonctionneront dès le retour du téléviseur.</string>
+    <string name="shell_key_paste">Coller</string>
+    <string name="shell_key_up">Commande précédente</string>
+    <string name="shell_key_down">Commande suivante</string>
+    <string name="shell_confirm">Ceci modifie le téléviseur. Exécuter ? [y/N]</string>
+    <string name="shell_confirm_answered">Ceci modifie le téléviseur. Exécuter ? [y/N] %1$s</string>
+    <string name="shell_no_history">Les commandes du terminal ne figurent pas dans l’historique : aucune annulation en un geste.</string>
+    <string name="shell_not_run">Non exécuté.</string>
+    <string name="shell_not_shell">Seules les commandes adb shell sont acceptées ici.</string>
+    <string name="shell_full_screen">%1$s nécessite un terminal plein écran, non pris en charge ici.</string>
+    <string name="shell_dropped_prefix">(préfixe \"adb shell\" retiré)</string>
+    <string name="shell_lost">Connexion perdue avant la fin de la commande. Elle a pu s’exécuter partiellement.</string>
+    <string name="device_app_background">En arrière-plan</string>
+    <string name="device_app_on_screen">À l’écran</string>
+    <string name="remote_volume_fixed">Le volume est fixe via HDMI. Utilisez la télécommande du téléviseur.</string>
+    <string name="remote_dpad">Pavé directionnel</string>
+    <string name="remote_touchpad">Pavé tactile</string>
+    <string name="remote_touchpad_swipe">Balayez pour déplacer</string>
+    <string name="remote_touchpad_tap">Touchez pour valider</string>
+    <string name="scan_vpn">Un VPN est actif et empêche la recherche sur le Wi-Fi. Les téléviseurs qui se signalent restent visibles. Ajoutez le téléviseur par adresse IP ou autorisez le réseau local dans votre VPN.</string>
 </resources>

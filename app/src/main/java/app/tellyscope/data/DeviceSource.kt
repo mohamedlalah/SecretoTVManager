@@ -14,11 +14,14 @@ import app.tellyscope.adb.TvFacts
 import app.tellyscope.adb.TvFile
 import app.tellyscope.adb.TvFolder
 import app.tellyscope.adb.Tweak
+import app.tellyscope.adb.TvShell
+import app.tellyscope.adb.UpdateScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import okio.Sink
 import okio.Source
 import java.io.File
+import java.io.IOException
 
 /**
  * Everything the screens need from a TV. The UI only talks to this; an
@@ -33,8 +36,17 @@ interface DeviceSource {
     /** Emits whenever the phone is on a Wi-Fi or Ethernet network a [scan] can sweep. */
     fun lanUp(): Flow<Unit> = emptyFlow()
 
+    /**
+     * Until cancelled, each new network that reaches the internet gives the shared lists another go, so ones
+     * that couldn't be downloaded at launch (the phone offline, nothing cached) arrive without a restart.
+     */
+    suspend fun refreshListsOnNetwork() {}
+
     /** Whether the phone is on Wi-Fi or Ethernet right now, VPN or not. */
     fun onLan(): Boolean = true
+
+    /** The phone just left Wi-Fi: every online TV goes offline now rather than when a read times out. */
+    fun lanLost() {}
 
     /** Classic connect. Suspends while the TV shows the Allow prompt; the caller owns the timeout. */
     suspend fun connect(hit: ScanHit): ConnectResult
@@ -105,8 +117,14 @@ interface DeviceSource {
     /** Everything Tellyscope changed on this TV, newest first. Survives app restarts. */
     suspend fun history(deviceId: String): List<HistoryEntry>
 
-    /** Turns back on every app Tellyscope disabled, and nothing that was off before. */
-    suspend fun restoreAll(deviceId: String): List<HistoryEntry>
+    /**
+     * Everything Tellyscope changed on this TV, as it was before its first change to each: what
+     * [restoreAll] puts back. Read on the phone; [restoreAll] then skips what the TV already shows so.
+     */
+    suspend fun restorable(deviceId: String): Restorable
+
+    /** Puts everything Tellyscope changed back as it was before its first change, on past any step the TV refuses. */
+    suspend fun restoreAll(deviceId: String): RestoreResult
 
     /** What Reset TV would change, read from the TV itself, whoever changed it. Throws if it's gone. */
     suspend fun resetPlan(deviceId: String): ResetPlan = ResetPlan()
@@ -164,7 +182,13 @@ interface DeviceSource {
     /** The remote screen closed: stop anything [press] left running on the TVs. */
     fun closeRemote() {}
 
-    /** Types into the focused box on the TV. The caller checks [app.tellyscope.adb.Remote.typeable] first. */
+    /**
+     * The TV can't change volume from here: a box on HDMI whose own volume is fixed, so the
+     * Remote's volume keys do nothing (see [app.tellyscope.adb.Remote.musicFixed]). Throws when it's gone.
+     */
+    suspend fun volumeFixed(deviceId: String): Boolean = false
+
+    /** Types into the focused box on the TV. The caller checks [app.tellyscope.adb.Remote.sendable] first. */
     suspend fun type(deviceId: String, text: String): Boolean
 
     /**
@@ -176,6 +200,9 @@ interface DeviceSource {
     /** Restarts the TV. The link drops and reconnects on its own once the TV is back. False if the TV refused. */
     suspend fun reboot(deviceId: String): Boolean
 
+    /** A shell session on the TV, for Advanced's Shell; each command reaches the TV over whatever link is up then. */
+    fun shell(deviceId: String): TvShell = TvShell({ throw IOException("no shell") }) { throw IOException("no shell") }
+
     /** Opens [packageName] on the TV, the way its launcher icon would. False when it has nothing to open. Not history. */
     suspend fun launch(deviceId: String, packageName: String): Boolean
 
@@ -184,8 +211,8 @@ interface DeviceSource {
 
     suspend fun setDock(deviceId: String, dock: List<Docked>)
 
-    /** Opens the TV's system update screen on the TV. False when the TV has no such screen. */
-    suspend fun openUpdates(deviceId: String): Boolean
+    /** Opens the TV's system update screen on the TV, or as near to it as the TV allows. */
+    suspend fun openUpdates(deviceId: String): UpdateScreen
 
     /** Private DNS and animation speed as the TV has them now. */
     suspend fun tweaks(deviceId: String): TvTweaks

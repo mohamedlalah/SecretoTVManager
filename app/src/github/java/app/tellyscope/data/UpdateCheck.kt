@@ -12,27 +12,20 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Properties
 
-const val PROJECT_REPO = "https://github.com/mohamedlalah/SecretoTVManager"
-const val UPSTREAM_REPO = "https://github.com/man15h/tellyscope"
-const val RELEASES = "$PROJECT_REPO/releases"
-const val RELEASES_API = "https://api.github.com/repos/mohamedlalah/SecretoTVManager/releases/latest"
-
 private const val RELEASE_INTERVAL_MS = 30 * 60 * 1000L
 private const val ALPHA_INTERVAL_MS = 5 * 60 * 1000L
 
 /** Metadata only. The application never downloads an APK or offers installation. */
-data class Update(val version: String, val notes: String, val url: String)
-enum class UpdateStatus { NotChecked, NoPublishedUpdates, UpToDate, Available, Failed, Disabled }
 
 /** Only the official fork's latest published stable release; no alternate repository or endpoint. */
 class UpdateCheck(
     private val file: File,
     private val current: String,
-    val alpha: Boolean,
+    override val alpha: Boolean = false,
     private val clock: () -> Long = System::currentTimeMillis,
     private val fetch: suspend (String) -> ByteArray = ::fetchOfficialRelease,
-) {
-    @Volatile var status: UpdateStatus = props().let { p ->
+) : Updates {
+    @Volatile override var status: UpdateStatus = props().let { p ->
         if (p.getProperty("source") == RELEASES_API && p.getProperty("status") == UpdateStatus.NoPublishedUpdates.name)
             UpdateStatus.NoPublishedUpdates else UpdateStatus.NotChecked
     }
@@ -40,7 +33,7 @@ class UpdateCheck(
     private var latestOfficial: Update? = null
 
     @get:Synchronized @set:Synchronized
-    var enabled: Boolean
+    override var enabled: Boolean
         get() = props().getProperty("off") != "true"
         set(on) {
             save { if (on) remove("off") else setProperty("off", "true") }
@@ -51,7 +44,7 @@ class UpdateCheck(
         }
 
     /** Null means no new offer. [status] distinguishes no published release from network errors. */
-    suspend fun check(): Update? = withContext(Dispatchers.IO) {
+    override suspend fun check(): Update? = withContext(Dispatchers.IO) {
         val p = props()
         if (p.getProperty("off") == "true") { status = UpdateStatus.Disabled; return@withContext null }
         // The old upstream timestamp must not suppress the first check against the fork.
@@ -81,7 +74,7 @@ class UpdateCheck(
     }
 
     /** What's new uses the already-fetched official release notes, never upstream/main history. */
-    suspend fun newer(): List<Changelog.Release>? = withContext(Dispatchers.IO) {
+    override suspend fun newer(): List<Changelog.Release>? = withContext(Dispatchers.IO) {
         if (status == UpdateStatus.Failed) return@withContext null
         val release = latestOfficial?.takeIf { compareVersions(it.version, current) > 0 } ?: return@withContext emptyList()
         val changes = Changelog.parse("# Changelog\n\n## ${release.version}\n\n${release.notes}").firstOrNull()?.changes.orEmpty()

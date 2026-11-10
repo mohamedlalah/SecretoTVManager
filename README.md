@@ -128,12 +128,14 @@ English, العربية, Français, Español, हिन्दी, 日本語, Р�
 The repository includes the Gradle wrapper, app/ADB/CLI modules, TV-helper sources, resource assets, R8 rules, legal bundling and release-preparation scripts. Install an Android SDK with platform 37 and the compatible build tools; configure your SDK locally (never commit local.properties).
 
 ```sh
-./gradlew :app:assembleDebug
-./gradlew :app:assembleRelease       # unsigned when RELEASE_* variables are absent
+./gradlew :app:assembleGithubDebug
+./gradlew :app:assembleGithubRelease       # unsigned when RELEASE_* variables are absent
 python3 -m unittest discover -s tests/release -v
 ```
 
 AGP is 9.4.1, Gradle 9.8.2 and Java source/target is 17. The checked-in daemon criteria select JDK 21. Kadb 2.1.5 contains Java 25 class files: tests loading it require a Java 25 test runtime, so installing JDK 25 or setting JAVA_HOME alone may not override the daemon criteria. With an isolated Java25 test launcher, the full app (701) and ADB (296) suites now pass: 997 tests, zero failures/errors/skips. Running the tests on Java21 still encounters Kadb’s class-version mismatch; the project daemon criteria remain21. See [Java25 verification](docs/JAVA25_VERIFICATION.md) for the exact temporary override and [historical blocker resolution](docs/RELEASE_BLOCKERS_RESOLUTION.md).
+
+The GitHub debug APK is `app/build/outputs/apk/github/debug/app-github-debug.apk`. The optional `play` flavor excludes GitHub update checks and launcher downloads; both flavors bundle the same legal notices. The current development integration is documented in [the upstream update report](docs/UPSTREAM_V0_16_INTEGRATION.md). The test counts above describe the published v1.0.0 build.
 
 Producing an unsigned artifact does not require the official private key. A developer may sign their own build with their own key; it will not update the official signed installation. The private release key/password is never part of corresponding source.
 

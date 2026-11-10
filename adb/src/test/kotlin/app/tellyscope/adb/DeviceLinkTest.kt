@@ -2,11 +2,14 @@
 package app.tellyscope.adb
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -25,15 +28,32 @@ class DeviceLinkTest {
         assertEquals(1, calls)
     }
 
-    @Test fun rememberedDeviceRefusedOnceIsLoggedOut() = runTest {
-        // Each try shows "Allow debugging?" on the TV again, so a revoked key gets exactly one.
+    @Test fun rememberedDeviceRefusedTwiceIsLoggedOut() = runTest {
+        // Each try shows "Allow debugging?" on the TV again, so a revoked key gets two: once could be a dropped handshake.
         var calls = 0
         val link = DeviceLink("tv", 5555, backgroundScope, open = { _, _ -> calls++; ConnectResult.NotAllowed }, knownGood = true)
         link.connect(); runCurrent()
         advanceTimeBy(60_000)
         assertEquals(DeviceState.NOT_ALLOWED, link.state.value)
         assertTrue(link.loggedOutAt.value != null)
-        assertEquals(1, calls)
+        assertEquals(2, calls)
+    }
+
+    @Test fun rememberedDeviceRefusedOnceThenInIsNotLoggedOut() = runTest {
+        // A handshake that dropped reads as a refusal: the next try lets the phone in, and nothing is stamped.
+        var calls = 0
+        val link = DeviceLink(
+            "tv", 5555, backgroundScope,
+            monitorFor = { _, _ -> fakeMonitor(failFirst = false) },
+            open = { _, _ -> if (calls++ == 0) ConnectResult.NotAllowed else ConnectResult.Online(FakeShell()) },
+            knownGood = true,
+        )
+        link.connect(); runCurrent()
+        assertEquals(DeviceState.OFFLINE, link.state.value)
+        advanceTimeBy(6_000); runCurrent()
+        assertEquals(DeviceState.ONLINE, link.state.value)
+        assertEquals(null, link.loggedOutAt.value)
+        assertEquals(2, calls)
     }
 
     @Test fun refusalAfterAskingIsNotALogout() = runTest {
@@ -100,6 +120,68 @@ class DeviceLinkTest {
         assertEquals(2, sessions.size)
     }
 
+    @Test fun lanLostGoesOfflineAtOnce() = runTest {
+        // The read on the old connection never fails, as on a phone that just lost Wi-Fi.
+        val sessions = mutableListOf<FakeShell>()
+        var reachable = true
+        val link = DeviceLink(
+            "tv", 5555, backgroundScope,
+            monitorFor = { _, _ -> fakeMonitor(failFirst = false) },
+            open = { _, _ ->
+                if (reachable) ConnectResult.Online(FakeShell().also { sessions += it }) else ConnectResult.Unreachable("no route")
+            },
+        )
+        link.connect(); runCurrent()
+        assertEquals(DeviceState.ONLINE, link.state.value)
+
+        reachable = false
+        link.lanLost(); runCurrent()
+        assertEquals(DeviceState.OFFLINE, link.state.value)
+        assertEquals(reading, link.stats.value)
+        assertTrue(sessions[0].closed)
+
+        reachable = true
+        advanceTimeBy(5_001)
+        assertEquals(DeviceState.ONLINE, link.state.value)
+        assertEquals(2, sessions.size)
+    }
+
+    @Test fun wirelessDebuggingFollowsANewPort() = runTest {
+        // The TV came back from standby on a new port; the saved one refuses.
+        val tried = mutableListOf<Int>()
+        val link = DeviceLink(
+            "tv", 37211, backgroundScope,
+            monitorFor = { _, _ -> fakeMonitor(failFirst = false) },
+            open = { _, p -> tried += p; if (p == 40523) ConnectResult.Online(FakeShell()) else ConnectResult.Unreachable("refused") },
+            findPort = { 40523 },
+        )
+        link.connect(); runCurrent()
+        assertEquals(DeviceState.OFFLINE, link.state.value)
+        advanceTimeBy(5_001)
+        assertEquals(DeviceState.ONLINE, link.state.value)
+        assertEquals(listOf(37211, 40523), tried)
+        assertEquals(40523, link.port)
+    }
+
+    @Test fun noPortFoundKeepsTheOldOne() = runTest {
+        val tried = mutableListOf<Int>()
+        val link = DeviceLink("tv", 37211, backgroundScope, open = { _, p -> tried += p; ConnectResult.Unreachable("asleep") }, findPort = { null })
+        link.connect(); runCurrent()
+        advanceTimeBy(5_001)
+        assertEquals(listOf(37211, 37211), tried)
+        assertEquals(37211, link.port)
+    }
+
+    @Test fun lanLostLeavesAnOfflineLinkAlone() = runTest {
+        var calls = 0
+        val link = DeviceLink("tv", 5555, backgroundScope, open = { _, _ -> calls++; ConnectResult.NotAllowed })
+        link.connect(); runCurrent()
+        link.lanLost()
+        advanceTimeBy(60_000)
+        assertEquals(DeviceState.NOT_ALLOWED, link.state.value)
+        assertEquals(1, calls)
+    }
+
     @Test fun needsPairingStopsRetrying() = runTest {
         var calls = 0
         val link = DeviceLink("tv", 37011, backgroundScope, open = { _, _ -> calls++; ConnectResult.NeedsPairing })
@@ -109,8 +191,8 @@ class DeviceLinkTest {
         assertEquals(1, calls)
     }
 
-    @Test fun refusedAfterADropLogsOutAfterOneTry() = runTest {
-        // Online once, then the key is revoked: one try, then a logout instead of a prompt every 5 s.
+    @Test fun refusedAfterADropLogsOutAfterTwoTries() = runTest {
+        // Online once, then the key is revoked: two tries, then a logout instead of a prompt every 5 s.
         var calls = 0
         val link = DeviceLink(
             "tv", 5555, backgroundScope,
@@ -121,7 +203,7 @@ class DeviceLinkTest {
         advanceTimeBy(60_000)
         assertEquals(DeviceState.NOT_ALLOWED, link.state.value)
         assertTrue(link.loggedOutAt.value != null)
-        assertEquals(1 + 1, calls)
+        assertEquals(1 + 2, calls)
     }
 
     @Test fun disconnectClosesSessionAndResets() = runTest {
@@ -151,6 +233,27 @@ class DeviceLinkTest {
         assertEquals(null, link.session)
         advanceTimeBy(5_001)
         assertTrue(link.session != null && link.session != first)
+    }
+
+    @Test fun theOldLoopStoppingLateLeavesTheNewSessionAlone() = runTest {
+        // The cancelled loop's cleanup can run after the new one is online, as on a real thread pool (#290).
+        val second = FakeShell()
+        var opens = 0
+        val link = DeviceLink("tv", 5555, backgroundScope,
+            monitorFor = { _, _ -> if (opens == 1) slowToStop() else fakeMonitor(failFirst = false) },
+            open = { _, _ -> ConnectResult.Online(if (opens++ == 0) FakeShell() else second) })
+        link.connect(); runCurrent()
+        link.connect(); runCurrent()
+        assertEquals(second, link.session)
+        advanceTimeBy(1_001)
+        assertEquals(second, link.session)
+    }
+
+    private fun slowToStop() = MonitorSource {
+        flow {
+            emit(reading)
+            try { awaitCancellation() } finally { withContext(NonCancellable) { delay(1_000) } }
+        }
     }
 
     private fun fakeMonitor(failFirst: Boolean) = object : MonitorSource {

@@ -44,7 +44,6 @@ import app.tellyscope.adb.AppFacts
 import app.tellyscope.adb.Connector
 import app.tellyscope.adb.StatsProfile
 import app.tellyscope.data.AdbDeviceSource
-import app.tellyscope.data.AndroidLauncherDownload
 import app.tellyscope.data.AndroidPhoneStorage
 import app.tellyscope.data.Device
 import app.tellyscope.data.DeviceState
@@ -53,7 +52,6 @@ import app.tellyscope.data.FoldBook
 import app.tellyscope.data.SeenBook
 import app.tellyscope.data.UiText
 import app.tellyscope.data.KeyHaptics
-import app.tellyscope.data.UpdateCheck
 import app.tellyscope.ui.AccessActions
 import app.tellyscope.ui.AccessScreen
 import app.tellyscope.ui.AdvancedScreen
@@ -126,13 +124,14 @@ class MainActivity : ComponentActivity() {
                                     TellyscopeViewModel(
                                         scenario?.let(::FakeDeviceSource) ?: AdbDeviceSource(applicationContext),
                                         AndroidPhoneStorage(applicationContext),
-                                        updates = if (scenario != null) null else updateCheck(),
+                                        // The Play build has none: Play updates it (Store.kt, per flavor).
+                                        updates = if (scenario != null) null else updates(applicationContext, installedVersion()),
                                         folds = FoldBook(File(filesDir, "folds.properties")),
                                         keyHaptics = KeyHaptics(File(filesDir, "remote.properties")),
                                         gates = FoldBook(File(filesDir, "gates.properties")),
                                         historySeen = SeenBook(File(filesDir, "history-seen.properties")),
                                         appFacts = AppFacts(installedVersion(), "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"),
-                                        launcherDownload = if (scenario != null) null else AndroidLauncherDownload(applicationContext),
+                                        launcherDownload = if (scenario != null) null else launcherPick(applicationContext),
                                     )
                                 }
                             },
@@ -147,12 +146,6 @@ class MainActivity : ComponentActivity() {
 
     @Suppress("DEPRECATION") // the flags overload is API 33+
     private fun installedVersion() = packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()
-
-    private fun updateCheck(): UpdateCheck {
-        val version = installedVersion()
-        // Alpha builds install as app.tellyscope.alpha (app/build.gradle.kts).
-        return UpdateCheck(File(filesDir, "updates.properties"), version, alpha = packageName.endsWith(".alpha"))
-    }
 
     /**
      * Android 17 blocks LAN connections and mDNS for apps targeting 37 until the user grants
@@ -217,7 +210,7 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
     var rejoinSince by rememberSaveable { mutableStateOf(0L) }
 
     val pickApp = rememberLauncherForActivityResult(InDownloads.Multiple()) { vm.pickedApp(it) }
-    val pickProjectivy = rememberLauncherForActivityResult(InDownloads.One()) { uri -> uri?.let(vm::pickedProjectivy) }
+    val pickLauncherApk = rememberLauncherForActivityResult(InDownloads.One()) { uri -> uri?.let(vm::pickedLauncherApk) }
     val pickFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(vm::push) }
     val saveFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream"), vm::saveTo)
     val saveScreenshot = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/png"), vm::screenshotTo)
@@ -307,7 +300,7 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
             vm.showStats(StatsProfile.ADVANCED)
             onDispose { vm.showStats(StatsProfile.OTHER) }
         }
-        AdvancedScreen(state, back = { advanced = false }, snackbar = snackbar)
+        AdvancedScreen(state, back = { advanced = false }, terminal = remember(state.selectedId) { vm.terminal() }, snackbar = snackbar)
     } else if (history) {
         BackHandler { history = false }
         // Seen on the way in, and again on the way out for changes made here, so ⋮ has no dot for them.
@@ -360,13 +353,16 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
                 makeHome = vm::makeHome,
                 open = vm::openLauncher,
                 later = vm::launcherLater,
-                fireCheck = vm::checkProjectivy,
-                fireInstall = vm::installProjectivy,
-                fireDismiss = vm::dismissProjectivy,
-                firePick = { pickProjectivy.launch(arrayOf(InDownloads.APK)) },
+                fireCheck = vm::checkLauncherApk,
+                fireChoose = vm::chooseFireLauncher,
+                fireTrust = vm::trustLauncherList,
+                fireInstall = vm::installLauncherApk,
+                fireDismiss = vm::dismissLauncherApk,
+                firePick = { pickLauncherApk.launch(arrayOf(InDownloads.APK)) },
             ),
             snackbar = snackbar,
             direct = vm.directDownload,
+            play = BuildConfig.PLAY,
         )
     } else if (debloat && state.device.debloat != null) {
         // Leaving mid-run only closes the screen; the run goes on, and History has each app.
@@ -398,6 +394,7 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
                 settings = { settings = true },
                 query = vm::query,
                 propose = vm::propose,
+                open = vm::openApp,
                 confirm = vm::confirm,
                 confirmHome = vm::confirmHome,
                 cancel = vm::cancel,
@@ -408,6 +405,7 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
                 debloatGateOff = vm::debloatGateOff,
                 undo = vm::undo,
                 reconnect = { state.selectedId?.let(vm::reconnect) },
+                openWifi = { context.openWifiSettings() },
                 forget = vm::forget,
                 rename = vm::rename,
                 restoreAll = vm::restoreAll,
@@ -431,6 +429,8 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
                 history = { history = true },
                 reset = { vm.openReset(); resetting = true },
                 checkUpdates = vm::checkUpdates,
+                openStore = vm::openStore,
+                turnOnStore = vm::turnOnStore,
                 setDns = vm::setDns,
                 setFastAnimations = vm::setFastAnimations,
                 clearCaches = vm::clearCaches,
@@ -461,6 +461,8 @@ fun TellyscopeApp(vm: TellyscopeViewModel) {
                     setDock = vm::setDock,
                     screenOff = vm::setScreenOff,
                     screenOffTipSeen = vm::screenOffTipSeen,
+                    checkVolume = vm::checkVolume,
+                    touchpad = vm::setTouchpad,
                 ),
             )
         }

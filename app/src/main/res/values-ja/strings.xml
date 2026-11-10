@@ -35,11 +35,9 @@
     <string name="copy_built_in">テレビに内蔵</string>
     <string name="copy_built_in_off">テレビに内蔵・無効</string>
     <string name="copy_current">現在</string>
-    <string name="copy_keeps_home">ユーザー補助サービスでホームを維持します</string>
     <string name="copy_make_home">ホームにする</string>
-    <string name="copy_get_launcher">別のランチャーを入手</string>
-    <string name="copy_get_launcher_text">Projectivy や FLauncher などを Play ストアからインストールしてください。いつでも元に戻せます。</string>
-    <string name="copy_get_projectivy_text">Projectivy をインストールしてください。いつでも元に戻せます。</string>
+    <string name="copy_change_home">ホーム画面を変更</string>
+    <string name="copy_change_home_text">編集部のおすすめから別のものをインストールするか、テレビにすでにあるものに切り替えます。</string>
     <string name="copy_home_settings">ホーム画面の設定</string>
     <string name="copy_make_home_title">%1$s をホーム画面にしますか？</string>
     <string name="copy_explain_replace_opens">ホームボタンで %1$s が開くようになります。テレビが勝手に元に戻らないよう、Secreto TV Manager はテレビ内蔵のランチャー %2$s を無効にします。</string>
@@ -76,11 +74,13 @@
     <string name="copy_choose_home_text">どれもテレビのホーム画面を置き換えます。Secreto TV Manager がテレビの Play ストアで開くので、リモコンでインストールしてください。</string>
     <string name="copy_can_download">一部は直接ダウンロードすることもできます。</string>
     <string name="copy_no_launcher_list">ホーム画面のリストを読み込めませんでした。スマートフォンのインターネット接続を確認して、もう一度お試しください。</string>
-    <string name="copy_recommended">おすすめ</string>
+    <string name="copy_recommended">編集部のおすすめ</string>
     <string name="copy_on_this_tv">このテレビ上</string>
     <string name="copy_installed">インストール済み</string>
-    <string name="copy_home_now">現在のホーム</string>
+    <string name="copy_install">インストール</string>
     <string name="copy_open">開く</string>
+    <string name="copy_home_screen_of">%1$s のホーム画面</string>
+    <string name="copy_picture_failed">画像を読み込めませんでした</string>
     <string name="copy_uses_service">ユーザー補助サービスを使用</string>
     <string name="copy_no_service">オープンソース・ユーザー補助サービスなし</string>
     <string name="copy_other_launcher">別のランチャーを使いたい場合は、テレビの Play ストアからインストールして、ここに戻ってください。%1$s に表示されます。</string>
@@ -106,8 +106,9 @@
     <string name="copy_not_installed">%1$s はインストールされていません</string>
     <string name="copy_wasnt_installed">%1$s はインストールされませんでした</string>
     <string name="copy_not_installed_text">インストールが終わる前に、テレビの Play ストアが閉じられました。このテレビでは利用できないと表示された場合は、別のランチャーを選んでください。</string>
-    <string name="copy_install_projectivy">Projectivy をインストール</string>
+    <string name="copy_install_launcher">%1$s をインストール</string>
     <string name="copy_fire_install_text">広告のないホーム画面です。Secreto TV Manager がテレビにインストールするので、テレビ側での操作は不要です。</string>
+    <string name="copy_fire_pick_text">広告のないホーム画面です。ブラウザでダウンロードしてから、ここでファイルを選んでください。Secreto TV Manager がテレビにインストールします。</string>
     <string name="copy_downloads_from">Secreto TV Manager は %1$s を開発元の公式リリースページからダウンロードします:</string>
     <string name="copy_release">リリース %1$s・%2$s</string>
     <string name="copy_where_from">入手元</string>
@@ -123,11 +124,11 @@
     <string name="copy_step_downloaded">ダウンロード完了</string>
     <string name="copy_downloading">ダウンロード中・%1$d%%・%2$s / %3$s</string>
     <string name="copy_step_picked">ファイルを選択済み</string>
-    <string name="copy_step_check">Projectivy であることを確認</string>
-    <string name="copy_step_checking">Projectivy であることを確認しています…</string>
-    <string name="copy_step_checked">Projectivy です</string>
+    <string name="copy_step_check">%1$s であることを確認</string>
+    <string name="copy_step_checking">%1$s であることを確認しています…</string>
+    <string name="copy_step_checked">%1$s です</string>
     <string name="copy_step_checked_text">開発元の署名あり</string>
-    <string name="copy_step_failed">Projectivy ではありません</string>
+    <string name="copy_step_failed">%1$s ではありません</string>
     <string name="copy_step_failed_text">パッケージ名または署名が一致しませんでした</string>
     <string name="copy_install_on">%1$s にインストール</string>
     <string name="copy_stop_title">ダウンロードを中止しますか？</string>
@@ -135,13 +136,13 @@
     <string name="copy_stop">中止</string>
     <string name="copy_keep_downloading">ダウンロードを続ける</string>
     <string name="copy_installing_on">%1$s にインストールしています…</string>
-    <string name="copy_not_projectivy">ダウンロードしたファイルは Projectivy ではありません</string>
-    <string name="copy_not_projectivy_text">GitHub から取得したファイルが Projectivy のパッケージ名または開発元の署名と一致しなかったため、Secreto TV Manager はテレビに何もインストールしませんでした。</string>
-    <string name="copy_not_projectivy_file">そのファイルは Projectivy ではありません</string>
-    <string name="copy_not_projectivy_file_text">Projectivy のパッケージ名または開発元の署名と一致しなかったため、Secreto TV Manager はテレビに何もインストールしませんでした。</string>
+    <string name="copy_wrong_apk">ダウンロードしたファイルは %1$s ではありません</string>
+    <string name="copy_wrong_apk_text">GitHub から取得したファイルが %1$s のパッケージ名または開発元の署名と一致しなかったため、Secreto TV Manager はテレビに何もインストールしませんでした。</string>
+    <string name="copy_wrong_apk_file">そのファイルは %1$s ではありません</string>
+    <string name="copy_wrong_apk_file_text">%1$s のパッケージ名または開発元の署名と一致しなかったため、Secreto TV Manager はテレビに何もインストールしませんでした。</string>
     <string name="copy_cant_read_file">Secreto TV Manager でそのファイルを読み取れませんでした。もう一度選ぶか、ダウンロードし直してください。</string>
     <string name="copy_cant_install">%1$s をインストールできませんでした</string>
-    <string name="copy_no_download">Projectivy をダウンロードできませんでした</string>
+    <string name="copy_no_download">%1$s をダウンロードできませんでした</string>
     <string name="copy_no_download_offline">スマートフォンから GitHub に接続できません。インターネット接続を確認して、もう一度お試しください。</string>
     <string name="copy_no_download_limited_until">GitHub が %1$s まで、お使いのネットワークからのダウンロードを制限しています。その後でもう一度お試しいただくか、ご自身でダウンロードしてください。</string>
     <string name="copy_no_download_limited">GitHub がしばらくの間、お使いのネットワークからのダウンロードを制限しています。時間をおいてもう一度お試しいただくか、ご自身でダウンロードしてください。</string>
@@ -153,6 +154,11 @@
     <string name="copy_pick_downloaded">ダウンロードしたファイルを選択</string>
     <string name="copy_pick_another">別のファイルを選択</string>
     <string name="copy_try_download_again">もう一度ダウンロード</string>
+    <string name="copy_unverified_title">ランチャーのリストを確認できませんでした</string>
+    <string name="copy_unverified_text">Tellyscope が公開したリストであることを確認できませんでした。数分以内にリストが変更された場合は、しばらくしてからもう一度お試しください。リストとその署名を信頼できる場合のみ、今すぐインストールしてください。</string>
+    <string name="copy_unverified_list">リスト</string>
+    <string name="copy_unverified_signer">署名 (SHA-256)</string>
+    <string name="copy_unverified_trust">このリストとその署名を信頼する</string>
     <string name="copy_service_off_text">%1$s のユーザー補助サービスがオフのため、テレビがホームを取り戻す可能性があります。</string>
     <string name="copy_open_again">もう一度開く</string>
     <string name="copy_undo">元に戻す</string>
@@ -169,9 +175,6 @@
     <plurals name="copy_days_ago">
         <item quantity="other">%1$d 日前</item>
     </plurals>
-    <string name="copy_uptime_days_hours">%1$d日 %2$d時間</string>
-    <string name="copy_uptime_hours_minutes">%1$d時間 %2$d分</string>
-    <string name="copy_uptime_minutes">%1$d分</string>
     <plurals name="copy_days">
         <item quantity="other">%1$d 日</item>
     </plurals>
@@ -208,7 +211,9 @@
     <string name="copy_reading_apps">テレビのアプリを読み込んでいます…</string>
     <string name="copy_reading_apps_line">数秒かかります。</string>
     <string name="copy_tv_offline">テレビがオフライン</string>
+    <string name="copy_off_wifi_line">テレビと同じ Wi-Fi につないでください。つながるとすぐに Secreto TV Manager が再接続します。</string>
     <string name="copy_running_offline">テレビに接続すると、実行中のアプリがここに表示されます。</string>
+    <string name="copy_apps_offline">テレビに接続すると、アプリがここに表示されます。</string>
     <string name="copy_state_online">接続済み</string>
     <string name="copy_state_offline">オフライン</string>
     <string name="copy_state_not_allowed">許可されていません</string>
@@ -277,6 +282,7 @@
     <string name="copy_sent_renamed">%3$s がすでにあるため、%2$s という名前で %1$s に送信しました</string>
     <string name="copy_saved">%1$s をスマートフォンに保存しました</string>
     <string name="copy_send_failed">%1$s を送信できませんでした。テレビが接続されていて、空き容量があることを確認してください。</string>
+    <string name="copy_send_failed_off_wifi">%1$s を送信できませんでした。このスマホは Wi-Fi につながっていません。</string>
     <string name="copy_save_failed">%1$s を保存できませんでした。テレビが接続されていて、スマートフォンに空き容量があることを確認してください。</string>
     <string name="copy_cancelled_send">キャンセルしました。テレビには何も残っていません。</string>
     <string name="copy_cancelled_save">キャンセルしました。何も保存されていません。</string>
@@ -288,6 +294,10 @@
     <string name="copy_remote_lost">テレビとの接続が切れました。テレビの電源が入っていて接続されていることを確認してください。</string>
     <string name="copy_no_update_screen">このテレビには、Secreto TV Manager から開けるアップデート画面がありません。テレビの設定の「システム」または「デバイス情報」を確認してください。</string>
     <string name="copy_updates_opened">テレビでアップデート画面を開きました。テレビでアップデートを確認してください。</string>
+    <string name="copy_store_opened">テレビで %1$s を開きました。</string>
+    <string name="copy_store_cant_open">テレビで %1$s を開けませんでした。</string>
+    <string name="copy_fire_settings_opened">テレビで設定を開きました。「マイFire TV」（テレビでは「デバイスとソフトウェア」）、「バージョン情報」、「アップデートを確認」の順に進んでください。</string>
+    <string name="copy_no_fire_update_screen">Secreto TV Manager はこのテレビの設定を開けません。テレビで「設定」、「マイFire TV」（テレビでは「デバイスとソフトウェア」）、「バージョン情報」、「アップデートを確認」の順に進んでください。</string>
     <string name="copy_reboot_refused">テレビが再起動を拒否しました。テレビ付属のリモコンか電源ボタンを使ってください。</string>
     <string name="copy_reboot_ignored">テレビが再起動しませんでした。テレビ付属のリモコンか電源ボタンを使ってください。</string>
     <string name="copy_remote_offline_wake">再接続すると使えるようになります</string>
@@ -319,6 +329,8 @@
     <string name="copy_restart_lost">%1$s にまだ接続できません</string>
     <string name="copy_back_online">オンラインに戻りました。%1$s に再接続しました。</string>
     <string name="copy_remote_buttons">リモコンのボタン</string>
+    <string name="copy_open_an_app">アプリを開く</string>
+    <string name="copy_open_an_app_hint">%1$s のストリーミングアプリ。タップすると開きます。</string>
     <string name="copy_more">その他のオプション</string>
     <string name="copy_buttons_hint">%1$d 個まで選べます。ドラッグで並べ替えます。別のものを選ぶには、先にどれかのチェックを外してください。</string>
     <string name="copy_not_on_tv">%1$s はこのテレビにありません。テレビの Play ストアからインストールしてください。</string>
@@ -344,6 +356,7 @@
     <string name="copy_animations_state_off">オフ。オンにすると、メニューの動きがきびきびします。</string>
     <string name="copy_caches_title">すべてのアプリのキャッシュを削除</string>
     <string name="copy_caches_text">すべてのアプリの一時ファイルを削除して、空き容量を増やします。アプリのデータとログイン情報は残ります。</string>
+    <string name="copy_caches_too_old">Android 8 以降が必要です。このテレビはそれより古いバージョンです。</string>
     <string name="copy_caches_button">キャッシュを削除</string>
     <string name="copy_caches_cleared">アプリのキャッシュを削除しました</string>
     <string name="copy_caches_cleared_freed">アプリのキャッシュを削除し、%1$s を解放しました</string>
@@ -393,6 +406,11 @@
     <string name="copy_reset_home">%1$s をホーム画面にする</string>
     <string name="copy_reset_home_text">%1$s の代わりに設定します。%1$s はインストールされたまま残ります。</string>
     <string name="copy_reset_home_text_service">%1$s の代わりに設定し、そのユーザー補助サービスを無効にします。%1$s はインストールされたまま残ります。</string>
+    <string name="copy_reset_dns">プライベート DNS を自動に戻す</string>
+    <string name="copy_reset_animations">アニメーションを通常の速度に戻す</string>
+    <string name="copy_reset_was">変更前: %1$s</string>
+    <string name="copy_dns_off">オフ</string>
+    <string name="copy_animation_scale">%1$s×</string>
     <plurals name="copy_reset_leaves_off">
         <item quantity="other">%2$s が無効の状態で出荷した %1$d 個のアプリは、無効のままです。</item>
     </plurals>
@@ -405,6 +423,8 @@
     <string name="copy_resetting_turn_on">アプリを有効にしています: %1$d / %2$d</string>
     <string name="copy_resetting_bring_back">アプリを復元しています: %1$d / %2$d</string>
     <string name="copy_resetting_home">%1$s をホーム画面にしています。</string>
+    <string name="copy_resetting_dns">プライベート DNS を自動に戻しています。</string>
+    <string name="copy_resetting_animations">アニメーションを通常の速度に戻しています。</string>
     <string name="copy_keep_tv_on">テレビの電源を入れたまま、接続を維持してください。</string>
     <string name="copy_resetting">リセットしています…</string>
     <string name="copy_reset_apps_stale">リセットは完了しましたが、アプリのリストが更新されませんでした。テレビを開き直すと表示されます。</string>
@@ -412,13 +432,16 @@
     <string name="copy_reset_done">テレビを出荷時の状態に戻しました</string>
     <string name="copy_reset_partly">リセットが一部完了しました</string>
     <plurals name="copy_reset_done_apps_home">
-        <item quantity="other">%1$d 個のプリインストール アプリが戻り、%2$s がホーム画面になりました。アプリのデータとログイン情報は残っています。</item>
+        <item quantity="other">%1$d 個のプリインストール アプリが戻り、%2$s がホーム画面になりました。</item>
     </plurals>
     <plurals name="copy_reset_done_apps">
-        <item quantity="other">%1$d 個のプリインストール アプリが戻りました。アプリのデータとログイン情報は残っています。</item>
+        <item quantity="other">%1$d 個のプリインストール アプリが戻りました。</item>
     </plurals>
-    <string name="copy_reset_done_home">%1$s がホーム画面になりました。アプリのデータとログイン情報は残っています。</string>
-    <string name="copy_reset_done_nothing">アプリのデータとログイン情報は残っています。</string>
+    <string name="copy_reset_done_home">%1$s がホーム画面になりました。</string>
+    <string name="copy_reset_done_settings">プライベート DNS とアニメーションは初期設定に戻りました。</string>
+    <string name="copy_reset_done_dns">プライベート DNS は自動に戻りました。</string>
+    <string name="copy_reset_done_animations">アニメーションは通常の速度に戻りました。</string>
+    <string name="copy_reset_kept_data">アプリのデータとログイン情報は残っています。</string>
     <plurals name="copy_reset_partly_text">
         <item quantity="other">%1$d 個の手順が失敗しました。それ以外はすべて出荷時の状態に戻りました。失われたものはありません。</item>
     </plurals>
@@ -436,6 +459,10 @@
     </plurals>
     <string name="copy_is_home">%1$s がホーム画面です</string>
     <string name="copy_still_home">%1$s がまだホーム画面です</string>
+    <string name="copy_dns_automatic">プライベート DNS は自動です</string>
+    <string name="copy_dns_still">プライベート DNS はまだ %1$s です</string>
+    <string name="copy_animations_normal">アニメーションは通常の速度です</string>
+    <string name="copy_animations_still">アニメーションはまだ %1$s です</string>
     <string name="copy_try_app_again">%1$s をもう一度試す</string>
     <string name="copy_try_again">再試行</string>
     <string name="copy_disabling_apps">アプリを無効にしています: %1$d / %2$d。テレビの電源を入れたまま、接続を維持してください。</string>
@@ -451,13 +478,29 @@
         <item quantity="other">%2$d 個中 %1$d 個のアプリを無効にしました</item>
     </plurals>
     <string name="copy_still_on">%1$s はまだ有効です</string>
-    <plurals name="copy_still_off">
-        <item quantity="other">%1$d 個のアプリがまだ無効です</item>
+    <plurals name="copy_to_put_back">
+        <item quantity="other">元に戻す変更が %1$d 件</item>
     </plurals>
-    <plurals name="copy_still_off_title">
-        <item quantity="other">Secreto TV Manager が無効にした %1$d 個のアプリがまだ無効です</item>
+    <plurals name="copy_put_back_title">
+        <item quantity="other">Secreto TV Manager による %1$d 件の変更がまだ残っています</item>
     </plurals>
-    <string name="copy_still_off_text">「すべて復元」で再び有効になります。Secreto TV Manager が最初に変更する前から無効だったアプリは、無効のままです。</string>
+    <string name="copy_put_back_text">「すべて復元」で、このテレビを Secreto TV Manager が最初に変更する前の状態に戻します:</string>
+    <plurals name="copy_restore_on">
+        <item quantity="other">%1$d 個のアプリを有効に戻す</item>
+    </plurals>
+    <plurals name="copy_restore_off">
+        <item quantity="other">%1$d 個のアプリを再び無効にする</item>
+    </plurals>
+    <plurals name="copy_restore_remove">
+        <item quantity="other">テレビのリセットで戻った %1$d 個のアプリを削除する</item>
+    </plurals>
+    <string name="copy_restore_home">ホームを元に戻す</string>
+    <string name="copy_restore_dns">プライベート DNS を元に戻す</string>
+    <string name="copy_restore_animations">アニメーションの速度を元に戻す</string>
+    <plurals name="copy_restore_gone">
+        <item quantity="other">%1$d 個のアプリはアンインストール済みのため戻せません</item>
+    </plurals>
+    <string name="copy_restore_line">• %1$s</string>
     <plurals name="copy_others_connected">
         <item quantity="other">ほかに %1$d 台が接続中</item>
     </plurals>
@@ -546,9 +589,12 @@
     <string name="vm_not_an_ip">IP アドレスの形式ではありません。テレビのネットワーク設定に表示されているような、ドットで区切られた 4 つの数字を入力してください。</string>
     <string name="vm_bad_port">コロンの後のポートは、5555 のような 1～65535 の数字にしてください。</string>
     <string name="vm_didnt_work">うまくいきませんでした。</string>
-    <string name="vm_nothing_to_turn_on">有効に戻すものはありません。</string>
-    <plurals name="vm_turned_back_on">
-        <item quantity="other">%1$d 個のアプリを有効に戻しました。</item>
+    <string name="vm_nothing_to_put_back">元に戻すものはありません。</string>
+    <plurals name="vm_put_back">
+        <item quantity="other">%1$d 件の変更を元に戻しました。</item>
+    </plurals>
+    <plurals name="vm_put_back_partly">
+        <item quantity="other">%2$d 件中 %1$d 件の変更を元に戻しました。%3$d 件は戻せませんでした。%4$s: %5$s</item>
     </plurals>
     <string name="vm_tv_refused">テレビが拒否しました</string>
     <string name="vm_tv_didnt_answer">テレビから応答がありません。</string>
@@ -586,10 +632,9 @@
     <string name="data_no_home_to_switch_back">戻せるホーム画面がありません</string>
     <string name="data_uninstall_after_service">%1$s。何もアンインストールされていません</string>
     <string name="data_uninstall_home_not_back">ホームを元に戻せませんでした: %1$s。何もアンインストールされていません</string>
-    <string name="data_restore_none">アプリを有効に戻せませんでした: %1$s</string>
-    <plurals name="data_restore_some">
-        <item quantity="other">%1$d 個のアプリを有効に戻した後、停止しました: %2$s</item>
-    </plurals>
+    <string name="data_restore_home">ホーム</string>
+    <string name="data_restore_dns">プライベート DNS</string>
+    <string name="data_restore_animations">アニメーションの速度</string>
     <string name="data_no_reset_to_undo">元に戻すリセットはありません</string>
     <string name="data_reset_already_undone">そのリセットはすでに元に戻されています</string>
     <string name="data_reset_tv_kept_home">テレビは %1$s をホーム画面のままにしました</string>
@@ -607,6 +652,7 @@
     <string name="data_lists_not_a_list">このソースは Secreto TV Manager のリストではありません</string>
     <string name="data_app_names_system">Android システム</string>
     <string name="data_history_service_off">%1$s のユーザー補助サービスを無効にしました</string>
+    <string name="data_history_service_on">%1$s のユーザー補助サービスを有効にしました</string>
     <string name="data_history_reset_undone">テレビのリセットによる変更を元に戻しました</string>
     <plurals name="data_history_reset">
         <item quantity="other">テレビをリセット・%1$d 件の変更</item>
@@ -662,6 +708,8 @@
     <string name="tabs_android_version">Android %1$s</string>
     <string name="tabs_updated">%1$s に更新</string>
     <string name="tabs_check_updates">アップデートを確認</string>
+    <string name="tabs_store_sub">アプリとアプリのアップデートを入手</string>
+    <string name="tabs_store_off">このテレビでは無効</string>
     <string name="lists_apps_on_tv">このテレビのアプリ</string>
     <string name="lists_which_tv">どのテレビですか？</string>
     <string name="lists_debloat">整理</string>
@@ -710,31 +758,18 @@
     <string name="lists_about_libraries">Kadb（Apache 2.0）と spake2-java（GPL v3）を使用しています。ライセンスの全文は NOTICE ファイルにあります。</string>
     <string name="lists_about_close">閉じる</string>
     <string name="advanced_back">テレビのページに戻る</string>
-    <string name="advanced_this_tv">このテレビ</string>
-    <string name="advanced_ip_address">IP アドレス</string>
-    <string name="advanced_port">ポート</string>
-    <string name="advanced_maker">メーカー</string>
-    <string name="advanced_network_name">ネットワーク名</string>
     <string name="advanced_loading">統計情報を読み込んでいます…</string>
-    <string name="advanced_cpu_by_app">アプリ別 CPU</string>
-    <string name="advanced_ram_by_app">アプリ別 RAM</string>
-    <string name="advanced_processes">プロセス</string>
     <string name="advanced_network">ネットワーク</string>
     <string name="advanced_cpu">CPU</string>
     <string name="advanced_ram">RAM</string>
-    <string name="advanced_app">アプリ</string>
     <string name="advanced_on_for">稼働時間</string>
     <string name="advanced_screen">画面</string>
     <string name="advanced_screen_on">オン</string>
     <string name="advanced_screen_off">オフ</string>
     <string name="advanced_percent">%1$d%%</string>
     <string name="advanced_percent_whole">%1$.0f%%</string>
-    <string name="advanced_percent_tenths">%1$.1f%%</string>
-    <string name="advanced_as_of">%1$s 時点</string>
     <string name="advanced_memory">メモリ</string>
     <string name="advanced_storage">ストレージ</string>
-    <string name="advanced_percent_used">%1$d%% 使用中</string>
-    <string name="advanced_other">その他</string>
     <string name="advanced_connection">接続</string>
     <string name="advanced_wifi">Wi-Fi</string>
     <string name="advanced_ethernet">イーサネット</string>
@@ -744,10 +779,71 @@
     <string name="advanced_signal_weak">弱（%1$d dBm）</string>
     <string name="advanced_signal_very_weak">非常に弱い（%1$d dBm）</string>
     <string name="advanced_mac">MAC</string>
-    <string name="advanced_link_speed">リンク速度</string>
     <string name="advanced_mbps">%1$d Mbps</string>
-    <string name="advanced_data_used">データ使用量</string>
-    <string name="advanced_open_connections">開いている接続</string>
+    <string name="advanced_copy_address">アドレスをコピー</string>
+    <string name="advanced_android">Android</string>
+    <string name="advanced_updated">更新</string>
+    <string name="advanced_this_tv">このテレビ</string>
+    <string name="advanced_offline_as_of">オフライン · %1$sの時点</string>
+    <string name="advanced_busiest">負荷の高いアプリ</string>
+    <string name="advanced_copy_mac">MAC アドレスをコピー</string>
+    <string name="advanced_signal_strong_word">強い</string>
+    <string name="advanced_signal_good_word">良好</string>
+    <string name="advanced_signal_weak_word">弱い</string>
+    <string name="advanced_signal_very_weak_word">非常に弱い</string>
+    <string name="advanced_not_running">停止中</string>
+    <string name="advanced_split_apps">アプリ</string>
+    <string name="advanced_split_system">システム</string>
+    <string name="advanced_split_waiting">ストレージ待ち</string>
+    <string name="advanced_core">コア %1$d</string>
+    <string name="advanced_ghz">%1$.1f GHz</string>
+    <string name="advanced_in_use">使用中</string>
+    <string name="advanced_cached">キャッシュ</string>
+    <string name="advanced_free">空き</string>
+    <string name="advanced_swap">スワップ %2$s 中 %1$s</string>
+    <string name="advanced_wifi_on">Wi-Fi · %1$s</string>
+    <string name="advanced_since_boot">起動から ↓ %1$s ↑ %2$s</string>
+    <string name="advanced_minute_ago">60 秒前</string>
+    <string name="advanced_now">現在</string>
+    <string name="advanced_cpu_share">CPU %1$.0f%%</string>
+    <string name="advanced_since_boot_short">起動から %1$s</string>
+    <string name="advanced_processes_n">プロセス · %1$d</string>
+    <string name="advanced_connections_n">開いている接続 · %1$d</string>
+    <string name="advanced_established">確立</string>
+    <string name="advanced_connecting">接続中</string>
+    <string name="advanced_closing">終了中</string>
+    <plurals name="advanced_cores">
+        <item quantity="other">%1$d コア</item>
+    </plurals>
+    <plurals name="advanced_processes">
+        <item quantity="other">%1$d プロセス</item>
+    </plurals>
+    <plurals name="advanced_connections">
+        <item quantity="other">%1$d 件の接続</item>
+    </plurals>
+    <plurals name="advanced_open_connections">
+        <item quantity="other">接続中 %1$d 件</item>
+    </plurals>
+    <plurals name="advanced_apps_running">
+        <item quantity="other">%1$d 個のアプリが実行中</item>
+    </plurals>
+    <string name="shell_open">シェル</string>
+    <string name="shell_close">シェルを閉じる</string>
+    <string name="shell_title">%1$s · %2$s</string>
+    <string name="shell_banner">%1$s（%2$s）に接続しました。\n閉じるには exit と入力するか ✕ をタップします。</string>
+    <string name="shell_trimmed">古い行は削除されました：最後の %1$d 行を表示しています。</string>
+    <string name="shell_offline_hint">テレビが戻るとコマンドを再び実行できます。</string>
+    <string name="shell_key_paste">貼り付け</string>
+    <string name="shell_key_up">前のコマンド</string>
+    <string name="shell_key_down">次のコマンド</string>
+    <string name="shell_confirm">テレビが変更されます。実行しますか？ [y/N]</string>
+    <string name="shell_confirm_answered">テレビが変更されます。実行しますか？ [y/N] %1$s</string>
+    <string name="shell_no_history">シェルでの実行は履歴に残らないため、ワンタップで元に戻せません。</string>
+    <string name="shell_not_run">実行しませんでした。</string>
+    <string name="shell_not_shell">ここで実行できるのは adb shell のコマンドだけです。</string>
+    <string name="shell_full_screen">%1$s には全画面のターミナルが必要です。ここでは使えません。</string>
+    <string name="shell_dropped_prefix">（「adb shell」を省きました）</string>
+    <string name="shell_lost">コマンドが終わる前にテレビとの接続が切れました。一部だけ実行された可能性があります。</string>
     <string name="report_title_new_tv">このテレビの追加に協力する</string>
     <string name="report_title_problem">問題を報告</string>
     <string name="report_subtitle_new_tv">GitHub で cleanyourtv の「My TV」フォームを開きます</string>
@@ -797,10 +893,10 @@
     <string name="device_disable_title">%1$s を無効にしますか？</string>
     <string name="device_cancel">キャンセル</string>
     <plurals name="device_restore_title">
-        <item quantity="other">%1$d 個のアプリを有効に戻しますか？</item>
+        <item quantity="other">%1$d 件の変更を元に戻しますか？</item>
     </plurals>
     <string name="device_restore_text">Secreto TV Manager がこのテレビで無効にしたすべてのアプリを有効に戻します。Secreto TV Manager が最初に変更する前から無効だったアプリは、無効のままです。</string>
-    <string name="device_restore_button">有効に戻す</string>
+    <string name="device_restore_button">元に戻す</string>
     <string name="device_rename_title">このテレビの名前を変更</string>
     <string name="device_rename_text">この名前はこのスマートフォンでのみ表示されます。テレビ側は何も変わりません。</string>
     <string name="device_save">保存</string>
@@ -819,6 +915,8 @@
     <string name="device_nothing_matches">「%1$s」に一致するものはありません。</string>
     <string name="device_app_disabled">無効</string>
     <string name="device_app_running">実行中</string>
+    <string name="device_app_background">バックグラウンドで実行中</string>
+    <string name="device_app_on_screen">画面に表示中</string>
     <string name="device_app_not_running">停止中</string>
     <string name="device_app_protected">保護: %1$s</string>
     <string name="guide_brand_other">その他</string>
@@ -870,6 +968,11 @@
     <string name="remote_mute">ミュート / ミュート解除</string>
     <string name="remote_volume_up">音量を上げる</string>
     <string name="remote_volume_down">音量を下げる</string>
+    <string name="remote_volume_fixed">HDMI 接続では音量が固定されています。テレビのリモコンを使ってください。</string>
+    <string name="remote_dpad">十字キー</string>
+    <string name="remote_touchpad">タッチパッド</string>
+    <string name="remote_touchpad_swipe">スワイプで移動</string>
+    <string name="remote_touchpad_tap">タップで OK</string>
     <string name="remote_back">戻る</string>
     <string name="remote_home">ホーム</string>
     <string name="remote_menu">メニュー</string>
@@ -997,6 +1100,7 @@
     <string name="scan_back">戻る</string>
     <string name="scan_title">テレビを追加</string>
     <string name="scan_no_lan">Wi-Fi に接続していないため、自身の存在を知らせるテレビしか表示されません。テレビと同じ Wi-Fi に接続してください。</string>
+    <string name="scan_vpn">VPN がオンのため、Secreto TV Manager は Wi-Fi 内を検索できません。自身の存在を知らせるテレビは引き続き表示されます。IP アドレスでテレビを追加するか、VPN アプリでローカルネットワークへのアクセスを許可してください。</string>
     <string name="scan_same_wifi">スマートフォンとテレビを同じ Wi-Fi に接続してください。</string>
     <string name="scan_add_by_ip">IP アドレスで追加</string>
     <string name="scan_cant_find">テレビが見つかりませんか？</string>
@@ -1035,7 +1139,7 @@
     <string name="launcher_ok">OK</string>
     <string name="history_empty_title">まだ変更はありません</string>
     <string name="history_empty_text">停止、無効化、有効化したものはすべてここに表示され、元に戻すことができます。</string>
-    <string name="history_restoring">アプリを有効に戻しています…</string>
+    <string name="history_restoring">元に戻しています…</string>
     <string name="history_restore_all">すべて復元（%1$d）</string>
     <string name="history_undone">元に戻しました</string>
     <string name="debloat_title">整理</string>
@@ -1061,8 +1165,12 @@
     <string name="welcome_step_1">テレビでデバッグをオンにします。次の画面で、ブランドごとの手順を確認できます。</string>
     <string name="welcome_step_2">Secreto TV Manager が Wi-Fi 上のテレビを見つけます。</string>
     <string name="welcome_step_3">テレビに表示されたコードを入力するか、確認画面で「許可」を選びます。</string>
-
-    <!-- SecretoTools fork developer integration. -->
+    <string name="copy_not_projectivy_text">GitHub から取得したファイルが Projectivy のパッケージ名または開発元の署名と一致しなかったため、Secreto TV Manager はテレビに何もインストールしませんでした。</string>
+    <string name="copy_not_projectivy_file_text">Projectivy のパッケージ名または開発元の署名と一致しなかったため、Secreto TV Manager はテレビに何もインストールしませんでした。</string>
+    <plurals name="copy_still_off_title">
+        <item quantity="other">Secreto TV Manager が無効にした %1$d 個のアプリがまだ無効です</item>
+    </plurals>
+    <string name="copy_still_off_text">「すべて復元」で再び有効になります。Secreto TV Manager が最初に変更する前から無効だったアプリは、無効のままです。</string>
     <string name="developer_about">アプリと開発者について</string>
     <string name="developer_version">バージョン %1$s · ビルド %2$d</string>
     <string name="developer_credit">SecretoTools によるカスタマイズと保守</string>
@@ -1070,7 +1178,6 @@
     <string name="developer_website">SecretoTools 公式サイト</string>
     <string name="developer_source">この派生版のソースコード（GitHub）</string>
     <string name="developer_youtube_description">Android TV、Google TV、TV ボックス、使い方ガイド、SecretoTools アプリ。</string>
-
     <string name="developer_visit_channel">YouTube で SecretofNet を見る</string>
     <string name="developer_subscribe">YouTube でチャンネル登録</string>
     <string name="developer_original">元のプロジェクトとオープンソースのクレジット</string>
@@ -1082,8 +1189,6 @@
     <string name="developer_features">Wi-Fi でテレビ、アプリ、ファイルを管理。不要アプリの無効化と取り消し、リモコン操作、設定の調整、動作状況の確認ができます。</string>
     <string name="developer_visit_website">SecretoTools のサイトを見る</string>
     <string name="welcome_by_secreto">SecretoTools 制作</string>
-
-    <!-- Voluntary SecretofNet social actions. -->
     <string name="social_follow">SecretofNet をフォロー</string>
     <string name="social_open_youtube">YouTube で SecretofNet を開く</string>
     <string name="social_open_instagram">Instagram で SecretofNet を開く</string>

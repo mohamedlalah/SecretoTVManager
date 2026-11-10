@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Isolated Java 25 test workers; the Gradle daemon remains on the checked-in Java 21 criteria.
+import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
+allprojects {
+ tasks.withType(Test).configureEach {
+  def tools = project.extensions.getByType(JavaToolchainService)
+  javaLauncher.set(tools.launcherFor { languageVersion.set(JavaLanguageVersion.of(25)) })
+ }
+}
