@@ -491,7 +491,7 @@
     <string name="copy_choose_one">Choisir</string>
     <string name="copy_install_one">Installer</string>
     <string name="copy_choose_home">Choisir un écran d’accueil</string>
-    <string name="copy_choose_home_text">Chacun remplace l’accueil du téléviseur. Secreto TV Manager ouvre sa page Play Store sur le téléviseur ; installez-le avec la télécommande.</string>
+    <string name="copy_choose_home_text">Choisissez un lanceur. Selon sa disponibilité, ouvrez sa fiche Play Store sur le téléviseur ou utilisez le téléchargement direct. L’installation et le choix de l’accueil exigent votre confirmation.</string>
     <string name="copy_can_download">Certains sont aussi téléchargeables directement.</string>
     <string name="copy_no_launcher_list">Impossible de charger les lanceurs. Vérifiez Internet sur le téléphone et réessayez.</string>
     <string name="copy_recommended">Sélection de la rédaction</string>
@@ -502,7 +502,7 @@
     <string name="copy_uses_service">Utilise un service d’accessibilité</string>
     <string name="copy_no_service">Code ouvert · sans service d’accessibilité</string>
     <string name="copy_other_launcher">Vous préférez un autre lanceur ? Installez-le depuis le Play Store du téléviseur, puis revenez ici. Il apparaîtra sous %1$s.</string>
-    <string name="copy_not_affiliated">Secreto TV Manager n’est affilié à aucun de ces lanceurs ni à leurs développeurs.</string>
+    <string name="copy_not_affiliated">Secreto TV Launcher est maintenu par SecretoTools. Les autres lanceurs appartiennent à leurs développeurs respectifs.</string>
     <string name="copy_get_from_store">Obtenir sur le Play Store</string>
     <string name="copy_store_recommended">Play Store recommandé : mises à jour automatiques</string>
     <string name="copy_download_directly">Télécharger directement</string>
@@ -529,7 +529,7 @@
     <string name="copy_downloads_from">Secreto TV Manager télécharge %1$s depuis la page officielle des versions du développeur :</string>
     <string name="copy_release">Version %1$s · %2$s</string>
     <string name="copy_where_from">Origine</string>
-    <string name="copy_signed_check">Secreto TV Manager vérifie la signature du développeur de Projectivy avant installation. Secreto TV Manager n’est pas affilié à Projectivy.</string>
+    <string name="copy_signed_check">Secreto TV Manager vérifie la signature du développeur de %1$s avant l’installation sur le téléviseur.</string>
     <string name="copy_download_and_install">Télécharger et installer</string>
     <string name="copy_download_directly_title">Télécharger %1$s directement ?</string>
     <string name="copy_direct_check">Secreto TV Manager vérifie la signature du développeur. Il ne recherche pas de code malveillant. L’application ne se mettra pas à jour automatiquement.</string>
@@ -1290,4 +1290,15 @@
     <string name="remote_touchpad_swipe">Balayez pour déplacer</string>
     <string name="remote_touchpad_tap">Touchez pour valider</string>
     <string name="scan_vpn">Un VPN est actif et empêche la recherche sur le Wi-Fi. Les téléviseurs qui se signalent restent visibles. Ajoutez le téléviseur par adresse IP ou autorisez le réseau local dans votre VPN.</string>
+    <string name="secreto_launcher_description">Un accueil personnalisable pour Android TV et Google TV, avec favoris et recherche d’applications.</string>
+    <string name="secreto_launcher_screenshot_credit">Capture du dépôt officiel. L’apparence varie selon la version et les réglages.</string>
+    <string name="secreto_launcher_play_pending">La fiche Play Store publique n’est pas encore vérifiée. Utilisez le téléchargement GitHub officiel.</string>
+    <string name="secreto_launcher_disabled">Installé mais désactivé sur le téléviseur. Activez-le dans Applications avant de l’ouvrir ou de le définir comme accueil.</string>
+    <string name="secreto_launcher_target_unknown">Impossible de vérifier Android et le processeur du téléviseur connecté. Reconnectez-vous et réessayez.</string>
+    <string name="secreto_launcher_incompatible">Cet APK est incompatible avec le téléviseur connecté. Rien n’a été installé.</string>
+    <string name="secreto_launcher_missing_apk">La dernière version stable ne contient aucun APK de production installable.</string>
+    <string name="secreto_launcher_ambiguous_apk">Plusieurs APK correspondent à ce téléviseur. Aucun n’a été choisi. Consultez la version officielle.</string>
+    <string name="secreto_launcher_invalid_release">Impossible de vérifier les métadonnées officielles, le lien APK ou l’empreinte SHA-256. Rien n’a été installé.</string>
+    <string name="secreto_launcher_picked_confirm">Le fichier choisi a été vérifié. Contrôlez sa version et sa taille, puis confirmez son installation sur le téléviseur.</string>
+    <string name="secreto_launcher_verification_failed">L’empreinte, le paquet ou le certificat de l’APK n’a pas passé la vérification. Rien n’a été installé.</string>
 </resources>

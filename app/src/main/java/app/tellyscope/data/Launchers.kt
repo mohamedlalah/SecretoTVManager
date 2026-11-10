@@ -216,7 +216,8 @@ object SharedLists {
     suspend fun logo(name: String): ByteArray? = source?.logo(name)
 
     /** A launcher's icon or screenshot from `data/images/` ([KnownLauncher.icon], [KnownLauncher.screenshot]); null until it can be had. */
-    suspend fun image(file: ListFile): ByteArray? = data?.image(file)
+    suspend fun image(file: ListFile): ByteArray? =
+        if (SecretoLauncher.isBundled(file)) kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { SecretoLauncher.image(file) } else data?.image(file)
 
     /**
      * Launchers, labels and streaming from [data]; only the protected list from [source]. Whether [data] passes comes from
@@ -231,7 +232,7 @@ object SharedLists {
         val protected = source.shared("protected")?.let(::parseProtected)
         _state.update { now ->
             now.copy(
-                launchers = launchers?.ifEmpty { null } ?: now.launchers,
+                launchers = SecretoLauncher.merge(launchers?.ifEmpty { null } ?: now.launchers),
                 labels = labels?.ifEmpty { null } ?: now.labels,
                 streaming = streaming?.ifEmpty { null } ?: now.streaming,
                 protected = protected?.ifEmpty { null } ?: now.protected,
@@ -254,7 +255,7 @@ object SharedLists {
     }
 
     private fun seed() = Shared(
-        launchers = resource("/fixtures/launchers.json")?.let { parseLaunchers(it.decodeToString()) }.orEmpty(),
+        launchers = SecretoLauncher.merge(resource("/fixtures/launchers.json")?.let { parseLaunchers(it.decodeToString()) }.orEmpty()),
         labels = resource("/fixtures/labels.json")?.let { parseLabels(it.decodeToString()) }.orEmpty(),
         streaming = resource("/fixtures/streaming.json")?.let { parseStreaming(it.decodeToString()) }.orEmpty(),
     )

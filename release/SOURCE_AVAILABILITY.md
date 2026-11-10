@@ -38,6 +38,7 @@ its exact versions (not just current upstream main). Principal upstream sources:
 - Kadb/Dadb: https://github.com/flyfishxu/Kadb and https://github.com/mobile-dev-inc/dadb
 - spake2-java: https://github.com/Flyfish233/spake2-java (1.1.1 source archive accompanies materials)
 - AndroidX/Compose/Material: https://android.googlesource.com/platform/frameworks/support/
+- AOSP APK signature verification (apksig): https://android.googlesource.com/platform/tools/apksig/
 - Kotlin: https://github.com/JetBrains/kotlin
 - Coroutines: https://github.com/Kotlin/kotlinx.coroutines
 - Bouncy Castle: https://github.com/bcgit/bc-java

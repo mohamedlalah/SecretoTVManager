@@ -103,6 +103,14 @@ class StreamingTest {
         assertNull(RemoteButtons.look(service("YouTube"), lightSheet, dark = false).ink)
     }
 
+    @Test fun missingLogosKeepReadableLabelsOnPaleAndDarkBrandPills() {
+        val youtube = RemoteButtons.look(service("YouTube"), lightSheet, dark = false)
+        assertEquals(RemoteButtons.BLACK, RemoteButtons.fallbackInk(youtube))
+        val netflix = RemoteButtons.look(service("Netflix"), lightSheet, dark = false)
+        assertEquals(RemoteButtons.WHITE, RemoteButtons.fallbackInk(netflix))
+        assertNull(RemoteButtons.fallbackInk(RemoteButtons.Look(RemoteButtons.WHITE, RemoteButtons.BLACK, false, null)))
+    }
+
     @Test fun aDarkPillTakesItsAccentInDarkModeWithAReadableLogo() {
         val netflix = RemoteButtons.look(service("Netflix"), darkSheet, dark = true)
         assertEquals(0xFFE50914, netflix.fill)

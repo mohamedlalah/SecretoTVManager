@@ -2,6 +2,7 @@
 
 package app.tellyscope.ui
 
+import app.tellyscope.ui.theme.zelligeBackground
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -119,6 +120,9 @@ fun AdvancedScreen(
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
+            modifier = Modifier.zelligeBackground(),
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             snackbarHost = { SnackbarHost(snackbar) },
             topBar = {
                 TopAppBar(

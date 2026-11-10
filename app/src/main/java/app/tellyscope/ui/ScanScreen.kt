@@ -2,6 +2,8 @@
 
 package app.tellyscope.ui
 
+import androidx.compose.ui.graphics.Color
+import app.tellyscope.ui.theme.zelligeBackground
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -112,6 +114,9 @@ fun ScanScreen(
     }
 
     Scaffold(
+        modifier = Modifier.zelligeBackground(),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
                 title = {},

@@ -71,7 +71,7 @@
     <string name="copy_choose_one">选择一个</string>
     <string name="copy_install_one">安装</string>
     <string name="copy_choose_home">选择主屏幕</string>
-    <string name="copy_choose_home_text">每一个都会替换电视的主屏幕。Secreto TV Manager 会在电视上的 Play 商店中打开它，你用遥控器进行安装。</string>
+    <string name="copy_choose_home_text">选择启动器。可用时在电视的 Play 商店中打开其页面，或直接下载。安装和设为主屏幕都需要您的确认。</string>
     <string name="copy_can_download">部分也可以直接下载。</string>
     <string name="copy_no_launcher_list">无法加载主屏幕列表。请检查手机的网络连接，然后重试。</string>
     <string name="copy_recommended">编辑精选</string>
@@ -84,7 +84,7 @@
     <string name="copy_uses_service">使用无障碍服务</string>
     <string name="copy_no_service">开源 · 不使用无障碍服务</string>
     <string name="copy_other_launcher">想用其他启动器？在电视上的 Play 商店中安装后再回到这里，它会显示在“%1$s”下。</string>
-    <string name="copy_not_affiliated">Secreto TV Manager 与这些启动器及其开发者均无关联。</string>
+    <string name="copy_not_affiliated">Secreto TV Launcher 由 SecretoTools 维护。其他启动器属于各自的开发者。</string>
     <string name="copy_get_from_store">从 Play 商店获取</string>
     <string name="copy_store_recommended">推荐使用 Play 商店：可自动更新</string>
     <string name="copy_download_directly">直接下载</string>
@@ -112,7 +112,7 @@
     <string name="copy_downloads_from">Secreto TV Manager 从开发者自己的发布页面下载 %1$s：</string>
     <string name="copy_release">版本 %1$s · %2$s</string>
     <string name="copy_where_from">来源</string>
-    <string name="copy_signed_check">在安装到电视之前，Secreto TV Manager 会检查它是否由 Projectivy 的开发者签名。Secreto TV Manager 与 Projectivy 无关联。</string>
+    <string name="copy_signed_check">Secreto TV Manager 会在电视上安装前验证 %1$s 的开发者签名。</string>
     <string name="copy_download_and_install">下载并安装</string>
     <string name="copy_download_directly_title">要直接下载 %1$s 吗？</string>
     <string name="copy_direct_check">Secreto TV Manager 会检查应用是否带有开发者的签名，但不会扫描应用中的恶意代码，而且应用不会自动更新。</string>
@@ -1198,4 +1198,15 @@
     <string name="about_credits">致谢与许可证</string>
     <string name="about_show_credits">显示致谢与许可证</string>
     <string name="about_hide_credits">隐藏致谢与许可证</string>
+    <string name="secreto_launcher_description">适用于 Android TV 和 Google TV 的可自定义主屏幕，支持收藏和应用搜索。</string>
+    <string name="secreto_launcher_screenshot_credit">截图来自官方仓库。外观因版本和设置而异。</string>
+    <string name="secreto_launcher_play_pending">尚未验证公开的 Play 商店页面。请使用官方 GitHub 下载。</string>
+    <string name="secreto_launcher_disabled">已在电视上安装但被停用。请先在应用管理中启用，再打开或设为主屏幕。</string>
+    <string name="secreto_launcher_target_unknown">无法验证已连接电视的 Android 版本和处理器。请重新连接后重试。</string>
+    <string name="secreto_launcher_incompatible">此 APK 与已连接的电视不兼容。未安装任何内容。</string>
+    <string name="secreto_launcher_missing_apk">最新稳定版本没有可安装的正式版 APK。</string>
+    <string name="secreto_launcher_ambiguous_apk">多个 APK 适用于此电视。未选择下载文件。请查看官方版本。</string>
+    <string name="secreto_launcher_invalid_release">无法验证官方稳定版本信息、APK 链接或 SHA-256。未安装任何内容。</string>
+    <string name="secreto_launcher_picked_confirm">已验证所选文件。请查看版本和大小，然后确认在电视上安装。</string>
+    <string name="secreto_launcher_verification_failed">APK 校验和、软件包或签名证书未通过验证。未安装任何内容。</string>
 </resources>

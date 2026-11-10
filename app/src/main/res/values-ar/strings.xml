@@ -491,7 +491,7 @@
     <string name="copy_choose_one">اختيار</string>
     <string name="copy_install_one">تثبيت</string>
     <string name="copy_choose_home">اختيار شاشة رئيسية</string>
-    <string name="copy_choose_home_text">يستبدل كل منها الشاشة الرئيسية للتلفاز. يفتح Secreto TV Manager صفحته في Play Store على التلفاز، وثبّته باستخدام جهاز التحكم.</string>
+    <string name="copy_choose_home_text">اختر مشغّلًا. عند توفره، افتح صفحته في Play Store على التلفاز أو استخدم التنزيل المباشر. يتطلب التثبيت وتعيين الشاشة الرئيسية موافقتك.</string>
     <string name="copy_can_download">يمكن أيضًا تنزيل بعضها مباشرة.</string>
     <string name="copy_no_launcher_list">تعذّر تحميل قائمة الشاشات الرئيسية. تحقق من إنترنت الهاتف وأعد المحاولة.</string>
     <string name="copy_recommended">اختيارات المحرر</string>
@@ -502,7 +502,7 @@
     <string name="copy_uses_service">يستخدم خدمة تسهيل الاستخدام</string>
     <string name="copy_no_service">مفتوح المصدر · دون خدمة تسهيل الاستخدام</string>
     <string name="copy_other_launcher">تفضل مشغّلًا آخر؟ ثبّته من Play Store على التلفاز ثم عُد هنا. سيظهر ضمن %1$s.</string>
-    <string name="copy_not_affiliated">لا يرتبط Secreto TV Manager بأي من هذه المشغّلات أو مطوّريها.</string>
+    <string name="copy_not_affiliated">تتولى SecretoTools صيانة Secreto TV Launcher. المشغّلات الأخرى تخص مطوّريها.</string>
     <string name="copy_get_from_store">الحصول عليه من Play Store</string>
     <string name="copy_store_recommended">يوصى بـ Play Store للتحديث التلقائي</string>
     <string name="copy_download_directly">تنزيل مباشر</string>
@@ -529,7 +529,7 @@
     <string name="copy_downloads_from">ينزّل Secreto TV Manager تطبيق %1$s من صفحة إصدارات المطوّر الأصلية:</string>
     <string name="copy_release">الإصدار %1$s · %2$s</string>
     <string name="copy_where_from">المصدر</string>
-    <string name="copy_signed_check">يتحقق Secreto TV Manager من توقيع مطوّر Projectivy قبل التثبيت على التلفاز. لا يرتبط Secreto TV Manager بـ Projectivy.</string>
+    <string name="copy_signed_check">يتحقق Secreto TV Manager من توقيع مطوّر %1$s على الملف قبل تثبيته على التلفاز.</string>
     <string name="copy_download_and_install">تنزيل وتثبيت</string>
     <string name="copy_download_directly_title">تنزيل %1$s مباشرة؟</string>
     <string name="copy_direct_check">يتحقق Secreto TV Manager من توقيع المطوّر. لا يفحص التطبيق بحثًا عن برامج ضارة، ولن يُحدّث التطبيق تلقائيًا.</string>
@@ -1413,4 +1413,15 @@
     <string name="remote_touchpad_swipe">اسحب للتحرك</string>
     <string name="remote_touchpad_tap">اضغط للموافقة</string>
     <string name="scan_vpn">اتصال VPN نشط، لذلك يتعذّر البحث في شبكة Wi-Fi. تظهر الأجهزة التي تعلن عن نفسها. أضف التلفاز بعنوان IP أو اسمح بالوصول إلى الشبكة المحلية في تطبيق VPN.</string>
+    <string name="secreto_launcher_description">شاشة رئيسية قابلة للتخصيص لأجهزة Android TV وGoogle TV، مع المفضلة والبحث عن التطبيقات.</string>
+    <string name="secreto_launcher_screenshot_credit">لقطة من المستودع الرسمي. قد يختلف المظهر بحسب الإصدار والإعدادات.</string>
+    <string name="secreto_launcher_play_pending">لم يتم التحقق من إتاحة التطبيق للعامة على Play Store بعد. استخدم التنزيل الرسمي من GitHub.</string>
+    <string name="secreto_launcher_disabled">مثبّت لكنه معطّل على التلفاز. فعّله من التطبيقات قبل فتحه أو تعيينه كشاشة رئيسية.</string>
+    <string name="secreto_launcher_target_unknown">تعذّر التحقق من إصدار Android ومعالج التلفاز المتصل. أعد الاتصال والمحاولة.</string>
+    <string name="secreto_launcher_incompatible">ملف APK هذا غير متوافق مع التلفاز المتصل. لم يتم تثبيت أي شيء.</string>
+    <string name="secreto_launcher_missing_apk">لا يحتوي أحدث إصدار مستقر على ملف APK قابل للتثبيت.</string>
+    <string name="secreto_launcher_ambiguous_apk">يوجد أكثر من ملف APK مناسب لهذا التلفاز. لم يُحدّد أي تنزيل. راجع الإصدار الرسمي.</string>
+    <string name="secreto_launcher_invalid_release">تعذّر التحقق من بيانات الإصدار المستقر الرسمي أو رابط APK أو بصمة SHA-256. لم يتم تثبيت أي شيء.</string>
+    <string name="secreto_launcher_picked_confirm">تم فحص الملف المحدد. راجع إصداره وحجمه ثم وافق على تثبيته على التلفاز.</string>
+    <string name="secreto_launcher_verification_failed">لم يجتز الملف التحقق من البصمة أو الحزمة أو شهادة التوقيع. لم يتم تثبيت أي شيء.</string>
 </resources>

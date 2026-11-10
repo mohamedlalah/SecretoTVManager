@@ -116,6 +116,11 @@ object RemoteButtons {
         return Look(fill, null, outline = false, ink = if (contrast(WHITE, fill) >= 4.5) WHITE else BLACK)
     }
 
+    /** Text shown while a brand logo is unavailable. Null means the label needs a neutral backing. */
+    fun fallbackInk(look: Look): Long? = listOf(WHITE, BLACK)
+        .map { ink -> ink to listOfNotNull(look.fill, look.fill2).minOf { contrast(ink, it) } }
+        .maxBy { it.second }.takeIf { it.second >= 4.5 }?.first
+
     const val WHITE = 0xFFFFFFFF
     const val BLACK = 0xFF000000
 

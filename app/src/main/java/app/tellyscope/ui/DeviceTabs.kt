@@ -4,6 +4,7 @@
 
 package app.tellyscope.ui
 
+import app.tellyscope.ui.theme.zelligeBackground
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -249,6 +250,9 @@ fun DeviceTabsScreen(
 
     Box {
         Scaffold(
+            modifier = Modifier.zelligeBackground(),
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             // Lifted by the Remote's rise, so a message isn't hidden behind the button.
             snackbarHost = { SnackbarHost(snackbar, Modifier.padding(bottom = RemoteRise)) },
             // Install on Apps and upload on Files as Material's extended FAB; the Remote has its own button in the bar.

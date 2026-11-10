@@ -71,7 +71,7 @@
     <string name="copy_choose_one">एक चुनें</string>
     <string name="copy_install_one">इसे इंस्टॉल करें</string>
     <string name="copy_choose_home">होम स्क्रीन चुनें</string>
-    <string name="copy_choose_home_text">हर एक TV की होम स्क्रीन की जगह ले लेता है। Secreto TV Manager इसे TV पर Play Store में खोलता है; आप रिमोट से इसे इंस्टॉल करते हैं।</string>
+    <string name="copy_choose_home_text">लॉन्चर चुनें। उपलब्ध होने पर TV के Play Store में उसका पेज खोलें या सीधे डाउनलोड करें। इंस्टॉल और होम बदलने के लिए पुष्टि आवश्यक है।</string>
     <string name="copy_can_download">कुछ को सीधे डाउनलोड भी किया जा सकता है।</string>
     <string name="copy_no_launcher_list">होम स्क्रीन की सूची लोड नहीं हो सकी। फ़ोन का इंटरनेट देखें और फिर से कोशिश करें।</string>
     <string name="copy_recommended">संपादक की पसंद</string>
@@ -84,7 +84,7 @@
     <string name="copy_uses_service">सुलभता सेवा का इस्तेमाल करता है</string>
     <string name="copy_no_service">ओपन सोर्स · कोई सुलभता सेवा नहीं</string>
     <string name="copy_other_launcher">कोई दूसरा लॉन्चर चाहिए? उसे अपने TV पर Play Store से इंस्टॉल करें, फिर यहां वापस आएं। वह %1$s में दिखेगा।</string>
-    <string name="copy_not_affiliated">Secreto TV Manager का इनमें से किसी भी लॉन्चर या उनके डेवलपर से कोई संबंध नहीं है।</string>
+    <string name="copy_not_affiliated">SecretoTools, Secreto TV Launcher का रखरखाव करता है। अन्य लॉन्चर अपने संबंधित डेवलपर के हैं।</string>
     <string name="copy_get_from_store">Play Store से लें</string>
     <string name="copy_store_recommended">Play Store सुझाया गया: यह खुद अपडेट होता रहता है</string>
     <string name="copy_download_directly">सीधे डाउनलोड करें</string>
@@ -112,7 +112,7 @@
     <string name="copy_downloads_from">Secreto TV Manager %1$s को डेवलपर के अपने रिलीज़ पेज से डाउनलोड करता है:</string>
     <string name="copy_release">रिलीज़ %1$s · %2$s</string>
     <string name="copy_where_from">यह कहां से आता है</string>
-    <string name="copy_signed_check">Secreto TV Manager TV पर इंस्टॉल करने से पहले जांचता है कि यह Projectivy के डेवलपर से साइन किया हुआ है। Secreto TV Manager का Projectivy से कोई संबंध नहीं है।</string>
+    <string name="copy_signed_check">TV पर इंस्टॉल करने से पहले Secreto TV Manager, %1$s के डेवलपर के हस्ताक्षर की पुष्टि करता है।</string>
     <string name="copy_download_and_install">डाउनलोड और इंस्टॉल करें</string>
     <string name="copy_download_directly_title">%1$s को सीधे डाउनलोड करें?</string>
     <string name="copy_direct_check">Secreto TV Manager जांचता है कि ऐप पर डेवलपर का सिग्नेचर है। यह ऐप में हानिकारक कोड की जांच नहीं करता, और ऐप खुद अपडेट नहीं होगा।</string>
@@ -1252,4 +1252,15 @@
     <string name="about_credits">श्रेय और लाइसेंस</string>
     <string name="about_show_credits">श्रेय और लाइसेंस दिखाएँ</string>
     <string name="about_hide_credits">श्रेय और लाइसेंस छिपाएँ</string>
+    <string name="secreto_launcher_description">Android TV और Google TV के लिए पसंदीदा ऐप और ऐप खोज वाला अनुकूलन योग्य होम स्क्रीन।</string>
+    <string name="secreto_launcher_screenshot_credit">आधिकारिक रिपॉज़िटरी का स्क्रीनशॉट। रूप संस्करण और सेटिंग के अनुसार बदलता है।</string>
+    <string name="secreto_launcher_play_pending">Play Store की सार्वजनिक लिस्टिंग अभी सत्यापित नहीं है। आधिकारिक GitHub डाउनलोड इस्तेमाल करें।</string>
+    <string name="secreto_launcher_disabled">TV पर इंस्टॉल है लेकिन अक्षम है। खोलने या होम बनाने से पहले ऐप्स में सक्षम करें।</string>
+    <string name="secreto_launcher_target_unknown">कनेक्ट किए गए TV का Android संस्करण और प्रोसेसर सत्यापित नहीं हो सका। दोबारा कनेक्ट करके प्रयास करें।</string>
+    <string name="secreto_launcher_incompatible">यह APK कनेक्ट किए गए TV के अनुकूल नहीं है। कुछ भी इंस्टॉल नहीं किया गया।</string>
+    <string name="secreto_launcher_missing_apk">नवीनतम स्थिर रिलीज़ में इंस्टॉल करने योग्य रिलीज़ APK नहीं है।</string>
+    <string name="secreto_launcher_ambiguous_apk">इस TV के लिए एक से अधिक APK मिले। कोई डाउनलोड नहीं चुना गया। आधिकारिक रिलीज़ देखें।</string>
+    <string name="secreto_launcher_invalid_release">आधिकारिक स्थिर रिलीज़ के विवरण, APK URL या SHA-256 की पुष्टि नहीं हुई। कुछ भी इंस्टॉल नहीं किया गया।</string>
+    <string name="secreto_launcher_picked_confirm">चुनी गई फ़ाइल जाँची गई है। संस्करण और आकार देखें, फिर TV पर इंस्टॉल की पुष्टि करें।</string>
+    <string name="secreto_launcher_verification_failed">APK के चेकसम, पैकेज या हस्ताक्षर प्रमाणपत्र का सत्यापन विफल हुआ। कुछ भी इंस्टॉल नहीं हुआ।</string>
 </resources>

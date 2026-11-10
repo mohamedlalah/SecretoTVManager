@@ -26,6 +26,7 @@ data class PickedApp(
     val info: ApkInfo,
     /** The APK's own label; the package name when it has none. */
     val label: String,
+    val launcherRequirements: LauncherRequirements? = null,
 ) {
     val sizeBytes: Long get() = files.sumOf { it.length() }
 }

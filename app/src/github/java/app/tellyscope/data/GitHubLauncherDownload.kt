@@ -25,6 +25,7 @@ private fun latestApi(releases: String) =
  * repo with exactly one APK, served from that release: the one named [KnownLauncher.apk], when the list names one.
  */
 fun parseRelease(json: String, launcher: KnownLauncher): LauncherRelease? = runCatching {
+    if (launcher.pkg == SecretoLauncher.PACKAGE) return@runCatching resolveSecretoRelease(json)
     val r = JSONObject(json)
     val tag = r.getString("tag_name")
     val assets = r.getJSONArray("assets")
@@ -65,6 +66,7 @@ class AndroidLauncherDownload(context: Context) : AndroidLauncherPick(context), 
      * Throws [RateLimited] only when the page didn't answer either.
      */
     override suspend fun latest(launcher: KnownLauncher): LauncherRelease = withContext(Dispatchers.IO) {
+        if (launcher.pkg == SecretoLauncher.PACKAGE) return@withContext resolveSecretoRelease(api("${SecretoLauncher.REPOSITORY}/releases"))
         val releases = launcher.releases ?: throw IOException("no releases page for ${launcher.pkg}")
         val limited = try {
             return@withContext parseRelease(api(releases), launcher) ?: throw IOException("no release of ${launcher.pkg}")
@@ -74,8 +76,16 @@ class AndroidLauncherDownload(context: Context) : AndroidLauncherPick(context), 
         runCatching { fromPage(launcher, releases) }.getOrNull() ?: throw limited
     }
 
+    override suspend fun latest(launcher: KnownLauncher, target: LauncherTarget): LauncherRelease =
+        if (launcher.pkg == SecretoLauncher.PACKAGE) withContext(Dispatchers.IO) {
+            resolveSecretoRelease(api("${SecretoLauncher.REPOSITORY}/releases"), target)
+        } else latest(launcher)
+
     private fun api(releases: String): String {
         val c = URL(latestApi(releases)).openConnection() as HttpURLConnection
+        c.instanceFollowRedirects = false
+        c.setRequestProperty("Accept", "application/vnd.github+json")
+        c.setRequestProperty("User-Agent", "SecretoTVManager-Launcher")
         c.connectTimeout = 10_000
         c.readTimeout = 10_000
         try {
@@ -84,7 +94,16 @@ class AndroidLauncherDownload(context: Context) : AndroidLauncherPick(context), 
                 throw RateLimited(c.getHeaderField("x-ratelimit-reset")?.toLongOrNull()?.times(1000))
             }
             if (code != 200) throw IOException("HTTP $code")
-            return c.inputStream.use { it.readBytes() }.decodeToString()
+            return c.inputStream.use { input ->
+                val out = java.io.ByteArrayOutputStream()
+                val buffer = ByteArray(8192)
+                while (true) {
+                    val n = input.read(buffer); if (n < 0) break
+                    check(out.size() + n <= 2_097_152) { "Release metadata too large" }
+                    out.write(buffer, 0, n)
+                }
+                out.toByteArray().decodeToString()
+            }
         } finally {
             c.disconnect()
         }
@@ -115,9 +134,11 @@ class AndroidLauncherDownload(context: Context) : AndroidLauncherPick(context), 
     }
 
     override suspend fun fetch(launcher: KnownLauncher, release: LauncherRelease, onProgress: (Progress) -> Unit): PickedApp = withContext(Dispatchers.IO) {
+        require(release.valid(launcher))
+        if (launcher.pkg == SecretoLauncher.PACKAGE && release.sha256?.matches(Regex("[0-9a-f]{64}")) != true) throw WrongApk()
         dir.deleteRecursively()
         dir.mkdirs()
-        val file = File(dir, apkName(launcher))
+        val file = File.createTempFile("launcher-", ".apk", dir)
         val c = URL(release.apk).openConnection() as HttpURLConnection
         c.connectTimeout = 10_000
         c.readTimeout = 30_000
@@ -125,6 +146,7 @@ class AndroidLauncherDownload(context: Context) : AndroidLauncherPick(context), 
             if (c.responseCode != 200) throw IOException("HTTP ${c.responseCode}")
             c.inputStream.use { input ->
                 file.outputStream().use { out ->
+                    val digest = java.security.MessageDigest.getInstance("SHA-256")
                     val buf = ByteArray(64 * 1024)
                     var done = 0L
                     while (true) {
@@ -133,14 +155,20 @@ class AndroidLauncherDownload(context: Context) : AndroidLauncherPick(context), 
                         done += n
                         if (done > release.size) throw IOException("larger than the release says")
                         out.write(buf, 0, n)
+                        digest.update(buf, 0, n)
                         onProgress(Progress(done, release.size))
                     }
                     if (done != release.size) throw IOException("download cut short")
+                    val actual = digest.digest().joinToString("") { "%02x".format(it) }
+                    if (release.sha256 != null && actual != release.sha256) throw WrongApk()
                 }
             }
+            read(file, launcher)
+        } catch (e: Exception) {
+            file.delete()
+            throw e
         } finally {
             c.disconnect()
         }
-        read(file, launcher)
     }
 }

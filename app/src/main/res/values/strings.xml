@@ -100,7 +100,7 @@
     <string name="copy_choose_one">Choose one</string>
     <string name="copy_install_one">Install it</string>
     <string name="copy_choose_home">Choose a home screen</string>
-    <string name="copy_choose_home_text">Each one replaces the TV\'s home screen. Secreto TV Manager opens it in the Play Store on the TV; you install it with the remote.</string>
+    <string name="copy_choose_home_text">Choose a launcher. When available, open its listing in the TV’s Play Store or use Download directly. Installation and Home selection require your confirmation.</string>
     <string name="copy_can_download">Some can also be downloaded directly.</string>
     <string name="copy_no_launcher_list">Couldn\'t load the list of home screens. Check the phone\'s internet and try again.</string>
     <string name="copy_recommended">Editor\'s choice</string>
@@ -114,7 +114,7 @@
     <string name="copy_no_service">Open source · no accessibility service</string>
     <!-- %1$s is copy_on_this_tv -->
     <string name="copy_other_launcher">Prefer another launcher? Install it from the Play Store on your TV, then come back here. It shows up under %1$s.</string>
-    <string name="copy_not_affiliated">Secreto TV Manager isn\'t affiliated with any of these launchers or their developers.</string>
+    <string name="copy_not_affiliated">Secreto TV Launcher is maintained by SecretoTools. Other launchers belong to their respective developers.</string>
     <string name="copy_get_from_store">Get it from Play Store</string>
     <string name="copy_store_recommended">Play Store recommended: it updates itself</string>
     <string name="copy_download_directly">Download directly</string>
@@ -148,7 +148,7 @@
     <!-- %1$s the version, %2$s its size (copy_size_*) -->
     <string name="copy_release">Release %1$s · %2$s</string>
     <string name="copy_where_from">Where it comes from</string>
-    <string name="copy_signed_check">Secreto TV Manager checks it\'s signed by Projectivy\'s developer before installing it on the TV. Secreto TV Manager isn\'t affiliated with Projectivy.</string>
+    <string name="copy_signed_check">Secreto TV Manager verifies that the APK is signed by the developer of %1$s before installing it on the TV.</string>
     <string name="copy_download_and_install">Download and install</string>
     <!-- Download directly, on a TV with the Play Store; %1$s the app's name -->
     <string name="copy_download_directly_title">Download %1$s directly?</string>
@@ -1558,4 +1558,15 @@
     <string name="about_credits">Credits &amp; licenses</string>
     <string name="about_show_credits">Show credits and licenses</string>
     <string name="about_hide_credits">Hide credits and licenses</string>
+    <string name="secreto_launcher_description">A customizable home screen for Android TV and Google TV, with favorites and app search.</string>
+    <string name="secreto_launcher_screenshot_credit">Official repository screenshot. Appearance varies with version and settings.</string>
+    <string name="secreto_launcher_play_pending">Play Store listing is not publicly verified yet. Use the official GitHub download.</string>
+    <string name="secreto_launcher_disabled">Installed but disabled on the TV. Enable it in Apps before opening or making it Home.</string>
+    <string name="secreto_launcher_target_unknown">Could not verify the connected TV’s Android version and processor. Reconnect and try again.</string>
+    <string name="secreto_launcher_incompatible">This APK is not compatible with the connected TV. Nothing was installed.</string>
+    <string name="secreto_launcher_missing_apk">The latest stable release has no installable release APK.</string>
+    <string name="secreto_launcher_ambiguous_apk">More than one APK matches this TV. No download was selected. Check the official release.</string>
+    <string name="secreto_launcher_invalid_release">The official stable release metadata, APK URL or SHA-256 checksum could not be verified. Nothing was installed.</string>
+    <string name="secreto_launcher_picked_confirm">This selected file has been checked. Review its version and size, then confirm installation on the TV.</string>
+    <string name="secreto_launcher_verification_failed">The APK checksum, package or signing certificate did not pass verification. Nothing was installed.</string>
 </resources>

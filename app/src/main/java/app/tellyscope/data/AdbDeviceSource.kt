@@ -1295,6 +1295,16 @@ class AdbDeviceSource(
 
     override suspend fun installed(deviceId: String, packageName: String) = Sideload(liveSession(deviceId)).installed(packageName)
 
+    override suspend fun launcherTarget(deviceId: String): LauncherTarget? {
+        val session = liveSession(deviceId)
+        val sdk = session.shell("getprop ro.build.version.sdk").output.trim().toIntOrNull() ?: return null
+        val abis = session.shell("getprop ro.product.cpu.abilist").output.trim().split(',').filter { it.isNotBlank() }
+        val features = session.shell("pm list features").output.lineSequence().filter { it.startsWith("feature:") }
+            .map { it.removePrefix("feature:").substringBefore('=') }.toSet()
+        val glEs = session.shell("getprop ro.opengles.version").output.trim().toIntOrNull() ?: 0
+        return LauncherTarget(sdk, abis.ifEmpty { listOf(session.shell("getprop ro.product.cpu.abi").output.trim()).filter { it.isNotBlank() } }, features, glEs)
+    }
+
     override suspend fun install(
         deviceId: String,
         apks: List<File>,

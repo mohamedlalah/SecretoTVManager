@@ -177,12 +177,12 @@ class DataSignatureTest {
         val none = DeviceLists(tmp.newFolder()) { throw IOException("offline $it") }
         SharedLists.load(forged, none, fresh = true)
         assertNull(SharedLists.unverified)
-        assertEquals(listOf("com.good.home"), SharedLists.launchers.map { it.pkg })
+        assertEquals(listOf("com.secreto.tvlauncher", "com.good.home"), SharedLists.launchers.map { it.pkg })
 
         SharedLists.refresh()
         assertEquals(2, fetches)
         assertEquals(DATA_BASE, SharedLists.unverified)
-        assertEquals(listOf("com.good.home"), SharedLists.launchers.map { it.pkg })
+        assertEquals(listOf("com.secreto.tvlauncher", "com.good.home"), SharedLists.launchers.map { it.pkg })
         assertTrue(lists(dir, Served(emptyMap())).cachedVerified())
         assertEquals(launchers.decodeToString(), forged.cachedShared("launchers"))
     }
@@ -192,7 +192,7 @@ class DataSignatureTest {
         val served = Served(serving(index(2026110301)))
         val none = DeviceLists(tmp.newFolder()) { throw IOException("offline $it") }
         SharedLists.load(lists(tmp.newFolder(), served), none, fresh = true)
-        assertEquals(listOf("com.good.home"), SharedLists.launchers.map { it.pkg })
+        assertEquals(listOf("com.secreto.tvlauncher", "com.good.home"), SharedLists.launchers.map { it.pkg })
         assertEquals(DATA_BASE, SharedLists.unverified)
 
         SharedLists.load(lists(tmp.newFolder(), Served(signed())), none, fresh = true)
@@ -206,7 +206,7 @@ class DataSignatureTest {
         val signedIndex = index(2026110301, file).let { withSigs(it, p256(it)) }
         SharedLists.load(lists(tmp.newFolder(), Served(mapOf("index.json" to signedIndex, "launchers.json" to file))), none, fresh = true)
         assertEquals(setOf("com.good.home"), SharedLists.serviceLaunchers)
-        assertEquals("1.0", SharedLists.launchers.single().accessibility)
+        assertEquals("1.0", SharedLists.launchers.single { it.pkg == "com.good.home" }.accessibility)
 
         SharedLists.load(lists(tmp.newFolder(), Served(mapOf("index.json" to index(2026110301, file), "launchers.json" to file))), none, fresh = true)
         assertEquals(DATA_BASE, SharedLists.unverified)
@@ -226,7 +226,7 @@ class DataSignatureTest {
         assertEquals(emptySet<String>(), SharedLists.serviceLaunchers)
 
         val uses = RECOMMENDED.associate { it.pkg to it.accessibility }
-        assertEquals(mapOf("com.spocky.projengmenu" to true, "me.efesser.flauncher" to false, "com.klevico.monet" to true), uses)
+        assertEquals(mapOf("com.secreto.tvlauncher" to false, "com.spocky.projengmenu" to true, "me.efesser.flauncher" to false, "com.klevico.monet" to true), uses)
     }
 
     /**

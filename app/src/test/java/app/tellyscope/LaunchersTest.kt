@@ -165,7 +165,7 @@ class LaunchersTest {
                 DeviceLists(tmp.newFolder()) { url -> asked += url; source[url.removePrefix(LISTS_BASE)] ?: throw IOException("404 $url") },
                 fresh = true,
             )
-            assertEquals(listOf("com.good.home"), SharedLists.launchers.map { it.pkg })
+            assertEquals(listOf("com.secreto.tvlauncher", "com.good.home"), SharedLists.launchers.map { it.pkg })
             assertEquals(listOf(LISTS_BASE + "index.json"), asked)
         } finally {
             SharedLists.reseed() // the seed lists, for the tests after this one

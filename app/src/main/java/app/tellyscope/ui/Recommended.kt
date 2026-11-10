@@ -34,3 +34,12 @@ fun fireLaunchers(recommended: List<Recommended> = RECOMMENDED) =
 
 /** The first of [fireLaunchers], which Fire OS's picker opens on. */
 fun fireLauncher(recommended: List<Recommended> = RECOMMENDED) = fireLaunchers(recommended).firstOrNull()
+
+/** Secreto's store availability is fork-owned; a remote list cannot enable it. */
+fun launcherPlayAvailable(pkg: String) = pkg != app.tellyscope.data.SecretoLauncher.PACKAGE || app.tellyscope.data.SecretoLauncher.PLAY_STORE_VERIFIED
+
+internal fun recommendedAbsent(apps: List<app.tellyscope.data.AppInfo>) = RECOMMENDED.filter { installedLauncher(apps, it.pkg) == null }
+internal fun installedChoices(apps: List<app.tellyscope.data.AppInfo>) = apps.filter {
+    installedLauncher(apps, it.packageName) != null &&
+        (RECOMMENDED.any { r -> r.pkg == it.packageName } || it.enabled && it.answersHome && !it.builtInLauncher)
+}.distinctBy { it.packageName }.sortedBy { it.packageName != app.tellyscope.data.SecretoLauncher.PACKAGE }

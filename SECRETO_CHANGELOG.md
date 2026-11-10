@@ -14,7 +14,8 @@ Integrates original Tellyscope v0.16.0 (including its v0.15.x changes).
 - App-store shortcuts, app-state actions, save-picker fixes and Fire TV improvements.
 - Expanded monitoring and an advanced shell with change confirmation and no automatic history undo.
 - Secreto branding, eight languages, fork-only metadata updater, signing and legal materials retained.
-- No Secreto Launcher download or promotion added.
+- Secreto TV Launcher appears first in the home-screen picker. The GitHub build resolves the latest stable APK and checks its checksum, signature, package and TV compatibility before installation.
+- Light Ocean Blue uses pale cards and readable navy text, with a subtle Moroccan zellige background on key screens.
 
 ## 1.0.0 — 2026-11-02
 

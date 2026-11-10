@@ -96,7 +96,7 @@ def prepare(fetch_dependency_sources=False):
         target_cache = download_cache / filename
         candidate = jars[0] if jars else target_cache
         if not candidate.is_file() and fetch_dependency_sources:
-            repository = 'https://dl.google.com/dl/android/maven2/' if group.startswith('androidx.') else 'https://repo.maven.apache.org/maven2/'
+            repository = 'https://dl.google.com/dl/android/maven2/' if group.startswith(('androidx.', 'com.android.tools.')) else 'https://repo.maven.apache.org/maven2/'
             if group.startswith('com.github.'):
                 repository = 'https://jitpack.io/'
             url = repository + group.replace('.', '/') + '/' + module + '/' + version + '/' + module + '-' + version + '-sources.jar'

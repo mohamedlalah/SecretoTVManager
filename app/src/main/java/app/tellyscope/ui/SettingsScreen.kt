@@ -3,6 +3,7 @@
 
 package app.tellyscope.ui
 
+import app.tellyscope.ui.theme.zelligeBackground
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.clickable
@@ -115,6 +116,9 @@ fun SettingsScreen(
     if (about) AboutDialog(commit = null, onDismiss = { about = false })
     if (editing) SourceDialog(listSource, onSave = { editing = false; onListSource(it) }, onDismiss = { editing = false })
     Scaffold(
+        modifier = Modifier.zelligeBackground(),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(

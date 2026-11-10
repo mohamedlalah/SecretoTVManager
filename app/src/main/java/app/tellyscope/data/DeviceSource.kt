@@ -248,6 +248,8 @@ interface DeviceSource {
     suspend fun closeAlert(deviceId: String): Boolean
 
     /** What a report says about the TV: model, Android, the apps it came with. Throws if it's gone. */
+    suspend fun launcherTarget(deviceId: String): LauncherTarget? = null
+
     suspend fun facts(deviceId: String): TvFacts
 
     /** Who may use ADB on the TV and who is connected now. Throws if it's gone. */

@@ -71,7 +71,7 @@
     <string name="copy_choose_one">Elegir uno</string>
     <string name="copy_install_one">Instalarlo</string>
     <string name="copy_choose_home">Elige una pantalla de inicio</string>
-    <string name="copy_choose_home_text">Cada una reemplaza la pantalla de inicio de la TV. Secreto TV Manager la abre en Play Store en la TV; la instalas con el control remoto.</string>
+    <string name="copy_choose_home_text">Elige un launcher. Si está disponible, abre su ficha en Play Store del TV o descárgalo directamente. La instalación y el cambio de inicio requieren confirmación.</string>
     <string name="copy_can_download">Algunas también se pueden descargar directamente.</string>
     <string name="copy_no_launcher_list">No se pudo cargar la lista de pantallas de inicio. Revisa la conexión a internet del teléfono y vuelve a intentarlo.</string>
     <string name="copy_recommended">Selección del editor</string>
@@ -84,7 +84,7 @@
     <string name="copy_uses_service">Usa un servicio de accesibilidad</string>
     <string name="copy_no_service">Código abierto · sin servicio de accesibilidad</string>
     <string name="copy_other_launcher">¿Prefieres otro launcher? Instálalo desde Play Store en tu TV y vuelve aquí. Aparecerá en %1$s.</string>
-    <string name="copy_not_affiliated">Secreto TV Manager no está afiliada a ninguno de estos launchers ni a sus desarrolladores.</string>
+    <string name="copy_not_affiliated">SecretoTools mantiene Secreto TV Launcher. Los demás launchers pertenecen a sus respectivos desarrolladores.</string>
     <string name="copy_get_from_store">Conseguir en Play Store</string>
     <string name="copy_store_recommended">Se recomienda Play Store: se actualiza solo</string>
     <string name="copy_download_directly">Descargar directamente</string>
@@ -112,7 +112,7 @@
     <string name="copy_downloads_from">Secreto TV Manager descarga %1$s de la página de versiones del propio desarrollador:</string>
     <string name="copy_release">Versión %1$s · %2$s</string>
     <string name="copy_where_from">De dónde viene</string>
-    <string name="copy_signed_check">Secreto TV Manager comprueba que esté firmado por el desarrollador de Projectivy antes de instalarlo en la TV. Secreto TV Manager no está afiliada a Projectivy.</string>
+    <string name="copy_signed_check">Secreto TV Manager verifica la firma del desarrollador de %1$s antes de instalar en el TV.</string>
     <string name="copy_download_and_install">Descargar e instalar</string>
     <string name="copy_download_directly_title">¿Descargar %1$s directamente?</string>
     <string name="copy_direct_check">Secreto TV Manager comprueba que la app lleve la firma del desarrollador. No analiza la app en busca de código malicioso, y la app no se actualizará sola.</string>
@@ -1306,4 +1306,15 @@
     <string name="about_credits">Créditos y licencias</string>
     <string name="about_show_credits">Mostrar créditos y licencias</string>
     <string name="about_hide_credits">Ocultar créditos y licencias</string>
+    <string name="secreto_launcher_description">Una pantalla de inicio personalizable para Android TV y Google TV, con favoritos y búsqueda de apps.</string>
+    <string name="secreto_launcher_screenshot_credit">Captura del repositorio oficial. El aspecto varía según la versión y los ajustes.</string>
+    <string name="secreto_launcher_play_pending">La ficha pública de Play Store aún no está verificada. Usa la descarga oficial de GitHub.</string>
+    <string name="secreto_launcher_disabled">Instalado pero desactivado en el TV. Actívalo en Apps antes de abrirlo o usarlo como inicio.</string>
+    <string name="secreto_launcher_target_unknown">No se pudo verificar Android y el procesador del TV conectado. Reconecta e inténtalo de nuevo.</string>
+    <string name="secreto_launcher_incompatible">Este APK no es compatible con el TV conectado. No se instaló nada.</string>
+    <string name="secreto_launcher_missing_apk">La última versión estable no contiene un APK de producción instalable.</string>
+    <string name="secreto_launcher_ambiguous_apk">Varios APK coinciden con este TV. No se seleccionó ninguno. Revisa la versión oficial.</string>
+    <string name="secreto_launcher_invalid_release">No se pudieron verificar los datos oficiales, el enlace APK o el SHA-256. No se instaló nada.</string>
+    <string name="secreto_launcher_picked_confirm">Se verificó el archivo elegido. Revisa su versión y tamaño y confirma la instalación en el TV.</string>
+    <string name="secreto_launcher_verification_failed">No se pudo verificar la suma, el paquete o el certificado del APK. No se instaló nada.</string>
 </resources>

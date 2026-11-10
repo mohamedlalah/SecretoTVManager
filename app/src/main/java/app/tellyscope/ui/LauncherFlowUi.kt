@@ -4,6 +4,7 @@
 
 package app.tellyscope.ui
 
+import app.tellyscope.ui.theme.zelligeBackground
 import android.provider.Settings
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -114,6 +115,7 @@ import app.tellyscope.data.AppInfo
 import app.tellyscope.data.Device
 import app.tellyscope.data.LauncherRelease
 import app.tellyscope.data.Picture
+import app.tellyscope.data.SecretoLauncher
 import app.tellyscope.data.SharedLists
 import app.tellyscope.data.UiText
 import app.tellyscope.data.asUiText
@@ -169,7 +171,7 @@ internal fun downloadable(pkg: String) =
     RECOMMENDED.firstOrNull { it.pkg == pkg }?.launcher?.let { it.signers.isNotEmpty() && it.releases != null } == true
 
 /** [pkg] on the TV and on, so the picker offers Make Home or Open on it rather than the Store. */
-internal fun installedLauncher(apps: List<AppInfo>, pkg: String) = apps.firstOrNull { it.packageName == pkg && it.enabled }
+internal fun installedLauncher(apps: List<AppInfo>, pkg: String) = apps.firstOrNull { it.packageName == pkg && (it.enabled || pkg == SecretoLauncher.PACKAGE) }
 
 /** The picker's On this TV: launchers someone added that Editor's choice doesn't list, the TV's own left out. */
 internal fun otherLaunchers(apps: List<AppInfo>) =
@@ -263,6 +265,9 @@ fun LauncherScreen(
         )
     }
     Scaffold(
+        modifier = Modifier.zelligeBackground(),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
@@ -296,18 +301,23 @@ fun LauncherScreen(
                         when {
                             have == null -> Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 val both = direct && downloadable(chosen)
-                                if (both) {
+                                val storeAvailable = chosen.isNotEmpty() && launcherPlayAvailable(chosen)
+                                if (both && storeAvailable) {
                                     Row(Modifier.align(Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Default.Check, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                         Spacer(Modifier.width(6.dp))
                                         Text(Copy.STORE_RECOMMENDED.resolve(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 }
-                                IconButtonText(OpenInNew, Copy.GET_FROM_STORE.resolve(), Modifier.fillMaxWidth()) { actions.install(chosen) }
-                                if (both) {
+                                IconButtonText(OpenInNew, Copy.GET_FROM_STORE.resolve(), Modifier.fillMaxWidth(), enabled = storeAvailable) { actions.install(chosen) }
+                                if (chosen == SecretoLauncher.PACKAGE && !storeAvailable) Text(stringResource(R.string.secreto_launcher_play_pending), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                if (both && !storeAvailable) {
+                                    IconButtonText(LauncherIcons.Download, Copy.DOWNLOAD_DIRECTLY.resolve(), Modifier.fillMaxWidth(), enabled = flow.fire == null) { actions.fireCheck(chosen) }
+                                } else if (both) {
                                     OutlinedButton(onClick = { actions.fireCheck(chosen) }, enabled = flow.fire == null, modifier = Modifier.fillMaxWidth()) { Text(Copy.DOWNLOAD_DIRECTLY.resolve()) }
                                 }
                             }
+                            !have.enabled -> Text(stringResource(R.string.secreto_launcher_disabled), style = MaterialTheme.typography.bodyMedium)
                             // Current, or a TV that can't take it as Home: only Open.
                             !have.home && current != null -> {
                                 TextButton(onClick = { actions.open(chosen) }) { Text(Copy.OPEN.resolve()) }
@@ -319,6 +329,7 @@ fun LauncherScreen(
                     LauncherFlow.Step.Waiting -> TextButton(onClick = { actions.install(flow.pkg) }) { Text(Copy.OPEN_STORE_AGAIN.resolve()) }
                     LauncherFlow.Step.Installed -> {
                         TextButton(onClick = actions.later) { Text(Copy.NOT_NOW.resolve()) }
+                        if (flow.pkg == SecretoLauncher.PACKAGE) TextButton(onClick = { actions.open(flow.pkg) }) { Text(Copy.OPEN.resolve()) }
                         Button(onClick = { if (app?.homeService == true) askService = true else actions.switch(false) }, enabled = current != null) {
                             Text(Copy.confirm(Action.Home).resolve())
                         }
@@ -403,10 +414,10 @@ private fun IconButtonText(icon: ImageVector, text: String, modifier: Modifier =
 @Composable
 private fun Picker(chosen: String, apps: List<AppInfo>, direct: Boolean, onChoose: (String) -> Unit) {
     val c = MaterialTheme.colorScheme
-    val others = otherLaunchers(apps)
-    val canDownload = direct && RECOMMENDED.any { downloadable(it.pkg) && installedLauncher(apps, it.pkg) == null }
+    val others = installedChoices(apps)
+    val absent = recommendedAbsent(apps)
     Text(
-        if (canDownload) Copy.CHOOSE_HOME_TEXT.resolve() + " " + Copy.CAN_DOWNLOAD.resolve() else Copy.CHOOSE_HOME_TEXT.resolve(),
+        Copy.CHOOSE_HOME_TEXT.resolve(),
         style = MaterialTheme.typography.bodyLarge,
     )
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -414,14 +425,16 @@ private fun Picker(chosen: String, apps: List<AppInfo>, direct: Boolean, onChoos
             Text(Copy.ON_THIS_TV.resolve(), style = MaterialTheme.typography.labelLarge, color = c.primary, modifier = Modifier.padding(bottom = 8.dp))
             Column(Modifier.selectableGroup().padding(bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 others.forEachIndexed { i, a ->
-                    PickRow(segment(i, others.lastIndex), a.packageName == chosen, a.label, a, vertical = 12.dp, onClick = { onChoose(a.packageName) })
+                    val known = RECOMMENDED.firstOrNull { it.pkg == a.packageName }
+                    if (known != null) RecommendedRow(known, segment(i, others.lastIndex), a.packageName == chosen, a) { onChoose(a.packageName) }
+                    else PickRow(segment(i, others.lastIndex), a.packageName == chosen, a.label, a, vertical = 12.dp, onClick = { onChoose(a.packageName) })
                 }
             }
         }
         Text(Copy.RECOMMENDED.resolve(), style = MaterialTheme.typography.labelLarge, color = c.primary, modifier = Modifier.padding(bottom = 8.dp))
         Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            RECOMMENDED.forEachIndexed { i, l ->
-                RecommendedRow(l, segment(i, RECOMMENDED.lastIndex), l.pkg == chosen, installedLauncher(apps, l.pkg)) { onChoose(l.pkg) }
+            absent.forEachIndexed { i, l ->
+                RecommendedRow(l, segment(i, absent.lastIndex), l.pkg == chosen, null) { onChoose(l.pkg) }
             }
         }
         Text(Copy.OTHER_LAUNCHER.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, modifier = Modifier.padding(top = 12.dp))
@@ -453,7 +466,8 @@ private fun FirePick(pkg: String, apps: List<AppInfo>, play: Boolean = false, on
         Column(Modifier.padding(16.dp)) {
             Text(l.name, style = MaterialTheme.typography.bodyLarge)
             Text(l.about, style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
-            ServiceLine(l.accessibility, Modifier.padding(top = 4.dp))
+            if (l.pkg == SecretoLauncher.PACKAGE) Text("SecretoTools", style = MaterialTheme.typography.labelMedium, color = c.onSurfaceVariant)
+            else ServiceLine(l.accessibility, Modifier.padding(top = 4.dp))
         }
     }
 }
@@ -483,11 +497,11 @@ private fun FireBody(f: FireInstall, pkg: String, device: Device, play: Boolean,
     when (f.step) {
         null, FireInstall.Step.Checking, FireInstall.Step.Confirm -> if (f.store) {
             WarningBadge()
-            Text(Copy.downloadDirectly(label).resolve(), style = MaterialTheme.typography.headlineMedium)
-            Text(Copy.downloadsFrom(label).resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+            Text((if (f.picked) Copy.installLauncher(label) else Copy.downloadDirectly(label)).resolve(), style = MaterialTheme.typography.headlineMedium)
+            Text(if (f.picked) stringResource(R.string.secreto_launcher_picked_confirm) else Copy.downloadsFrom(label).resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
             release?.let { SourceRow(source, it, openPage) }
             Text(Copy.DIRECT_CHECK.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
-            Text(Copy.STORE_SAFER.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+            if (launcherPlayAvailable(pkg)) Text(Copy.STORE_SAFER.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
         } else if (play) {
             FirePick(pkg, apps, play = true, onChoose = choose)
             Yourself(f, label, source, openPage, actions)
@@ -513,11 +527,11 @@ private fun FireBody(f: FireInstall, pkg: String, device: Device, play: Boolean,
                 AnnotatedString((if (f.picked) Copy.wrongApkFileText(label) else Copy.wrongApkText(label)).resolve()),
             )
             FireSteps(f, label, device)
-            if (f.store) Text(Copy.STORE_INSTEAD.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+            if (f.store && launcherPlayAvailable(pkg)) Text(Copy.STORE_INSTEAD.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
         }
         FireInstall.Step.NoDownload -> {
             Hero(LauncherIcons.ErrorOutline, c.errorContainer, c.onErrorContainer)
-            val text = if (f.until != null) Copy.noDownloadLimited(clockTime(f.until)) else Copy.NO_DOWNLOAD_OFFLINE
+            val text = f.error ?: if (f.until != null) Copy.noDownloadLimited(clockTime(f.until)) else Copy.NO_DOWNLOAD_OFFLINE
             Headed(Copy.noDownload(label).resolve(), AnnotatedString(text.resolve()))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(Copy.OR_YOURSELF.resolve(), style = MaterialTheme.typography.labelLarge, color = c.primary)
@@ -566,8 +580,10 @@ private fun FireButtons(f: FireInstall, pkg: String, actions: LauncherActions, p
         when (f.step) {
             null, FireInstall.Step.Checking -> if (!play) IconButtonText(LauncherIcons.Download, Copy.INSTALL.resolve(), wide, enabled = f.step == null, onClick = check)
             // The safe way first and filled; the download only as the outlined second.
-            FireInstall.Step.Confirm -> if (f.store) {
-                IconButtonText(OpenInNew, Copy.GET_FROM_STORE.resolve(), wide, onClick = store)
+            FireInstall.Step.Confirm -> if (pkg == SecretoLauncher.PACKAGE) {
+                IconButtonText(LauncherIcons.Download, (if (f.picked) Copy.INSTALL else Copy.DOWNLOAD_AND_INSTALL).resolve(), wide, enabled = !f.gated, onClick = actions.fireInstall)
+            } else if (f.store) {
+                IconButtonText(OpenInNew, Copy.GET_FROM_STORE.resolve(), wide, enabled = launcherPlayAvailable(pkg), onClick = store)
                 if (f.list != null) TrustRow(f.trusted, actions.fireTrust)
                 OutlinedButton(onClick = actions.fireInstall, enabled = !f.gated, modifier = wide) { Text(Copy.DOWNLOAD_ANYWAY.resolve()) }
             } else {
@@ -583,7 +599,7 @@ private fun FireButtons(f: FireInstall, pkg: String, actions: LauncherActions, p
                     TextButton(onClick = actions.firePick) { Text(Copy.PICK_ANOTHER.resolve()) }
                     Button(onClick = check) { Text(Copy.TRY_DOWNLOAD_AGAIN.resolve()) }
                 }
-                f.store -> IconButtonText(OpenInNew, Copy.GET_FROM_STORE.resolve(), wide, onClick = store)
+                f.store -> IconButtonText(OpenInNew, Copy.GET_FROM_STORE.resolve(), wide, enabled = launcherPlayAvailable(pkg), onClick = store)
                 else -> Button(onClick = check, modifier = wide) { Text(Copy.TRY_AGAIN.resolve()) }
             }
             FireInstall.Step.NoDownload -> Row(wide, horizontalArrangement = Arrangement.End) {
@@ -884,8 +900,10 @@ private fun RecommendedRow(l: Recommended, shape: RoundedCornerShape, on: Boolea
             }
         },
         footer = {
-            Text(l.about, style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
-            ServiceLine(l.accessibility, Modifier.padding(top = 4.dp))
+            Text(if (l.pkg == SecretoLauncher.PACKAGE) stringResource(R.string.secreto_launcher_description) else l.about,
+                style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
+            if (l.pkg == SecretoLauncher.PACKAGE) Text("SecretoTools", style = MaterialTheme.typography.labelMedium, color = c.onSurfaceVariant)
+            else ServiceLine(l.accessibility, Modifier.padding(top = 4.dp))
         },
         below = {
             if (shot != ListImage.Missing) Column(Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
@@ -896,7 +914,7 @@ private fun RecommendedRow(l: Recommended, shape: RoundedCornerShape, on: Boolea
                     contentAlignment = Alignment.Center,
                 ) {
                     when (shot) {
-                        is ListImage.Ready -> Image(shot.bitmap, description, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                        is ListImage.Ready -> Image(shot.bitmap, description, Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
                         ListImage.Failed -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(LauncherIcons.HideImage, null, tint = c.onSurfaceVariant)
                             Text(Copy.PICTURE_FAILED.resolve(), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant,
@@ -908,7 +926,7 @@ private fun RecommendedRow(l: Recommended, shape: RoundedCornerShape, on: Boolea
                         else -> {}
                     }
                 }
-                l.launcher.credit?.takeIf { shot is ListImage.Ready }?.let {
+                (if (l.pkg == SecretoLauncher.PACKAGE) stringResource(R.string.secreto_launcher_screenshot_credit) else l.launcher.credit)?.takeIf { shot is ListImage.Ready }?.let {
                     Text(it, style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant, fontSize = 10.sp, fontWeight = FontWeight.Light,
                         modifier = Modifier.padding(start = 4.dp, top = 4.dp, end = 4.dp))
                 }

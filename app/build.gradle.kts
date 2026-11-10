@@ -282,7 +282,9 @@ androidComponents {
         val name = variant.name.replaceFirstChar { it.uppercase() }
         val sizeCheck = tasks.register<CheckApkSize>("check${name}ApkSize") {
             apkDir = variant.artifacts.get(SingleArtifact.APK)
-            maxBytes = 4_000_000L
+            // GitHub adds the verified Launcher download, bundled preview and zellige.
+            // The measured optimized APK was 4,069,127 bytes before signing.
+            maxBytes = if (variant.name == "githubRelease") 4_200_000L else 4_000_000L
         }
         afterEvaluate { tasks.named("assemble$name") { finalizedBy(sizeCheck) } }
         if (variant.flavorName == "play") {
@@ -302,6 +304,8 @@ androidComponents {
 
 dependencies {
     implementation(project(":adb"))
+    // Required to cryptographically verify launcher APK contents before any TV installation.
+    implementation("com.android.tools.build:apksig:9.4.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

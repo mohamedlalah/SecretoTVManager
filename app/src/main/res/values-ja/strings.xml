@@ -71,7 +71,7 @@
     <string name="copy_choose_one">選択してください</string>
     <string name="copy_install_one">インストール</string>
     <string name="copy_choose_home">ホーム画面を選択</string>
-    <string name="copy_choose_home_text">どれもテレビのホーム画面を置き換えます。Secreto TV Manager がテレビの Play ストアで開くので、リモコンでインストールしてください。</string>
+    <string name="copy_choose_home_text">ランチャーを選択してください。利用可能ならテレビの Play ストアを開くか、直接ダウンロードします。インストールとホーム設定には確認が必要です。</string>
     <string name="copy_can_download">一部は直接ダウンロードすることもできます。</string>
     <string name="copy_no_launcher_list">ホーム画面のリストを読み込めませんでした。スマートフォンのインターネット接続を確認して、もう一度お試しください。</string>
     <string name="copy_recommended">編集部のおすすめ</string>
@@ -84,7 +84,7 @@
     <string name="copy_uses_service">ユーザー補助サービスを使用</string>
     <string name="copy_no_service">オープンソース・ユーザー補助サービスなし</string>
     <string name="copy_other_launcher">別のランチャーを使いたい場合は、テレビの Play ストアからインストールして、ここに戻ってください。%1$s に表示されます。</string>
-    <string name="copy_not_affiliated">Secreto TV Manager は、これらのランチャーやその開発元とは関係ありません。</string>
+    <string name="copy_not_affiliated">Secreto TV Launcher は SecretoTools が保守しています。他のランチャーは各開発者のものです。</string>
     <string name="copy_get_from_store">Play ストアから入手</string>
     <string name="copy_store_recommended">Play ストアがおすすめ: 自動で更新されます</string>
     <string name="copy_download_directly">直接ダウンロード</string>
@@ -112,7 +112,7 @@
     <string name="copy_downloads_from">Secreto TV Manager は %1$s を開発元の公式リリースページからダウンロードします:</string>
     <string name="copy_release">リリース %1$s・%2$s</string>
     <string name="copy_where_from">入手元</string>
-    <string name="copy_signed_check">Secreto TV Manager は、テレビにインストールする前に、Projectivy の開発元による署名があることを確認します。Secreto TV Manager は Projectivy とは関係ありません。</string>
+    <string name="copy_signed_check">Secreto TV Manager は、テレビへのインストール前に %1$s の開発者署名を検証します。</string>
     <string name="copy_download_and_install">ダウンロードしてインストール</string>
     <string name="copy_download_directly_title">%1$s を直接ダウンロードしますか？</string>
     <string name="copy_direct_check">Secreto TV Manager はアプリに開発元の署名があることを確認しますが、悪意のあるコードのスキャンは行いません。また、アプリは自動で更新されません。</string>
@@ -1198,4 +1198,15 @@
     <string name="about_credits">クレジットとライセンス</string>
     <string name="about_show_credits">クレジットとライセンスを表示</string>
     <string name="about_hide_credits">クレジットとライセンスを非表示</string>
+    <string name="secreto_launcher_description">お気に入りとアプリ検索に対応した、Android TV・Google TV用のカスタマイズ可能なホーム画面。</string>
+    <string name="secreto_launcher_screenshot_credit">公式リポジトリの画面。外観はバージョンと設定により異なります。</string>
+    <string name="secreto_launcher_play_pending">Play ストアでの公開は未確認です。公式 GitHub ダウンロードをご利用ください。</string>
+    <string name="secreto_launcher_disabled">テレビにインストール済みですが無効です。開く・ホームに設定する前にアプリ画面で有効にしてください。</string>
+    <string name="secreto_launcher_target_unknown">接続したテレビの Android バージョンと CPU を確認できません。再接続してお試しください。</string>
+    <string name="secreto_launcher_incompatible">この APK は接続したテレビに対応していません。何もインストールしていません。</string>
+    <string name="secreto_launcher_missing_apk">最新の安定版にインストール可能なリリース APK がありません。</string>
+    <string name="secreto_launcher_ambiguous_apk">このテレビに一致する APK が複数あります。選択していません。公式リリースをご確認ください。</string>
+    <string name="secreto_launcher_invalid_release">公式安定版の情報、APK URL、SHA-256 を確認できません。何もインストールしていません。</string>
+    <string name="secreto_launcher_picked_confirm">選択したファイルを検証しました。バージョンとサイズを確認し、テレビへのインストールを承認してください。</string>
+    <string name="secreto_launcher_verification_failed">APK のチェックサム、パッケージ、署名証明書を検証できません。何もインストールしていません。</string>
 </resources>

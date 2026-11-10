@@ -71,7 +71,7 @@
     <string name="copy_choose_one">Выберите</string>
     <string name="copy_install_one">Установить</string>
     <string name="copy_choose_home">Выберите главный экран</string>
-    <string name="copy_choose_home_text">Любой из них заменяет главный экран телевизора. Secreto TV Manager откроет его в Play Маркете на телевизоре, а установите вы его пультом.</string>
+    <string name="copy_choose_home_text">Выберите лаунчер. Если доступно, откройте его страницу в Play Маркете на ТВ или загрузите напрямую. Установка и назначение главным экраном требуют подтверждения.</string>
     <string name="copy_can_download">Некоторые можно скачать и напрямую.</string>
     <string name="copy_no_launcher_list">Не удалось загрузить список главных экранов. Проверьте подключение телефона к интернету и повторите попытку.</string>
     <string name="copy_recommended">Выбор редакции</string>
@@ -84,7 +84,7 @@
     <string name="copy_uses_service">Использует службу специальных возможностей</string>
     <string name="copy_no_service">Открытый код · без службы специальных возможностей</string>
     <string name="copy_other_launcher">Хотите другой лаунчер? Установите его из Play Маркета на телевизоре и вернитесь сюда. Он появится в разделе «%1$s».</string>
-    <string name="copy_not_affiliated">Secreto TV Manager не связан ни с одним из этих лаунчеров и их разработчиками.</string>
+    <string name="copy_not_affiliated">Secreto TV Launcher поддерживает SecretoTools. Остальные лаунчеры принадлежат их разработчикам.</string>
     <string name="copy_get_from_store">Скачать в Play Маркете</string>
     <string name="copy_store_recommended">Рекомендуем Play Маркет: приложение обновляется само</string>
     <string name="copy_download_directly">Скачать напрямую</string>
@@ -112,7 +112,7 @@
     <string name="copy_downloads_from">Secreto TV Manager скачивает %1$s со страницы релизов самого разработчика:</string>
     <string name="copy_release">Релиз %1$s · %2$s</string>
     <string name="copy_where_from">Откуда он берется</string>
-    <string name="copy_signed_check">Перед установкой на телевизор Secreto TV Manager проверяет, что файл подписан разработчиком Projectivy. Secreto TV Manager не связан с Projectivy.</string>
+    <string name="copy_signed_check">Secreto TV Manager проверяет подпись разработчика %1$s перед установкой на ТВ.</string>
     <string name="copy_download_and_install">Скачать и установить</string>
     <string name="copy_download_directly_title">Скачать %1$s напрямую?</string>
     <string name="copy_direct_check">Secreto TV Manager проверяет, что у приложения есть подпись разработчика. Вредоносный код он не ищет, и приложение не будет обновляться само.</string>
@@ -1360,4 +1360,15 @@
     <string name="about_credits">Авторы и лицензии</string>
     <string name="about_show_credits">Показать авторов и лицензии</string>
     <string name="about_hide_credits">Скрыть авторов и лицензии</string>
+    <string name="secreto_launcher_description">Настраиваемый главный экран для Android TV и Google TV с избранным и поиском приложений.</string>
+    <string name="secreto_launcher_screenshot_credit">Снимок из официального репозитория. Вид зависит от версии и настроек.</string>
+    <string name="secreto_launcher_play_pending">Публичная страница Play Маркета пока не подтверждена. Используйте официальную загрузку с GitHub.</string>
+    <string name="secreto_launcher_disabled">Установлен, но отключён на ТВ. Включите его в приложениях, прежде чем открывать или назначать главным экраном.</string>
+    <string name="secreto_launcher_target_unknown">Не удалось проверить Android и процессор подключённого ТВ. Подключитесь заново.</string>
+    <string name="secreto_launcher_incompatible">Этот APK несовместим с подключённым ТВ. Ничего не установлено.</string>
+    <string name="secreto_launcher_missing_apk">В последнем стабильном выпуске нет подходящего релизного APK.</string>
+    <string name="secreto_launcher_ambiguous_apk">Для этого ТВ подходит несколько APK. Загрузка не выбрана. Проверьте официальный выпуск.</string>
+    <string name="secreto_launcher_invalid_release">Не удалось проверить данные официального стабильного выпуска, URL APK или SHA-256. Ничего не установлено.</string>
+    <string name="secreto_launcher_picked_confirm">Выбранный файл проверен. Проверьте версию и размер, затем подтвердите установку на ТВ.</string>
+    <string name="secreto_launcher_verification_failed">Контрольная сумма, пакет или сертификат APK не прошли проверку. Ничего не установлено.</string>
 </resources>

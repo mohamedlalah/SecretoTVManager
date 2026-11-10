@@ -17,7 +17,7 @@ import java.io.IOException
 import java.security.MessageDigest
 
 /** A launcher's latest release: [page] is shown before anything downloads, [apk] is its one APK. */
-data class LauncherRelease(val version: String, val page: String, val apk: String, val size: Long)
+data class LauncherRelease(val version: String, val page: String, val apk: String, val size: Long, val sha256: String? = null)
 
 /**
  * The file [launcher] is saved as: its list name with spaces as `-` and only `[A-Za-z0-9._-]` kept,
@@ -36,6 +36,8 @@ class RateLimited(val until: Long?) : IOException("rate-limited")
 /** The APK isn't the launcher it should be ([KnownLauncher.accepts]): another package, or not signed by its developer. */
 class WrongApk : IOException("not the launcher")
 
+class ReleaseUnavailable(val messageRes: Int) : IOException("No compatible verified release")
+
 /** A launcher's APK the user downloaded and picked, checked before anything reaches the TV. Faked in tests. */
 interface LauncherPick {
     /** Throws [WrongApk], or IOException when it can't be read. */
@@ -49,6 +51,7 @@ interface LauncherPick {
 interface LauncherDownload : LauncherPick {
     /** Throws on no network, no [KnownLauncher.releases], or a release that doesn't parse. */
     suspend fun latest(launcher: KnownLauncher): LauncherRelease
+    suspend fun latest(launcher: KnownLauncher, target: LauncherTarget): LauncherRelease = latest(launcher)
 
     /** Downloads [release]'s APK and checks it. Throws [WrongApk], or IOException on a failed download. */
     suspend fun fetch(launcher: KnownLauncher, release: LauncherRelease, onProgress: (Progress) -> Unit): PickedApp
@@ -81,31 +84,39 @@ open class AndroidLauncherPick(context: Context) : LauncherPick {
         read(file, launcher)
     }
 
-    /** The package manager checks the APK's signature while it reads the certificates. */
+    /** Parse identity, then verify APK content signatures independently with AOSP apksig. */
     protected fun read(file: File, launcher: KnownLauncher): PickedApp {
+        // Package archive parsing alone is not proof that APK content signatures are valid.
+        val verified = runCatching { com.android.apksig.ApkVerifier.Builder(file).setMinCheckedPlatformVersion(26).build().verify() }.getOrNull() ?: throw WrongApk()
+        if (!verified.isVerified) throw WrongApk()
+        val signers = verified.signerCertificates.map { launcherSha256(it.encoded) }.toSet()
+        if (signers.isEmpty() || !launcher.signers.containsAll(signers)) throw WrongApk()
         val pm = ctx.packageManager
         val pkg = if (Build.VERSION.SDK_INT >= 28) {
             @Suppress("DEPRECATION") // the flags overload is API 33+
-            pm.getPackageArchiveInfo(file.path, PackageManager.GET_SIGNING_CERTIFICATES)
+            pm.getPackageArchiveInfo(file.path, PackageManager.GET_SIGNING_CERTIFICATES or PackageManager.GET_CONFIGURATIONS)
         } else {
             @Suppress("DEPRECATION")
-            pm.getPackageArchiveInfo(file.path, PackageManager.GET_SIGNATURES)
+            pm.getPackageArchiveInfo(file.path, PackageManager.GET_SIGNATURES or PackageManager.GET_CONFIGURATIONS)
         } ?: throw WrongApk()
-        val certs = if (Build.VERSION.SDK_INT >= 28) {
-            // A rotated key lists its past certificates first; the current one signs.
-            pkg.signingInfo?.let { if (it.hasMultipleSigners()) it.apkContentsSigners.toList() else it.signingCertificateHistory.takeLast(1) }
-        } else {
-            @Suppress("DEPRECATION")
-            pkg.signatures?.toList()
-        }
-        val signers = certs.orEmpty().map { sha256(it.toByteArray()) }.toSet()
         if (!launcher.accepts(pkg.packageName, signers)) throw WrongApk()
+        if (launcher.pkg == SecretoLauncher.PACKAGE) {
+            val flags = pkg.applicationInfo?.flags ?: throw WrongApk()
+            val debugOrTest = android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE or android.content.pm.ApplicationInfo.FLAG_TEST_ONLY
+            if (flags and debugOrTest != 0) throw WrongApk()
+        }
         return PickedApp(
             files = listOf(file),
             info = ApkInfo(pkg.packageName, PackageInfoCompat.getLongVersionCode(pkg), pkg.versionName),
             label = launcher.name,
+            launcherRequirements = LauncherRequirements(
+                pkg.applicationInfo?.minSdkVersion ?: throw WrongApk(),
+                java.util.zip.ZipFile(file).use { zip -> zip.entries().asSequence()
+                    .map { it.name }.filter { it.startsWith("lib/") && it.endsWith(".so") }
+                    .map { it.split('/')[1] }.toSet() },
+                pkg.reqFeatures.orEmpty().filter { it.flags and android.content.pm.FeatureInfo.FLAG_REQUIRED != 0 }.mapNotNull { it.name }.toSet(),
+                pkg.reqFeatures.orEmpty().filter { it.name == null }.maxOfOrNull { it.reqGlEsVersion } ?: 0,
+            ),
         )
     }
 }
-
-private fun sha256(b: ByteArray) = MessageDigest.getInstance("SHA-256").digest(b).joinToString("") { "%02x".format(it) }

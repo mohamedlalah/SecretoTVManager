@@ -36,6 +36,9 @@ import app.tellyscope.data.Docked
 import app.tellyscope.data.HistoryEntry
 import app.tellyscope.data.KeyHaptics
 import app.tellyscope.data.KnownLauncher
+import app.tellyscope.data.SecretoLauncher
+import app.tellyscope.data.LauncherTarget
+import app.tellyscope.data.ReleaseUnavailable
 import app.tellyscope.data.LauncherDownload
 import app.tellyscope.data.LauncherPick
 import app.tellyscope.data.LauncherRelease
@@ -203,7 +206,7 @@ data class ResetUi(
  * opens at its page ([Step.Waiting], or [Step.NoStore] when the Store didn't open and the user
  * searches by hand), then switch to it ([Step.Installed]). [Step.Left]: the Store closed first.
  */
-data class LauncherFlow(val step: Step = Step.Pick, val pkg: String = RECOMMENDED.first().pkg, val fire: FireInstall? = null) {
+data class LauncherFlow(val step: Step = Step.Pick, val pkg: String = "", val fire: FireInstall? = null) {
     enum class Step { Pick, Waiting, NoStore, Left, Installed }
 
     /** Fire OS: its launchers alone ([fireLaunchers]), with no Play Store; not Download directly beside the Store ([FireInstall.store]). */
@@ -227,6 +230,7 @@ data class FireInstall(
     val error: UiText? = null,
     val store: Boolean = false,
     val picked: Boolean = false,
+    val pickedApp: PickedApp? = null,
     val until: Long? = null,
     /** The APK's size once it's downloaded or picked, for the steps' first line. */
     val size: Long? = null,
@@ -1031,14 +1035,20 @@ class TellyscopeViewModel(
         val download = downloader ?: return
         val launcher = apkLauncher(pkg) ?: return
         val store = _state.value.device.launcher?.let { it.fire?.store ?: true } ?: return
-        val list = unverified()
+        val list = if (pkg == SecretoLauncher.PACKAGE) null else unverified()
         launcherJob?.cancel()
         updateDevice(id) { d -> d.copy(launcher = d.launcher?.copy(pkg = pkg, fire = FireInstall(FireInstall.Step.Checking, store = store, list = list))) }
         launcherJob = viewModelScope.launch {
             val release = try {
-                download.latest(launcher)
+                if (launcher.pkg == SecretoLauncher.PACKAGE) {
+                    val target = source.launcherTarget(id) ?: throw ReleaseUnavailable(R.string.secreto_launcher_target_unknown)
+                    if (target.sdk < 26) throw ReleaseUnavailable(R.string.secreto_launcher_incompatible)
+                    download.latest(launcher, target)
+                } else download.latest(launcher)
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: ReleaseUnavailable) {
+                return@launch setFire(id) { FireInstall(FireInstall.Step.NoDownload, store = store, list = list, error = UiText(e.messageRes)) }
             } catch (e: RateLimited) {
                 return@launch setFire(id) { FireInstall(FireInstall.Step.NoDownload, store = store, until = e.until, list = list) }
             } catch (_: Exception) {
@@ -1054,7 +1064,7 @@ class TellyscopeViewModel(
      */
     private fun listChanged(id: String, flow: LauncherFlow): Boolean {
         val fire = flow.fire ?: return false
-        val list = unverified()
+        val list = if (flow.pkg == SecretoLauncher.PACKAGE) null else unverified()
         if (list == fire.list) return false
         if (downloader == null) setFire(id) { FireInstall(list = list) } else checkLauncherApk(flow.pkg)
         return true
@@ -1072,9 +1082,15 @@ class TellyscopeViewModel(
      */
     fun installLauncherApk() {
         val id = _state.value.selectedId ?: return
-        val download = downloader ?: return
         val flow = _state.value.device.launcher ?: return
         val launcher = apkLauncher(flow.pkg) ?: return
+        flow.fire?.takeIf { it.step == FireInstall.Step.Confirm && !it.gated }?.pickedApp?.let { app ->
+            if (listChanged(id, flow)) return
+            setFire(id) { it.copy(step = FireInstall.Step.Installing, pickedApp = null) }
+            launcherJob = viewModelScope.launch { installFetched(id, launcher, app) }
+            return
+        }
+        val download = downloader ?: return
         val release = flow.fire?.takeIf { it.step == FireInstall.Step.Confirm && !it.gated }?.release ?: return
         if (listChanged(id, flow)) return
         launcherJob?.cancel()
@@ -1121,12 +1137,21 @@ class TellyscopeViewModel(
             } catch (_: Exception) {
                 return@launch setFire(id) { it.copy(step = FireInstall.Step.Refused, error = Copy.CANT_READ_FILE) }
             }
-            installFetched(id, launcher, app)
+            if (launcher.pkg == SecretoLauncher.PACKAGE) {
+                setFire(id) { it.copy(step = FireInstall.Step.Confirm, pickedApp = app,
+                    release = LauncherRelease(app.info.versionName.orEmpty(), "${SecretoLauncher.REPOSITORY}/releases", "", app.sizeBytes)) }
+            } else installFetched(id, launcher, app)
         }
     }
 
     /** The launcher, downloaded or picked and checked, onto the TV over adb like any sideload. */
     private suspend fun installFetched(id: String, launcher: KnownLauncher, app: PickedApp) {
+        if (launcher.pkg == SecretoLauncher.PACKAGE) {
+            val target = try { source.launcherTarget(id) } catch (e: CancellationException) { throw e } catch (_: Exception) { null }
+            if (target == null || app.launcherRequirements?.compatible(target) != true) {
+                return setFire(id) { it.copy(step = FireInstall.Step.Refused, error = UiText(R.string.secreto_launcher_incompatible)) }
+            }
+        }
         setFire(id) { it.copy(step = FireInstall.Step.Installing, progress = null, size = app.sizeBytes) }
         val result = try {
             source.install(id, app.files, app.info, allowDowngrade = false) { p -> setFire(id) { it.copy(progress = p) } }
@@ -1187,6 +1212,7 @@ class TellyscopeViewModel(
      * Open Store again recovers.
      */
     fun installLauncher(pkg: String) {
+        if (!launcherPlayAvailable(pkg)) return
         val id = _state.value.selectedId ?: return
         launcherJob?.cancel()
         val step = { s: LauncherFlow.Step -> updateDevice(id) { it.copy(launcher = it.launcher?.let { _ -> LauncherFlow(s, pkg) }) } }
@@ -1264,7 +1290,7 @@ class TellyscopeViewModel(
         val id = _state.value.selectedId ?: return
         launcherJob?.cancel()
         updateDevice(id) { it.copy(launcher = null) }
-        run(pkg, Action.Home, id = id) { source.makeHome(it, pkg, service) }
+        run(pkg, Action.Home, id = id) { source.makeHome(it, pkg, service && pkg != SecretoLauncher.PACKAGE) }
     }
 
     /** Open in the picker: shows the launcher [pkg] on the TV. The picker stays. */

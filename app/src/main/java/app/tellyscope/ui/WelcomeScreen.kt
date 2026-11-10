@@ -2,6 +2,8 @@
 
 package app.tellyscope.ui
 
+import androidx.compose.ui.graphics.Color
+import app.tellyscope.ui.theme.zelligeBackground
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +48,9 @@ fun WelcomeScreen(askLocalNetwork: Boolean, onContinue: () -> Unit, onSkip: () -
     val context = LocalContext.current
     val website = stringResource(R.string.developer_website_url)
     Scaffold(
+        modifier = Modifier.zelligeBackground(),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         bottomBar = {
             Row(
                 Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 16.dp),

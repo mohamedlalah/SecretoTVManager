@@ -2,6 +2,7 @@
 
 package app.tellyscope.ui
 
+import app.tellyscope.ui.theme.zelligeBackground
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.background
@@ -309,6 +310,7 @@ fun RemoteScreen(
         // their lift, so the D-pad can move through results with the keyboard still up. Never consumed here.
         Box(
             Modifier.fillMaxSize()
+                .zelligeBackground(MaterialTheme.colorScheme.surfaceContainerLow)
                 .onGloballyPositioned { origin = it.positionInWindow() }
                 .pointerInput(typing) {
                     if (!typing) return@pointerInput
@@ -1098,7 +1100,10 @@ private fun ServicePill(s: StreamingService, modifier: Modifier = Modifier, inte
                 colorFilter = look.ink?.let { ColorFilter.tint(Color(it)) },
             )
         } else {
-            Text(s.name, style = MaterialTheme.typography.labelLarge, color = Color(look.ink ?: RemoteButtons.WHITE), maxLines = 1)
+            val ink = RemoteButtons.fallbackInk(look)
+            val backing = if (ink == null) Modifier.clip(CircleShape).background(c.surfaceContainerLow).padding(horizontal = 6.dp) else Modifier
+            Text(s.name, backing, style = MaterialTheme.typography.labelLarge,
+                color = if (ink == null) c.onSurface else Color(ink), maxLines = 1)
         }
     }
 }

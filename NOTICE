@@ -96,3 +96,18 @@ App icon in app/src/test/resources/dock-icons/ (screenshot tests only, not in
 the app)
 The YouTube name and logo belong to its owner. It is shown only to illustrate
 the Apps list in a screenshot.
+
+--------------------------------------------------------------------------------
+Secreto TV Launcher picker assets and APK verification
+The bundled Secreto TV Launcher icon and home-screen screenshot are supplied by
+SecretoTools / Mohamed LALAH. Official sources:
+https://secretotools.com/secreto-tv-launcher/assets/launcher-icon.png
+https://github.com/mohamedlalah/SecretoTVLauncher/blob/main/home.jpeg
+The screenshot depicts the real launcher; appearance depends on version and settings.
+Third-party app names and logos depicted in it retain their owners' rights and do
+not imply endorsement. Original Tellyscope and CleanYourTV credits remain above.
+
+APK content verification uses AOSP apksig (com.android.tools.build:apksig:9.4.1),
+Copyright (C) 2016 The Android Open Source Project, under the Apache License 2.0.
+Source: https://android.googlesource.com/platform/tools/apksig/
+The Apache-2.0 text is retained in release/licenses/Apache-2.0.txt and assets/legal/.
