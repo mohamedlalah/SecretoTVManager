@@ -26,10 +26,12 @@ class ReleaseTests(unittest.TestCase):
         for name in ['certificate.pem', 'fixtures/public.pem', '.env.example', 'gradle.properties', 'LICENSE', 'NOTICE']:
             self.assertFalse(ignored(name), name)
 
-    def validate_with(self, tags):
+    def validate_with(self, tags, changed=('app/build.gradle.kts',)):
         current = 'applicationId = "com.secreto.tvmanager"\nversionName = "1.0.0"\nversionCode = 1'
         def git(*args):
             if args[0] == 'tag': return '\n'.join(tags)
+            if args[0] == 'diff': return '\n'.join(changed)
+            if args[0] == 'ls-files': return ''
             tag, path = args[1].split(':', 1)
             if path.endswith('build.gradle.kts'): return tags[tag]
             if 'com.secreto.tvmanager' not in tags[tag]: raise subprocess.CalledProcessError(1, 'git')
@@ -43,6 +45,8 @@ class ReleaseTests(unittest.TestCase):
     def test_official_fork_tags_prevent_duplicate_or_downgrade(self):
         with self.assertRaises(ValueError):
             self.validate_with({'v1.0.0': 'applicationId = "com.secreto.tvmanager"\nversionName = "1.0.0"\nversionCode = 1'})
+        with self.assertRaises(ValueError):
+            self.validate_with({'v1.0.1': 'applicationId = "com.secreto.tvmanager"\nversionName = "1.0.1"\nversionCode = 2'}, changed=())
 
     def test_secret_export_filter(self):
         for name in ['a.jks', 'release.p12', '.env.production', 'private-key.pem', 'signing.properties']:
