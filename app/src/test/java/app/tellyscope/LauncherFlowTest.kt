@@ -2,10 +2,12 @@
 
 package app.tellyscope
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.lifecycle.viewModelScope
 import app.tellyscope.data.AppInfo
 import app.tellyscope.data.Device
@@ -340,7 +342,9 @@ class LauncherScreenTest {
         compose.onNodeWithText(Copy.GET_FROM_STORE.text()).performClick()
         assertEquals(listOf(PROJECTIVY), downloads)
         assertEquals(listOf(PROJECTIVY), installs)
-        compose.onNodeWithText("FLauncher").performScrollTo().performClick()
+        // A semantics click selects the row itself: a touch at its centre can land on the bottom bar instead,
+        // where CI's font metrics leave the row after scrolling (that bar holds Download directly).
+        compose.onNodeWithText("FLauncher").performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
         compose.onNodeWithText(Copy.DOWNLOAD_DIRECTLY.text()).assertDoesNotExist()
         compose.onNodeWithText(Copy.GET_FROM_STORE.text()).assertExists()
     }
