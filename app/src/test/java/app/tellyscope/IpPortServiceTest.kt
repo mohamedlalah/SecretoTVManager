@@ -20,6 +20,7 @@ import okio.Sink
 import okio.Source
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -49,9 +50,11 @@ private class WirelessTv : AdbSession {
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class IpPortServiceTest {
+    @get:Rule val lists = SharedListsIsolation()
+
     @Test fun aTvAddedByIpPortKeepsItsInstanceName() = runBlocking {
         val app = RuntimeEnvironment.getApplication()
-        val source = AdbDeviceSource(app, connector = { _, _ -> AdbConnectResult.Online(WirelessTv()) })
+        val source = lists.track(AdbDeviceSource(app, connector = { _, _ -> AdbConnectResult.Online(WirelessTv()) }))
         assertTrue(source.connect(ScanHit("tv", 37123, ScanKind.Wireless, null, null)) is ConnectResult.Online)
 
         val store = DeviceStore(File(app.filesDir, "devices.tsv"))

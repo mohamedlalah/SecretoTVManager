@@ -22,6 +22,7 @@ import okio.Sink
 import okio.Source
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -56,9 +57,11 @@ private class OnTv : AdbSession {
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class ResetCancelTest {
+    @get:Rule val lists = SharedListsIsolation()
+
     @Test fun aCancelledResetKeepsWhatItTurnedOn() = runBlocking {
         val tv = OnTv()
-        val source = AdbDeviceSource(RuntimeEnvironment.getApplication(), connector = { _, _ -> AdbConnectResult.Online(tv) })
+        val source = lists.track(AdbDeviceSource(RuntimeEnvironment.getApplication(), connector = { _, _ -> AdbConnectResult.Online(tv) }))
         assertTrue(source.connect(ScanHit("tv", 5555, ScanKind.Classic, "tv", null)) is ConnectResult.Online)
         val apps = listOf("com.acme.one", "com.acme.two", "com.acme.three").map { ResetApp(it, it) }
 

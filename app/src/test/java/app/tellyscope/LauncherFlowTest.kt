@@ -262,6 +262,8 @@ class LauncherFlowTest {
 @Config(sdk = [35])
 class LauncherScreenTest {
     @get:Rule val compose = createComposeRule()
+    // Which launchers download directly comes from the shared launcher list: keep it on the fixtures.
+    @get:Rule val lists = SharedListsIsolation()
 
     private val tv = Device("tv", ScanHit("tv", 5555, ScanKind.Classic, "tv", null), DeviceState.Online, null, null, null, 0L)
 
