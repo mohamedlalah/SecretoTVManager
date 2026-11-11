@@ -47,6 +47,25 @@ def maintenance_path(path):
             re.fullmatch(r'tools/test_[A-Za-z0-9_]+\.py', path) is not None)
 
 
+# The only app/build.gradle.kts edit that may ship without a version advance: the release APK size budget line.
+# It changes no APK content; any other difference in that file is a release change.
+BUDGET_FILE = 'app/build.gradle.kts'
+BUDGET_LINE = re.compile(r'\s*maxBytes = (?:if \(variant\.name == "githubRelease"\) [\d_]+L else )?[\d_]+L\s*')
+
+
+def budget_only_change(tag):
+    """True when app/build.gradle.kts differs from tag only on the size-budget line."""
+    try:
+        old = git('show', tag + ':' + BUDGET_FILE).splitlines()
+        new = Path(BUDGET_FILE).read_text().splitlines()
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    if len(old) != len(new):
+        return False
+    changed = [(a, b) for a, b in zip(old, new) if a != b]
+    return bool(changed) and all(BUDGET_LINE.fullmatch(a) and BUDGET_LINE.fullmatch(b) for a, b in changed)
+
+
 def changed_since(tag):
     """Committed, staged, unstaged and untracked paths since tag; both sides of renames and deletions."""
     paths = git('diff', '--name-only', '--no-renames', tag).splitlines()
@@ -80,7 +99,8 @@ def validate():
         latest_version, latest_code, latest_tag = max(previous)
         if current == latest_version and code == latest_code and latest_code == max(c for _, c, _ in previous):
             # Same version as the latest official release: allowed only when nothing that ships changed since it.
-            release_changes = [p for p in changed_since(latest_tag) if not maintenance_path(p)]
+            release_changes = [p for p in changed_since(latest_tag) if not maintenance_path(p)
+                               and not (p == BUDGET_FILE and budget_only_change(latest_tag))]
             if release_changes:
                 raise ValueError('Version and code must advance past official fork tags; release-affecting changes since '
                                  + latest_tag + ': ' + ', '.join(release_changes[:20]))

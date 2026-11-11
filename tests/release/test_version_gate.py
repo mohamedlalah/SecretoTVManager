@@ -136,6 +136,22 @@ class VersionGateRepositoryTests(unittest.TestCase):
             self.commit(path)
             self.assert_rejected(path)
 
+    def test_size_budget_only_change(self):
+        budget = '            maxBytes = if (variant.name == "githubRelease") 4_200_000L else 4_000_000L\n'
+        self.write('app/build.gradle.kts', GRADLE.format(name='1.1.0', code=2) + budget)
+        self.commit('budget at release')
+        self.git('tag', '-f', '-a', 'v1.1.0', '-m', 'v1.1.0')
+        self.write('app/build.gradle.kts', GRADLE.format(name='1.1.0', code=2) + '            maxBytes = 4_200_000L\n')
+        self.commit('budget')
+        self.assert_passes()
+        # Anything else in the same file still needs a version advance.
+        self.write('app/build.gradle.kts', GRADLE.format(name='1.1.0', code=2) + '            maxBytes = 4_200_000L\nminSdk = 27\n')
+        self.commit('budget and more')
+        self.assert_rejected('app/build.gradle.kts')
+        self.write('app/build.gradle.kts', GRADLE.format(name='1.1.0', code=2) + '            maxBytes = 4_200_000L // note\n')
+        self.commit('budget line with extra text')
+        self.assert_rejected('app/build.gradle.kts')
+
     def test_production_change_with_version_advance_passes(self):
         self.write('app/src/main/java/App.kt', 'class App { val x = 1 }\n')
         self.write('app/build.gradle.kts', GRADLE.format(name='1.1.1', code=3))
