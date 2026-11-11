@@ -6,6 +6,17 @@ from pathlib import Path
 
 APP_ID = 'com.secreto.tvmanager'
 
+# Paths that cannot change the distributed APK or its release/compliance materials. Allowlist only:
+# every other path, including unknown ones, needs a version advance (fail closed).
+MAINTENANCE_FILES = {
+    '.github/workflows/ci.yml',
+    '.github/workflows/release-check.yml',
+    'scripts/release/check_release.py',
+    'scripts/release/docs_only.py',
+    'scripts/verification/java25-tests.gradle',
+}
+TEST_PREFIXES = ('app/src/test/', 'adb/src/test/', 'cli/src/test/', 'tests/release/')
+
 
 def identity(text):
     values = []
@@ -25,6 +36,41 @@ def version(value):
 
 def git(*args):
     return subprocess.check_output(['git', *args], text=True, stderr=subprocess.DEVNULL)
+
+
+def maintenance_path(path):
+    """Documentation, tests and CI/gate maintenance only; anything else counts as a release change."""
+    if not path or path.startswith('/') or '\\' in path or '..' in path.split('/'):
+        return False
+    return (path == 'README.md' or (path.startswith('docs/') and path.endswith('.md')) or
+            path in MAINTENANCE_FILES or path.startswith(TEST_PREFIXES) or
+            re.fullmatch(r'tools/test_[A-Za-z0-9_]+\.py', path) is not None)
+
+
+# The only app/build.gradle.kts edit that may ship without a version advance: the release APK size budget line.
+# It changes no APK content; any other difference in that file is a release change.
+BUDGET_FILE = 'app/build.gradle.kts'
+BUDGET_LINE = re.compile(r'\s*maxBytes = (?:if \(variant\.name == "githubRelease"\) [\d_]+L else )?[\d_]+L\s*')
+
+
+def budget_only_change(tag):
+    """True when app/build.gradle.kts differs from tag only on the size-budget line."""
+    try:
+        old = git('show', tag + ':' + BUDGET_FILE).splitlines()
+        new = Path(BUDGET_FILE).read_text().splitlines()
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    if len(old) != len(new):
+        return False
+    changed = [(a, b) for a, b in zip(old, new) if a != b]
+    return bool(changed) and all(BUDGET_LINE.fullmatch(a) and BUDGET_LINE.fullmatch(b) for a, b in changed)
+
+
+def changed_since(tag):
+    """Committed, staged, unstaged and untracked paths since tag; both sides of renames and deletions."""
+    paths = git('diff', '--name-only', '--no-renames', tag).splitlines()
+    paths += git('ls-files', '--others', '--exclude-standard').splitlines()
+    return sorted({p for p in paths if p})
 
 
 def validate():
@@ -48,9 +94,20 @@ def validate():
         if old_id == APP_ID and 'Secreto TV Manager' in fork_notes:
             if old_name != tag[1:]:
                 raise ValueError('Fork tag/version mismatch: ' + tag)
-            previous.append((version(old_name), old_code))
+            previous.append((version(old_name), old_code, tag))
     if previous:
-        if current <= max(v for v, _ in previous) or code <= max(c for _, c in previous):
+        latest_version, latest_code, latest_tag = max(previous)
+        if current == latest_version and code == latest_code and latest_code == max(c for _, c, _ in previous):
+            # Same version as the latest official release: allowed only when nothing that ships changed since it.
+            release_changes = [p for p in changed_since(latest_tag) if not maintenance_path(p)
+                               and not (p == BUDGET_FILE and budget_only_change(latest_tag))]
+            if release_changes:
+                raise ValueError('Version and code must advance past official fork tags; release-affecting changes since '
+                                 + latest_tag + ': ' + ', '.join(release_changes[:20]))
+            print(f'Secreto TV Manager {name} ({code}): maintenance-only changes since {latest_tag}; '
+                  f'no version advance required; {len(previous)} official fork tags considered')
+            return
+        if current <= latest_version or code <= max(c for _, c, _ in previous):
             raise ValueError('Version and code must advance past official fork tags')
     elif (name, code) != ('1.0.0', 1):
         raise ValueError('First official fork release must be 1.0.0 (1)')

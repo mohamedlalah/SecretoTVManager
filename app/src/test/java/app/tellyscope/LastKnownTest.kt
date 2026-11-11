@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,6 +25,8 @@ import java.time.YearMonth
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class LastKnownTest {
+    @get:Rule val lists = SharedListsIsolation()
+
     private val context = RuntimeEnvironment.getApplication()
     private val file = File(context.filesDir, "devices.tsv")
     private val facts = LastKnown("XGIMI", "XGIMI", "11", YearMonth.of(2023, 5), 9.4, 12.0)
@@ -35,7 +38,7 @@ class LastKnownTest {
         // What the last launch saved.
         DeviceStore(file).save(listOf(tv))
 
-        val source = AdbDeviceSource(context)
+        val source = lists.track(AdbDeviceSource(context))
         val device = source.known().single()
         assertEquals(DeviceState.Offline, device.state)
         assertEquals(facts, device.lastKnown)
@@ -47,6 +50,6 @@ class LastKnownTest {
         source.forget(device.id)
         // The file is written off the caller's thread.
         withTimeout(5_000) { while (DeviceStore(file).load().isNotEmpty()) delay(20) }
-        assertEquals(emptyList<Any>(), AdbDeviceSource(context).known())
+        assertEquals(emptyList<Any>(), lists.track(AdbDeviceSource(context)).known())
     }
 }

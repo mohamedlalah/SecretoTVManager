@@ -19,6 +19,7 @@ import okio.Sink
 import okio.Source
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -52,13 +53,15 @@ private class Link(private val version: Int) : AdbSession {
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class PickerDropTest {
+    @get:Rule val lists = SharedListsIsolation()
+
     @Test fun theVersionCheckAfterThePickerRedialsADeadLink() = runBlocking {
         val before = Link(version = 1)
         val after = Link(version = 2)
         var dials = 0
-        val source = AdbDeviceSource(RuntimeEnvironment.getApplication(), connector = { _, _ ->
+        val source = lists.track(AdbDeviceSource(RuntimeEnvironment.getApplication(), connector = { _, _ ->
             AdbConnectResult.Online(if (++dials == 1) before else after)
-        })
+        }))
         val hit = ScanHit("tv", 5555, ScanKind.Classic, "tv", null)
         assertTrue(source.connect(hit) is ConnectResult.Online)
 

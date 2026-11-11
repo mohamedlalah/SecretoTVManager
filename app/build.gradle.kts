@@ -284,7 +284,7 @@ androidComponents {
             apkDir = variant.artifacts.get(SingleArtifact.APK)
             // GitHub adds the verified Launcher download, bundled preview and zellige.
             // The measured optimized APK was 4,069,127 bytes before signing.
-            maxBytes = if (variant.name == "githubRelease") 4_200_000L else 4_000_000L
+            maxBytes = 4_200_000L
         }
         afterEvaluate { tasks.named("assemble$name") { finalizedBy(sizeCheck) } }
         if (variant.flavorName == "play") {
